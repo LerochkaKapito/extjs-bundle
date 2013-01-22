@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false"
          syntaxCheck="false"
-         bootstrap="Tpg/ExtjsBundle/Tests/bootstrap.php"
+         bootstrap="./Tpg/ExtjsBundle/Tests/bootstrap.php"
         >
 
     <testsuites>
