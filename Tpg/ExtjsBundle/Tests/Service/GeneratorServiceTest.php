@@ -23,7 +23,7 @@ class GeneratorServiceTest extends TestCase {
         $this->service->setTwigEngine($this->twigEngine);
     }
 
-    public function testGeneratingEntity() {
+    public function testEntityProperty() {
         $this->service->generateMarkupForEntity('Test\Model\Person');
         $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
         $fieldsName = array();
@@ -34,5 +34,32 @@ class GeneratorServiceTest extends TestCase {
         $this->assertContains("first_name", $fieldsName);
         $this->assertContains("last_name", $fieldsName);
         $this->assertNotContains("age", $fieldsName);
+    }
+
+    public function testEntityPropertyType() {
+        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
+        $fieldsType = array();
+        foreach ($this->twigEngine->renderParameters['fields'] as $field) {
+            $fieldsType[$field['name']] = $field['type'];
+        }
+        $this->assertEquals("integer", $fieldsType['id']);
+        $this->assertEquals("string", $fieldsType['first_name']);
+    }
+
+    public function testEntityPropertyValidation() {
+        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
+        $fields = array();
+        foreach ($this->twigEngine->renderParameters['fields'] as $field) {
+            foreach ($field['validators'] as $validator) {
+                $fields[$field['name']][] = $validator['name'];
+            }
+        }
+        $this->assertContains("notblank", $fields['first_name']);
+        $this->assertContains("blank", $fields['last_name']);
+        $this->assertContains("email", $fields['email']);
+        $this->assertContains("minlength", $fields['email']);
+        $this->assertContains("maxlength", $fields['email']);
     }
 }

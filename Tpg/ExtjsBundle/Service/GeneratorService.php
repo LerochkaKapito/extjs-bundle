@@ -51,13 +51,7 @@ class GeneratorService {
                         continue;
                     }
                 }
-                /** @var $propertyColumn Column */
-                $propertyColumn = $this->annoReader->getPropertyAnnotation($property, 'Doctrine\ORM\Mapping\Column');
-                /** @var $propertySerializedName SerializedName */
-                $propertySerializedName = $this->annoReader->getPropertyAnnotation($property, 'JMS\Serializer\Annotation\SerializedName');
-                $structure['fields'][] = array(
-                    'name'=>($propertySerializedName!==null)?$propertySerializedName->name:$this->convertNaming($property->name),
-                );
+                $structure['fields'][] = $this->buildPropertyAnnotation($property);
             }
             return $this->twig->render('TpgExtjsBundle:ExtjsMarkup:model.js.twig', $structure);
         } else {
@@ -69,5 +63,31 @@ class GeneratorService {
         $separator = "_";
         $name = preg_replace('/[A-Z]/', $separator.'\\0', $name);
         return strtolower($name);
+    }
+
+    protected function buildPropertyAnnotation($property) {
+        $field = array(
+            'name' => $this->convertNaming($property->name),
+            'type' => 'string',
+            'validators' => array (),
+        );
+        $annotations = $this->annoReader->getPropertyAnnotations($property);
+        foreach ($annotations as $annotation) {
+            $className = get_class($annotation);
+            if (strpos(get_class($annotation), 'Symfony\Component\Validator\Constraints') === 0) {
+                $field['validators'][] = array(
+                    'name' => strtolower(substr($className, 40)),
+                ) + get_object_vars($annotation);
+            }
+            switch(get_class($annotation)) {
+                case 'Doctrine\ORM\Mapping\Column':
+                    $field['type'] = $annotation->type;
+                    break;
+                case 'JMS\Serializer\Annotation\SerializedName':
+                    $field['name'] = $annotation->name;
+                    break;
+            }
+        }
+        return $field;
     }
 }
