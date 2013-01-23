@@ -38,4 +38,8 @@ class Person {
      * @Assert\MaxLength(limit = 20)
      */
     protected $email;
+    /**
+     * @ORM\OneToMany(targetEntity="Test\Model\Book", mappedBy="person")
+     */
+    protected $books;
 }

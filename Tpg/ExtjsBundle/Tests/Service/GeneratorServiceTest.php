@@ -38,7 +38,6 @@ class GeneratorServiceTest extends TestCase {
 
     public function testEntityPropertyType() {
         $this->service->generateMarkupForEntity('Test\Model\Person');
-        $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
         $fieldsType = array();
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             $fieldsType[$field['name']] = $field['type'];
@@ -49,7 +48,6 @@ class GeneratorServiceTest extends TestCase {
 
     public function testEntityPropertyValidation() {
         $this->service->generateMarkupForEntity('Test\Model\Person');
-        $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
         $fields = array();
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             foreach ($field['validators'] as $validator) {
@@ -61,5 +59,29 @@ class GeneratorServiceTest extends TestCase {
         $this->assertContains("email", $fields['email']);
         $this->assertContains("minlength", $fields['email']);
         $this->assertContains("maxlength", $fields['email']);
+    }
+
+    public function testEntityAssociation() {
+        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $associations = array();
+        foreach ($this->twigEngine->renderParameters['associations'] as $assoc) {
+            $associations[$assoc['name']] = $assoc;
+        }
+        $this->assertEquals('Test.model.Book', $associations['books']['model']);
+        $this->assertEquals('books', $associations['books']['name']);
+        $this->assertEquals('OneToMany', $associations['books']['type']);
+        $this->service->generateMarkupForEntity('Test\Model\Book');
+        $associations = array();
+        foreach ($this->twigEngine->renderParameters['associations'] as $assoc) {
+            $associations[$assoc['name']] = $assoc;
+        }
+        $this->assertEquals('Test.model.Person', $associations['person']['model']);
+        $this->assertEquals('person', $associations['person']['name']);
+        $this->assertEquals('ManyToOne', $associations['person']['type']);
+        $fieldsName = array();
+        foreach ($this->twigEngine->renderParameters['fields'] as $field) {
+            $fieldsName[] = $field['name'];
+        }
+        $this->assertContains('person_id', $fieldsName);
     }
 }

@@ -33,8 +33,12 @@ class GeneratorService {
         /** @var $classModelAnnotation Model */
         $classModelAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\Model');
         if ($classModelAnnotation !== null) {
-            $structure['name'] = $classModelAnnotation->name;
-            $structure['extend'] = $classModelAnnotation->extend;
+            $structure = array(
+                'name' => $classModelAnnotation->name,
+                'extend' => $classModelAnnotation->extend,
+                'fields' => array(),
+                'associations' => array(),
+            );
             /** @var $classExclusionPolicy ExclusionPolicy */
             $classExclusionPolicy = $this->annoReader->getClassAnnotation($classRef, 'JMS\Serializer\Annotation\ExclusionPolicy');
             foreach ($classRef->getProperties() as $property) {
@@ -51,7 +55,7 @@ class GeneratorService {
                         continue;
                     }
                 }
-                $structure['fields'][] = $this->buildPropertyAnnotation($property);
+                $this->buildPropertyAnnotation($property, &$structure);
             }
             return $this->twig->render('TpgExtjsBundle:ExtjsMarkup:model.js.twig', $structure);
         } else {
@@ -65,12 +69,14 @@ class GeneratorService {
         return strtolower($name);
     }
 
-    protected function buildPropertyAnnotation($property) {
+    protected function buildPropertyAnnotation($property, $structure) {
         $field = array(
             'name' => $this->convertNaming($property->name),
             'type' => 'string',
-            'validators' => array (),
+            'validators' => array(),
         );
+        $association = array();
+        $saveField = false;
         $annotations = $this->annoReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
             $className = get_class($annotation);
@@ -86,8 +92,61 @@ class GeneratorService {
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
                     break;
+                case 'Doctrine\ORM\Mapping\OneToMany':
+                case 'Doctrine\ORM\Mapping\ManyToOne':
+                case 'Doctrine\ORM\Mapping\OneToOne':
+                    $association['type'] = substr(get_class($annotation), 21);
+                    $association['name'] = $this->convertNaming($property->name);
+                    $association['model'] = $this->getModelName($annotation->targetEntity);
+                    $association['entity'] = $annotation->targetEntity;
+                    break;
+                case 'Doctrine\ORM\Mapping\JoinColumn':
+                    $saveField = true;
+                    $field['name'] = $this->convertNaming($annotation->name);
+                    $field['type'] = $this->getColumnType($association['entity'], $annotation->referencedColumnName);
+                    break;
             }
         }
+        if (!empty($association)) {
+            $structure['associations'][] = $association;
+        }
+        if ($saveField || empty($association)) {
+            $structure['fields'][] = $field;
+        }
         return $field;
+    }
+
+    /**
+     * Get Column Type of a model.
+     * @param $entity string Class name of the entity
+     * @param $property string
+     */
+    public function getColumnType($entity, $property) {
+        $classRef = new \ReflectionClass($entity);
+        $propertyRef = $classRef->getProperty($property);
+        $columnRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Column');
+        if ($columnRef === null) {
+            $idRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Id');
+            if ($idRef !== null) {
+                return "integer";
+            } else {
+                return "string";
+            }
+        } else {
+            return $columnRef->type;
+        }
+    }
+
+    /**
+     * Get model name of an entity
+     * @param $entity string Class name of the entity
+     */
+    public function getModelName($entity) {
+        $classRef = new \ReflectionClass($entity);
+        $classModelAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\Model');
+        if ($classModelAnnotation !== null) {
+            return $classModelAnnotation->name;
+        }
+        return null;
     }
 }
