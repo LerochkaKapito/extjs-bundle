@@ -55,7 +55,7 @@ class GeneratorService {
                         continue;
                     }
                 }
-                $this->buildPropertyAnnotation($property, &$structure);
+                $this->buildPropertyAnnotation($property, $structure);
             }
             return $this->twig->render('TpgExtjsBundle:ExtjsMarkup:model.js.twig', $structure);
         } else {
@@ -69,7 +69,7 @@ class GeneratorService {
         return strtolower($name);
     }
 
-    protected function buildPropertyAnnotation($property, $structure) {
+    protected function buildPropertyAnnotation($property, &$structure) {
         $field = array(
             'name' => $this->convertNaming($property->name),
             'type' => 'string',
