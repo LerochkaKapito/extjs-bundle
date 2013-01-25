@@ -20,10 +20,14 @@
     "require-dev": {
         "behat/symfony2-extension": "*",
         "behat/mink-extension": "*",
+        "behat/mink-browserkit-driver":  "*",
         "behat/mink-zombie-driver": "dev-master"
     },
     "autoload": {
         "psr-0": { "Tpg\\ExtjsBundle": "" }
+    },
+    "config": {
+        "bin-dir": "bin/"
     },
     "minimum-stability": "dev",
     "target-dir": "Tpg/ExtjsBundle"
