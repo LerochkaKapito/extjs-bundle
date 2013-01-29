@@ -1,8 +1,15 @@
 language: php
 
 php:
-    - 5.3
+    - 5.4
 
 before_script:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
     - curl -s http://getcomposer.org/installer | php
     - php composer.phar install --dev
+    - cd Tpg/ExtjsBundle/Tests; php -S 127.0.0.1:8888 app_test.php &
+
+script:
+    - phpunit -c phpunit.xml.dist
+    - phantomjs Tpg/ExtjsBundle/Tests/testrunner.js

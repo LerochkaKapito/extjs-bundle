@@ -23,7 +23,7 @@ class Person {
     protected $firstName;
     /**
      * @ORM\Column(type="string")
-     * @Assert\Blank
+     * @Assert\NotNull
      */
     protected $lastName;
     /**
@@ -38,6 +38,18 @@ class Person {
      * @Assert\MaxLength(limit = 20)
      */
     protected $email;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $age;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $created_at;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $active;
     /**
      * @ORM\OneToMany(targetEntity="Test\Model\Book", mappedBy="person")
      */

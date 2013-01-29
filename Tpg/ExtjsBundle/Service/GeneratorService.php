@@ -81,13 +81,14 @@ class GeneratorService {
         foreach ($annotations as $annotation) {
             $className = get_class($annotation);
             if (strpos(get_class($annotation), 'Symfony\Component\Validator\Constraints') === 0) {
-                $field['validators'][] = array(
-                    'name' => strtolower(substr($className, 40)),
-                ) + get_object_vars($annotation);
+                $field['validators'][] = $this->getValidator(
+                    substr($className, 40),
+                    $annotation
+                );
             }
             switch(get_class($annotation)) {
                 case 'Doctrine\ORM\Mapping\Column':
-                    $field['type'] = $annotation->type;
+                    $field['type'] = $this->getColumnType($annotation->type);
                     break;
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
@@ -103,7 +104,7 @@ class GeneratorService {
                 case 'Doctrine\ORM\Mapping\JoinColumn':
                     $saveField = true;
                     $field['name'] = $this->convertNaming($annotation->name);
-                    $field['type'] = $this->getColumnType($association['entity'], $annotation->referencedColumnName);
+                    $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->referencedColumnName);
                     break;
             }
         }
@@ -118,10 +119,11 @@ class GeneratorService {
 
     /**
      * Get Column Type of a model.
+     *
      * @param $entity string Class name of the entity
      * @param $property string
      */
-    public function getColumnType($entity, $property) {
+    public function getEntityColumnType($entity, $property) {
         $classRef = new \ReflectionClass($entity);
         $propertyRef = $classRef->getProperty($property);
         $columnRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Column');
@@ -133,8 +135,57 @@ class GeneratorService {
                 return "string";
             }
         } else {
-            return $columnRef->type;
+            return $this->getColumnType($columnRef->type);
         }
+    }
+
+    /**
+     * Translate Column Type from PHP to ExtJS
+     *
+     * @param $type
+     * @return string
+     */
+    protected function getColumnType($type) {
+        switch ($type) {
+            case 'datetime':
+                return 'date';
+            default:
+                return $type;
+        }
+    }
+
+    /**
+     * Get the Ext JS Validator
+     *
+     * @param string $name
+     * @param array $annotation
+     * @return array
+     */
+    protected function getValidator($name, $annotation) {
+        $validate = array();
+        switch($name) {
+            case 'NotBlank':
+            case 'NotNull':
+                $validate['name'] = "presence";
+                break;
+            case 'Email':
+                $validate['name'] = "email";
+                break;
+            case 'MaxLength':
+            case 'MinLength':
+                $validate['name'] = "length";
+                if ($name == "MaxLength") {
+                    $validate['max'] = $annotation->limit;
+                } else {
+                    $validate['min'] = $annotation->limit;
+                }
+                break;
+            default:
+                $validate['name'] = strtolower($name);
+                $validate += get_object_vars($annotation);
+                break;
+        }
+        return $validate;
     }
 
     /**

@@ -1,3 +1,47 @@
 Ext.define("{{ name }}", {
-    extend: "{{ extend }}"
+    extend: "{{ extend }}",
+    uses: [
+        {% for assoc in associations %}
+            '{{ assoc.model }}',
+        {% endfor %}
+    ],
+    fields: [
+        {% for field in fields %}
+            { name: "{{ field.name }}", type: "{{ field.type }}" },
+        {% endfor %}
+    ],
+    validations: [
+        {% for field in fields %}
+            {% for validator in field.validators %}
+                {
+                    type: '{{ validator.name }}',
+                    field: '{{ field.name }}',
+                    {% for key,value in validator %}
+                        {% if key != "name" %}
+                            {{ key }}: '{{ value }}',
+                        {% endif %}
+                    {% endfor %}
+                },
+            {% endfor %}
+        {% endfor %}
+    ],
+    associations: [
+        {% for assoc in associations %}
+            {
+                {% if assoc.type == "OneToMany" %}
+                    type: 'hasMany',
+                    model: '{{ assoc.model }}',
+                    name: '{{ assoc.name }}'
+                {% elseif assoc.type == "ManyToOne" %}
+                    type: 'belongsTo',
+                    model: '{{ assoc.model }}',
+                    name: '{{ assoc.name }}'
+                {% elseif assoc.type == "OneToOne" %}
+                    type: 'hasOne',
+                    model: '{{ assoc.model }}',
+                    name: '{{ assoc.name }}'
+                {% endif %}
+            },
+        {% endfor %}
+    ]
 });

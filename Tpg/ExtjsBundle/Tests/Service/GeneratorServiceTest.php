@@ -33,7 +33,7 @@ class GeneratorServiceTest extends TestCase {
         $this->assertContains("id", $fieldsName);
         $this->assertContains("first_name", $fieldsName);
         $this->assertContains("last_name", $fieldsName);
-        $this->assertNotContains("age", $fieldsName);
+        $this->assertNotContains("dob", $fieldsName);
     }
 
     public function testEntityPropertyType() {
@@ -54,11 +54,11 @@ class GeneratorServiceTest extends TestCase {
                 $fields[$field['name']][] = $validator['name'];
             }
         }
-        $this->assertContains("notblank", $fields['first_name']);
-        $this->assertContains("blank", $fields['last_name']);
+        $this->assertContains("presence", $fields['first_name']);
+        $this->assertContains("presence", $fields['last_name']);
         $this->assertContains("email", $fields['email']);
-        $this->assertContains("minlength", $fields['email']);
-        $this->assertContains("maxlength", $fields['email']);
+        $this->assertContains("length", $fields['email']);
+        $this->assertContains("length", $fields['email']);
     }
 
     public function testEntityAssociation() {
