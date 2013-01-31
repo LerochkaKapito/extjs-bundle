@@ -84,4 +84,10 @@ class GeneratorServiceTest extends TestCase {
         }
         $this->assertContains('person_id', $fieldsName);
     }
+
+    public function testEntityProxy() {
+        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $parameters = $this->twigEngine->renderParameters;
+        $this->assertNotNull($parameters['proxy']);
+    }
 }

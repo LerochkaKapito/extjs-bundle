@@ -49,11 +49,15 @@ Ext.define("{{ name }}", {
             },
         {% endfor %}
     ],
-    proxy: {
-        {% for key,value in proxy %}
-            {{ key }}: '{{ value }}',
-        {% else %}
-            type: 'memory'
-        {% endfor %}
-    }
+    {% if proxy %}
+        proxy: {{ proxy|json_encode|raw }}
+    {% else %}
+        proxy: {
+            type: 'memory',
+            reader: {
+                type: 'json',
+                root: 'data'
+            }
+        }
+    {% endif %}
 });

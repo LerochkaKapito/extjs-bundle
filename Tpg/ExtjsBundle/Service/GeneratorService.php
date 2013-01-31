@@ -50,6 +50,8 @@ class GeneratorService {
                 $structure['proxy'] = array(
                     'type'=>$classModelProxyAnnotation->name,
                 ) + $classModelProxyAnnotation->option;
+                if ($classModelProxyAnnotation->reader != array()) $structure['proxy']['reader'] = $classModelProxyAnnotation->reader;
+                if ($classModelProxyAnnotation->writer != array()) $structure['proxy']['writer'] = $classModelProxyAnnotation->writer;
             }
             /** @var $classExclusionPolicy ExclusionPolicy */
             $classExclusionPolicy = $this->annoReader->getClassAnnotation($classRef, 'JMS\Serializer\Annotation\ExclusionPolicy');
