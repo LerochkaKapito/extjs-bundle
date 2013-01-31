@@ -17,6 +17,7 @@ class Book {
      * @ORM\GeneratedValue
      */
     protected $id;
+    protected $name;
     /**
      * @ORM\ManyToOne(targetEntity="Test\Model\Person", inversedBy="books")
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")

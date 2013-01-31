@@ -5,6 +5,9 @@ describe('Model Generator', function () {
     it('Base Book Model to exist', function() {
         expect(Test.model.BaseBook).toBeDefined();
     });
+    it('Book Model to exist', function() {
+        expect(Test.model.Book).toBeDefined();
+    });
     describe('Model Fields', function () {
         var getField = (function () {
             var fields = Test.model.Person.getFields();
@@ -74,6 +77,24 @@ describe('Model Generator', function () {
         });
     });
     describe('Model Associations', function() {
-
+        it('books define in person', function() {
+            var person = Ext.create('Test.model.Person');
+            expect(person.books).toBeDefined();
+        });
+        it('person define in book', function() {
+            var book = Ext.create('Test.model.Book');
+            expect(book.getPerson).toBeDefined();
+            expect(book.setPerson).toBeDefined();
+        });
+        it('associate books to person', function() {
+            var book1 = Ext.create('Test.model.Book');
+            book1.set('name', 'Book A');
+            var book2 = Ext.create('Test.model.Book');
+            book2.set('name', 'Book 2');
+            var person = Ext.create('Test.model.Person');
+            person.set("id", 10);
+            person.books().add(book1, book2);
+            expect(person.books().count()).toEqual(2);
+        })
     });
 });

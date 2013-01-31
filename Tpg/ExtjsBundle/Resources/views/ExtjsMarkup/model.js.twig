@@ -35,11 +35,13 @@ Ext.define("{{ name }}", {
                 {% elseif assoc.type == "ManyToOne" %}
                     type: 'belongsTo',
                     model: '{{ assoc.model }}',
-                    name: '{{ assoc.name }}'
+                    getterName: 'get{{ assoc.name|capitalize }}',
+                    setterName: 'set{{ assoc.name|capitalize }}'
                 {% elseif assoc.type == "OneToOne" %}
                     type: 'hasOne',
                     model: '{{ assoc.model }}',
-                    name: '{{ assoc.name }}'
+                    getterName: 'get{{ assoc.name|capitalize }}',
+                    setterName: 'set{{ assoc.name|capitalize }}'
                 {% endif %}
             },
         {% endfor %}
