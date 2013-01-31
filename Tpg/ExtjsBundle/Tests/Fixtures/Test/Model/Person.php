@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @Extjs\Model(name="Test.model.Person")
+ * @extjs\ModelProxy()
  */
 class Person {
     /**

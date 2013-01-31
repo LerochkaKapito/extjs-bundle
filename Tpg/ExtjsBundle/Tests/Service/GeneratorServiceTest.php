@@ -42,7 +42,7 @@ class GeneratorServiceTest extends TestCase {
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             $fieldsType[$field['name']] = $field['type'];
         }
-        $this->assertEquals("integer", $fieldsType['id']);
+        $this->assertEquals("int", $fieldsType['id']);
         $this->assertEquals("string", $fieldsType['first_name']);
     }
 

@@ -91,10 +91,13 @@ describe('Model Generator', function () {
             book1.set('name', 'Book A');
             var book2 = Ext.create('Test.model.Book');
             book2.set('name', 'Book 2');
-            var person = Ext.create('Test.model.Person');
-            person.set("id", 10);
+            var person = Ext.create('Test.model.Person', {id: 10});
             person.books().add(book1, book2);
             expect(person.books().count()).toEqual(2);
+            person.books().remove(book2);
+            expect(person.books().count()).toEqual(1);
+            expect(book1.dirty).toBeTruthy();
+            expect(book1.getPerson().get('id')).toBe(10);
         })
     });
 });

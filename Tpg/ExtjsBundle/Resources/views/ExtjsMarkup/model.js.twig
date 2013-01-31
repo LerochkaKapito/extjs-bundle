@@ -31,19 +31,29 @@ Ext.define("{{ name }}", {
                 {% if assoc.type == "OneToMany" %}
                     type: 'hasMany',
                     model: '{{ assoc.model }}',
-                    name: '{{ assoc.name }}'
+                    name: '{{ assoc.name }}',
+                    foreignKey: '{{ assoc.key }}'
                 {% elseif assoc.type == "ManyToOne" %}
                     type: 'belongsTo',
                     model: '{{ assoc.model }}',
                     getterName: 'get{{ assoc.name|capitalize }}',
-                    setterName: 'set{{ assoc.name|capitalize }}'
+                    setterName: 'set{{ assoc.name|capitalize }}',
+                    foreignKey: '{{ assoc.key }}'
                 {% elseif assoc.type == "OneToOne" %}
                     type: 'hasOne',
                     model: '{{ assoc.model }}',
                     getterName: 'get{{ assoc.name|capitalize }}',
-                    setterName: 'set{{ assoc.name|capitalize }}'
+                    setterName: 'set{{ assoc.name|capitalize }}',
+                    foreignKey: '{{ assoc.key }}'
                 {% endif %}
             },
         {% endfor %}
-    ]
+    ],
+    proxy: {
+        {% for key,value in proxy %}
+            {{ key }}: '{{ value }}',
+        {% else %}
+            type: 'memory'
+        {% endfor %}
+    }
 });

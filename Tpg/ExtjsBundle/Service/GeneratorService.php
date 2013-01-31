@@ -11,6 +11,7 @@ use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Naming\CamelCaseNamingStrategy;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Tpg\ExtjsBundle\Annotation\Model;
+use Tpg\ExtjsBundle\Annotation\ModelProxy;
 
 class GeneratorService {
 
@@ -32,6 +33,8 @@ class GeneratorService {
         $classRef = new \ReflectionClass($entity);
         /** @var $classModelAnnotation Model */
         $classModelAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\Model');
+        /** @var $classModelProxyAnnotation ModelProxy */
+        $classModelProxyAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\ModelProxy');
         if ($classModelAnnotation !== null) {
             $modelName = $classModelAnnotation->name;
             if ($classModelAnnotation->generateAsBase === true) {
@@ -43,6 +46,11 @@ class GeneratorService {
                 'fields' => array(),
                 'associations' => array(),
             );
+            if ($classModelProxyAnnotation !== null) {
+                $structure['proxy'] = array(
+                    'type'=>$classModelProxyAnnotation->name,
+                ) + $classModelProxyAnnotation->option;
+            }
             /** @var $classExclusionPolicy ExclusionPolicy */
             $classExclusionPolicy = $this->annoReader->getClassAnnotation($classRef, 'JMS\Serializer\Annotation\ExclusionPolicy');
             foreach ($classRef->getProperties() as $property) {
@@ -98,8 +106,18 @@ class GeneratorService {
                     $field['name'] = $annotation->name;
                     break;
                 case 'Doctrine\ORM\Mapping\OneToMany':
-                case 'Doctrine\ORM\Mapping\ManyToOne':
                 case 'Doctrine\ORM\Mapping\OneToOne':
+                    $association['type'] = substr(get_class($annotation), 21);
+                    $association['name'] = $this->convertNaming($property->name);
+                    $association['model'] = $this->getModelName($annotation->targetEntity);
+                    $association['entity'] = $annotation->targetEntity;
+                    $association['key'] = $this->getAnnotation(
+                        $annotation->targetEntity,
+                        $annotation->mappedBy,
+                        'Doctrine\ORM\Mapping\JoinColumn'
+                    )->name;
+                    break;
+                case 'Doctrine\ORM\Mapping\ManyToOne':
                     $association['type'] = substr(get_class($annotation), 21);
                     $association['name'] = $this->convertNaming($property->name);
                     $association['model'] = $this->getModelName($annotation->targetEntity);
@@ -109,6 +127,7 @@ class GeneratorService {
                     $saveField = true;
                     $field['name'] = $this->convertNaming($annotation->name);
                     $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->referencedColumnName);
+                    $association['key'] = $this->convertNaming($annotation->name);
                     break;
             }
         }
@@ -119,6 +138,13 @@ class GeneratorService {
             $structure['fields'][] = $field;
         }
         return $field;
+    }
+
+    protected function getAnnotation($entity, $property, $annotation) {
+        $classRef = new \ReflectionClass($entity);
+        $propertyRef = $classRef->getProperty($property);
+        if ($propertyRef) return $this->annoReader->getPropertyAnnotation($propertyRef, $annotation);
+        else return false;
     }
 
     /**
@@ -134,7 +160,7 @@ class GeneratorService {
         if ($columnRef === null) {
             $idRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Id');
             if ($idRef !== null) {
-                return "integer";
+                return "int";
             } else {
                 return "string";
             }
@@ -151,6 +177,8 @@ class GeneratorService {
      */
     protected function getColumnType($type) {
         switch ($type) {
+            case 'integer':
+                return 'int';
             case 'datetime':
                 return 'date';
             default:
