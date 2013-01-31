@@ -33,8 +33,12 @@ class GeneratorService {
         /** @var $classModelAnnotation Model */
         $classModelAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\Model');
         if ($classModelAnnotation !== null) {
+            $modelName = $classModelAnnotation->name;
+            if ($classModelAnnotation->generateAsBase === true) {
+                $modelName = substr($modelName, 0, strrpos($modelName, '.')+1) . 'Base' . substr($modelName, strrpos($modelName, '.')+1);
+            }
             $structure = array(
-                'name' => $classModelAnnotation->name,
+                'name' => $modelName,
                 'extend' => $classModelAnnotation->extend,
                 'fields' => array(),
                 'associations' => array(),

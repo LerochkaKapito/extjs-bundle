@@ -5,7 +5,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Tpg\ExtjsBundle\Annotation as Extjs;
 
 /**
- * @Extjs\Model(name="Test.model.Book")
+ * @Extjs\Model(
+ *     name="Test.model.Book",
+ *     generateAsBase=true
+ * )
  */
 class Book {
     /**

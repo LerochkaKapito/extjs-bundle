@@ -2,6 +2,9 @@ describe('Model Generator', function () {
     it('Person Model exist', function () {
         expect(Test.model.Person).toBeDefined();
     });
+    it('Base Book Model to exist', function() {
+        expect(Test.model.BaseBook).toBeDefined();
+    });
     describe('Model Fields', function () {
         var getField = (function () {
             var fields = Test.model.Person.getFields();

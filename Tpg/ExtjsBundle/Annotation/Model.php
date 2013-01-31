@@ -10,4 +10,5 @@ use Doctrine\ORM\Mapping\Annotation;
 final class Model implements Annotation {
     public $name;
     public $extend = "Ext.data.Model";
+    public $generateAsBase = false;
 }
