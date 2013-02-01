@@ -1,0 +1,8 @@
+--TEST--
+"extjs_generate_model" function
+--TEMPLATE--
+{{ extjs_model(true, 'Test.model.Book', 'Test.model.Person') }}
+--DATA--
+return array()
+--EXPECT--
+Test.model.BookTest.model.Person

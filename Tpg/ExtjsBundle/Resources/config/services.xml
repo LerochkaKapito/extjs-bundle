@@ -6,6 +6,7 @@
 
     <parameters>
         <parameter key="tpg_extjs.generator.class">Tpg\ExtjsBundle\Service\GeneratorService</parameter>
+        <parameter key="tpg.twig.extjs_extension.class">Tpg\ExtjsBundle\Twig\ExtjsExtension</parameter>
     </parameters>
 
     <services>
@@ -16,6 +17,16 @@
             <call method="setTwigEngine">
                 <argument type="service" id="twig"/>
             </call>
+        </service>
+
+        <service id="tpg.twig.extjs_extension" class="%tpg.twig.extjs_extension.class%">
+            <call method="setGenerator">
+                <argument type="service" id="tpg_extjs.generator"/>
+            </call>
+            <call method="setRouter">
+                <argument type="service" id="router"/>
+            </call>
+            <tag name="twig.extension" />
         </service>
     </services>
 </container>

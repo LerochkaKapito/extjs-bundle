@@ -1,3 +1,3 @@
-test:
+extjs_generate_model:
     pattern:   /generateModel.js
     defaults:  { _controller: TpgExtjsBundle:Generator:generateModel }
