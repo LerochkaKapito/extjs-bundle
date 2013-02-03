@@ -25,6 +25,5 @@
     "config": {
         "bin-dir": "bin/"
     },
-    "minimum-stability": "dev",
-    "target-dir": "Tpg/ExtjsBundle"
+    "minimum-stability": "dev"
 }
