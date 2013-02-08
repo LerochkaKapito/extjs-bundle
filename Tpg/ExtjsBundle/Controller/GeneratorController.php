@@ -23,4 +23,9 @@ class GeneratorController extends Controller {
             'Content-Type'=>'application/javascript'
         ));
     }
+
+    public function generateRemoteApiAction() {
+        /** @var $generator GeneratorService */
+        $generator = $this->get("tpg_extjs.generator");
+    }
 }

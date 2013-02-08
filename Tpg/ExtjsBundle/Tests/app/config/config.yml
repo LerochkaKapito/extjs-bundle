@@ -8,3 +8,8 @@ framework:
     csrf_protection: true
     validation:      { enable_annotations: true }
     templating:      { engines: ['twig'] }
+
+tpg_extjs:
+    remoting:
+        bundles:
+            - TestBundle

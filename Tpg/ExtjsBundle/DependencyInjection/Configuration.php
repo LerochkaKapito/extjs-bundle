@@ -12,6 +12,12 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
+    protected $bundles;
+
+    public function __construct($bundles) {
+        $this->bundles = $bundles;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -20,9 +26,22 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('tpg_extjs');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->arrayNode('remoting')
+                    ->children()
+                        ->arrayNode('bundles')
+                            ->prototype('scalar')
+                                ->validate()
+                                    ->ifNotInArray($this->bundles)
+                                    ->thenInvalid('%s is not a valid bundle.')
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
 
         return $treeBuilder;
     }

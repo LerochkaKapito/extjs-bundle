@@ -90,4 +90,20 @@ class GeneratorServiceTest extends TestCase {
         $parameters = $this->twigEngine->renderParameters;
         $this->assertNotNull($parameters['proxy']);
     }
+
+    public function testGenerateRemotingApi() {
+        $api = $this->service->generateRemotingApi(array('Test\Controller\TestController'));
+        $this->assertSame(array(
+            'Test.Remote'=>array(
+                'methods'=>array(
+                    'test'=>array(
+                        'len'=>0
+                    ),
+                    'test2'=>array(
+                        'len'=>1
+                    ),
+                ),
+            ),
+        ), $api);
+    }
 }

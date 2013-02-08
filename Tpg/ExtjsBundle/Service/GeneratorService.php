@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Naming\CamelCaseNamingStrategy;
 use Symfony\Bundle\TwigBundle\TwigEngine;
+use Tpg\ExtjsBundle\Annotation\Direct;
 use Tpg\ExtjsBundle\Annotation\Model;
 use Tpg\ExtjsBundle\Annotation\ModelProxy;
 
@@ -21,12 +22,44 @@ class GeneratorService {
     /** @var $twig TwigEngine */
     protected $twig;
 
+    protected $remotingBundles = array();
+
     public function setAnnotationReader($reader) {
         $this->annoReader = $reader;
     }
 
     public function setTwigEngine($engine) {
         $this->twig = $engine;
+    }
+
+    public function setRemotingBundles($bundles) {
+        $this->remotingBundles = $bundles;
+    }
+
+    /**
+     * Generate Remote API from a list of controllers
+     *
+     * @param array $controllers
+     */
+    public function generateRemotingApi($controllers) {
+        $list = array();
+        if ($controllers === false) {
+
+        }
+        foreach ($controllers as $controller) {
+            $controllerRef = new \ReflectionClass($controller);
+            foreach ($controllerRef->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                /** @var $methodDirectAnnotation Direct */
+                $methodDirectAnnotation = $this->annoReader->getMethodAnnotation($method, 'Tpg\ExtjsBundle\Annotation\Direct');
+                if ($methodDirectAnnotation !== null) {
+                    $apiName = $methodDirectAnnotation->name;
+                    $className = substr($apiName, 0, strrpos($apiName, '.'));
+                    $methodName = substr($apiName, strrpos($apiName, '.')+1);
+                    $list[$className]['methods'][$methodName] = array('len' => count($method->getParameters()));
+                }
+            }
+        }
+        return $list;
     }
 
     public function generateMarkupForEntity($entity) {
