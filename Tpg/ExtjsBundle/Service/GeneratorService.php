@@ -7,9 +7,8 @@ use Doctrine\ORM\Tools\Export\ExportException;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Naming\CamelCaseNamingStrategy;
 use Symfony\Bundle\TwigBundle\TwigEngine;
+use Symfony\Component\Finder\Finder;
 use Tpg\ExtjsBundle\Annotation\Direct;
 use Tpg\ExtjsBundle\Annotation\Model;
 use Tpg\ExtjsBundle\Annotation\ModelProxy;
@@ -38,24 +37,29 @@ class GeneratorService {
 
     /**
      * Generate Remote API from a list of controllers
-     *
-     * @param array $controllers
      */
-    public function generateRemotingApi($controllers) {
+    public function generateRemotingApi() {
         $list = array();
-        if ($controllers === false) {
-
-        }
-        foreach ($controllers as $controller) {
-            $controllerRef = new \ReflectionClass($controller);
-            foreach ($controllerRef->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                /** @var $methodDirectAnnotation Direct */
-                $methodDirectAnnotation = $this->annoReader->getMethodAnnotation($method, 'Tpg\ExtjsBundle\Annotation\Direct');
-                if ($methodDirectAnnotation !== null) {
-                    $apiName = $methodDirectAnnotation->name;
-                    $className = substr($apiName, 0, strrpos($apiName, '.'));
-                    $methodName = substr($apiName, strrpos($apiName, '.')+1);
-                    $list[$className]['methods'][$methodName] = array('len' => count($method->getParameters()));
+        foreach($this->remotingBundles as $bundle) {
+            $controllers = array();
+            $bundleRef = new \ReflectionClass($bundle);
+            $controllerDir = new Finder();
+            $controllerDir->files()->in(dirname($bundleRef->getFileName()).'/Controller/')->name('/.*Controller\.php$/');
+            foreach($controllerDir as $controllerFile) {
+                $controller = $bundleRef->getNamespaceName() . "\\Controller\\" . substr($controllerFile->getFilename(), 0, -4);
+                $controllerRef = new \ReflectionClass($controller);
+                foreach ($controllerRef->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    /** @var $methodDirectAnnotation Direct */
+                    $methodDirectAnnotation = $this->annoReader->getMethodAnnotation($method, 'Tpg\ExtjsBundle\Annotation\Direct');
+                    if ($methodDirectAnnotation !== null) {
+                        $nameSpace = str_replace("\\", ".", $bundleRef->getNamespaceName());
+                        $className = str_replace("Controller", "", $controllerRef->getShortName());
+                        $methodName = str_replace("Action", "", $method->getName());
+                        $list[$nameSpace][$className][] = array(
+                            'name'=>$methodName,
+                            'len' => count($method->getParameters())
+                        );
+                    }
                 }
             }
         }

@@ -8,7 +8,7 @@ use Tpg\ExtjsBundle\Annotation as Extjs;
 class TestController extends Controller {
 
     /**
-     * @Extjs\Direct("Test.Remote.test")
+     * @Extjs\Direct
      */
     public function testAction() {
         return new JsonResponse(array('result'=>'test'));
@@ -19,9 +19,9 @@ class TestController extends Controller {
     }
 
     /**
-     * @Extjs\Direct("Test.Remote.test2")
+     * @Extjs\Direct
      */
-    public function testParameterAction($id) {
+    public function test2Action($id) {
         return new JsonResponse(array('result'=>$id));
     }
 }

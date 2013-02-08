@@ -27,12 +27,23 @@ class TpgExtjsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        $container->setParameter('tpg_extjs.remoting.bundles', $config['remoting']['bundles']);
+        $bundles = $container->getParameter('kernel.bundles');
+        $list = array();
+        if (isset($config['remoting'])) {
+            foreach ($config['remoting']['bundles'] as $bundleName) {
+                if (isset($bundles[$bundleName])) {
+                    $list[$bundleName] = $bundles[$bundleName];
+                }
+            }
+        } else {
+            $list = $bundles;
+        }
+
+        $container->setParameter('tpg_extjs.remoting.bundles', $list);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container) {
         $bundles = $container->getParameter('kernel.bundles');
-
         return new Configuration(array_keys($bundles));
     }
 }

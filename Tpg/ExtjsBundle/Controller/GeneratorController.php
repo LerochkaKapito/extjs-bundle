@@ -3,6 +3,7 @@ namespace Tpg\ExtjsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Tpg\ExtjsBundle\Service\GeneratorService;
 
 class GeneratorController extends Controller {
@@ -27,5 +28,16 @@ class GeneratorController extends Controller {
     public function generateRemoteApiAction() {
         /** @var $generator GeneratorService */
         $generator = $this->get("tpg_extjs.generator");
+        $apis = $generator->generateRemotingApi();
+        $response = new Response();
+        $response->headers->set('Content-Type', 'application/javascript');
+        return $this->render(
+            "TpgExtjsBundle:ExtjsMarkup:remoteapi.js.twig",
+            array(
+                "apis"=>$apis,
+                "route"=>'/'
+            ),
+            $response
+        );
     }
 }

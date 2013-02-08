@@ -1,0 +1,8 @@
+{% for namespace,actions in apis %}
+Ext.Direct.addProvider({
+    "url": "{{ route|raw }}",
+    "type": "remoting",
+    "actions": {{ actions|json_encode|raw }},
+    "namespace": "{{ namespace }}"
+});
+{% endfor %}

@@ -92,15 +92,18 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testGenerateRemotingApi() {
-        $api = $this->service->generateRemotingApi(array('Test\Controller\TestController'));
+        $this->service->setRemotingBundles(array('TestBundle'=>'Test\TestBundle'));
+        $api = $this->service->generateRemotingApi();
         $this->assertSame(array(
-            'Test.Remote'=>array(
-                'methods'=>array(
-                    'test'=>array(
-                        'len'=>0
+            'Test'=>array(
+                'Test'=>array(
+                    array(
+                        'name'=>'test',
+                        'len'=>0,
                     ),
-                    'test2'=>array(
-                        'len'=>1
+                    array(
+                        'name'=>'test2',
+                        'len'=>1,
                     ),
                 ),
             ),
