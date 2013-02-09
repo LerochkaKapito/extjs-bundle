@@ -1,5 +1,10 @@
 <?php
 
+if (is_file(__DIR__.$_SERVER['REQUEST_URI'])) {
+    echo file_get_contents(__DIR__.$_SERVER['REQUEST_URI']);
+    exit(0);
+}
+
 $loader = require_once __DIR__.'/bootstrap.php';
 require_once __DIR__.'/app/AppKernel.php';
 use Symfony\Component\HttpFoundation\Request;

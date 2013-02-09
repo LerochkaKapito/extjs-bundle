@@ -2,6 +2,7 @@
 namespace Tpg\ExtjsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Tpg\ExtjsBundle\Service\GeneratorService;
@@ -35,9 +36,35 @@ class GeneratorController extends Controller {
             "TpgExtjsBundle:ExtjsMarkup:remoteapi.js.twig",
             array(
                 "apis"=>$apis,
-                "route"=>'/'
+                "route"=>'extjs_remoting',
             ),
             $response
         );
+    }
+
+    public function remotingAction($bundle) {
+        $bundleName = str_replace('.', "", $bundle) . 'Bundle';
+        $request = json_decode($this->getRequest()->getContent(), true);
+        if (!isset($request['data'])) {
+            $data = array();
+        } else {
+            $data = $request['data'];
+        }
+        $controller = str_replace('.', "\\", $bundle)."\\Controller\\".$request['action'].'Controller';
+        $actionMethod = (new \ReflectionClass($controller))->getMethod($request['method'].'Action');
+        $requestData = array();
+        $i = 0;
+        foreach($actionMethod->getParameters() as $paramter) {
+            $requestData[$paramter->getName()] = $data[$i++];
+        }
+        /** @var $response JsonResponse */
+        $response = $this->forward($bundleName.':'.$request['action'].':'.$request['method'], $requestData);
+        return new JsonResponse(array(
+            'type'=>$request['type'],
+            'tid'=>$request['tid'],
+            'action'=>$request['action'],
+            'method'=>$request['method'],
+            'result'=>json_decode($response->getContent())
+        ));
     }
 }
