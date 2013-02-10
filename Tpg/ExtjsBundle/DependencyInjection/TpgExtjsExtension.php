@@ -36,7 +36,7 @@ class TpgExtjsExtension extends Extension
                 }
             }
         } else {
-            $list = $bundles;
+            $list = array();
         }
 
         $container->setParameter('tpg_extjs.remoting.bundles', $list);
