@@ -43,7 +43,7 @@ class GeneratorController extends Controller {
     }
 
     public function remotingAction($bundle) {
-        $bundleName = str_replace('.', "", $bundle) . 'Bundle';
+        $bundleName = str_replace('.', "", $bundle);
         $request = json_decode($this->getRequest()->getContent(), true);
         if (!isset($request['data'])) {
             $data = array();

@@ -53,8 +53,6 @@ class GeneratorService {
                     $methodDirectAnnotation = $this->annoReader->getMethodAnnotation($method, 'Tpg\ExtjsBundle\Annotation\Direct');
                     if ($methodDirectAnnotation !== null) {
                         $nameSpace = str_replace("\\", ".", $bundleRef->getNamespaceName());
-                        /** Strip Bundle from the namespace */
-                        $nameSpace = str_replace("Bundle", "", $nameSpace);
                         $className = str_replace("Controller", "", $controllerRef->getShortName());
                         $methodName = str_replace("Action", "", $method->getName());
                         $list[$nameSpace][$className][] = array(

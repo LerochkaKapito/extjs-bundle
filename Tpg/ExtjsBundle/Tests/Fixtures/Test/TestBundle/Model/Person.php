@@ -1,5 +1,5 @@
 <?php
-namespace Test\Model;
+namespace Test\TestBundle\Model;
 
 use Doctrine\ORM\Mapping as ORM;
 use Tpg\ExtjsBundle\Annotation as Extjs;
@@ -52,7 +52,7 @@ class Person {
      */
     protected $active;
     /**
-     * @ORM\OneToMany(targetEntity="Test\Model\Book", mappedBy="person")
+     * @ORM\OneToMany(targetEntity="Test\TestBundle\Model\Book", mappedBy="person")
      */
     protected $books;
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Test\Mockup;
+namespace Test\TestBundle\Mockup;
 
 use Symfony\Bundle\TwigBundle\TwigEngine;
 

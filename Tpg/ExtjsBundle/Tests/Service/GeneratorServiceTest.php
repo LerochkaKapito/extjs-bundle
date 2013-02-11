@@ -3,7 +3,7 @@ namespace Tpg\ExtjsBundle\Tests\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Form\Util\PropertyPath;
-use Test\Mockup\TwigEngineMokcup;
+use Test\TestBundle\Mockup\TwigEngineMokcup;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Tpg\ExtjsBundle\Service\GeneratorService;
 
@@ -24,7 +24,7 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testEntityProperty() {
-        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $this->assertContains("Test.model.Person", $this->twigEngine->renderParameters['name']);
         $fieldsName = array();
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
@@ -37,7 +37,7 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testEntityPropertyType() {
-        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $fieldsType = array();
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             $fieldsType[$field['name']] = $field['type'];
@@ -47,7 +47,7 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testEntityPropertyValidation() {
-        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $fields = array();
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             foreach ($field['validators'] as $validator) {
@@ -62,7 +62,7 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testEntityAssociation() {
-        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $associations = array();
         foreach ($this->twigEngine->renderParameters['associations'] as $assoc) {
             $associations[$assoc['name']] = $assoc;
@@ -70,7 +70,7 @@ class GeneratorServiceTest extends TestCase {
         $this->assertEquals('Test.model.Book', $associations['books']['model']);
         $this->assertEquals('books', $associations['books']['name']);
         $this->assertEquals('OneToMany', $associations['books']['type']);
-        $this->service->generateMarkupForEntity('Test\Model\Book');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Book');
         $associations = array();
         foreach ($this->twigEngine->renderParameters['associations'] as $assoc) {
             $associations[$assoc['name']] = $assoc;
@@ -86,16 +86,16 @@ class GeneratorServiceTest extends TestCase {
     }
 
     public function testEntityProxy() {
-        $this->service->generateMarkupForEntity('Test\Model\Person');
+        $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $parameters = $this->twigEngine->renderParameters;
         $this->assertNotNull($parameters['proxy']);
     }
 
     public function testGenerateRemotingApi() {
-        $this->service->setRemotingBundles(array('TestBundle'=>'Test\TestBundle'));
+        $this->service->setRemotingBundles(array('TestBundle'=>'Test\TestBundle\TestTestBundle'));
         $api = $this->service->generateRemotingApi();
         $this->assertSame(array(
-            'Test'=>array(
+            'Test.TestBundle'=>array(
                 'Test'=>array(
                     array(
                         'name'=>'test',

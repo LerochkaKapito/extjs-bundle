@@ -1,5 +1,5 @@
 <?php
-namespace Test\Controller;
+namespace Test\TestBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
