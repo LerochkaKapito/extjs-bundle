@@ -10,6 +10,9 @@ framework:
     templating:      { engines: ['twig'] }
 
 tpg_extjs:
+    entities:
+        - @TestTestBundle/Entity/
+        - @TestTestBundle/Model/Auto
     remoting:
         bundles:
             - TestTestBundle

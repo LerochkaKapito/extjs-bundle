@@ -40,6 +40,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode('entities')
+                    ->prototype('scalar')
+                    ->end()
+                ->end()
             ->end()
         ;
 

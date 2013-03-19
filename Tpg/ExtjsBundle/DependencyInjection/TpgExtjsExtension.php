@@ -40,6 +40,10 @@ class TpgExtjsExtension extends Extension
         }
 
         $container->setParameter('tpg_extjs.remoting.bundles', $list);
+
+        if (isset($config['entities'])) {
+            $container->setParameter('tpg_extjs.entities', $config['entities']);
+        }
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container) {

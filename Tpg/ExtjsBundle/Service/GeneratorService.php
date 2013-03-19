@@ -74,6 +74,9 @@ class GeneratorService {
         $classModelProxyAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\ModelProxy');
         if ($classModelAnnotation !== null) {
             $modelName = $classModelAnnotation->name;
+            if (empty($modelName)) {
+                $modelName = str_replace("\\", ".", $classRef->getName());
+            }
             if ($classModelAnnotation->generateAsBase === true) {
                 $modelName = substr($modelName, 0, strrpos($modelName, '.')+1) . 'Base' . substr($modelName, strrpos($modelName, '.')+1);
             }
