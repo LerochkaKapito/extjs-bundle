@@ -1,8 +1,13 @@
+Ext.require([
+    'Ext.direct.Manager',
+    'Ext.direct.RemotingProvider'
+], function() {
 {% for namespace,actions in apis %}
-Ext.Direct.addProvider({
+Ext.direct.Manager.addProvider({
     "url": "{{ url(route, {'bundle': namespace})|raw }}",
     "type": "remoting",
     "actions": {{ actions|json_encode|raw }},
     "namespace": "{{ namespace }}"
 });
 {% endfor %}
+});
