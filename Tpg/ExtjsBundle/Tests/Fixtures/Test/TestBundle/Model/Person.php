@@ -35,8 +35,7 @@ class Person {
     /**
      * @ORM\Column(type="string")
      * @Assert\Email
-     * @Assert\MinLength(limit = 10)
-     * @Assert\MaxLength(limit = 20)
+     * @Assert\Length(min="10", max="20")
      */
     protected $email;
     /**

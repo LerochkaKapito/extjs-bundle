@@ -18,7 +18,7 @@ Ext.define("{{ name }}", {
                     field: '{{ field.name }}',
                     {% for key,value in validator %}
                         {% if key != "name" %}
-                            {{ key }}: '{{ value }}',
+                            {{ key }}: {{ value|json_encode()|raw }},
                         {% endif %}
                     {% endfor %}
                 },
