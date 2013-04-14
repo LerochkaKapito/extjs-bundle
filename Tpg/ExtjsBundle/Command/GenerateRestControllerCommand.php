@@ -30,8 +30,7 @@ class GenerateRestControllerCommand extends GenerateControllerCommand {
     {
         $generator = new RestControllerGenerator($this->getContainer()->get('filesystem'));
         list($bundle, $entity) = $this->parseShortcutNotation($this->input->getOption('entity'));
-        $entity = str_replace(array("/","\\"), "_", $entity);
-        $generator->setEntityClass($entity);
+        $generator->setEntityName($entity);
         return $generator;
     }
 

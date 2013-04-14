@@ -8,10 +8,10 @@ use Symfony\Component\Yaml\Yaml;
 
 class RestControllerGenerator extends ControllerGenerator {
 
-    protected $entityClass;
+    protected $entityName;
 
-    public function setEntityClass($name) {
-        $this->entityClass = $name;
+    public function setEntityName($name) {
+        $this->entityName = $name;
     }
 
     public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
@@ -22,6 +22,9 @@ class RestControllerGenerator extends ControllerGenerator {
             throw new \RuntimeException(sprintf('Controller "%s" already exists', $controller));
         }
 
+        $entityClass = $bundle->getNamespace().'\\'.$this->entityName;
+        $tmpEntity = explode('/', $this->entityName);
+
         $parameters = array(
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
@@ -29,8 +32,12 @@ class RestControllerGenerator extends ControllerGenerator {
                 'routing'    => $routeFormat,
                 'templating' => $templateFormat,
             ),
-            'controller' => $controller,
-            'entity_name' => $this->entityClass,
+            'controller'        => $controller,
+            'entity_class'      => $entityClass,
+            'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),
+            'entity'            => array_pop($tmpEntity),
+            'entity_type_class' => $bundle->getNamespace().'\\Form\\Type\\'.$this->entityName.'Type',
+            'entity_type'       => $this->entityName.'Type'
         );
 
         $this->generateRestRouting($bundle, $controller);
@@ -38,7 +45,6 @@ class RestControllerGenerator extends ControllerGenerator {
         $parameters['actions'] = $actions;
 
         $this->renderFile('controller/Controller.php', $controllerFile, $parameters);
-        $this->renderFile('controller/ControllerTest.php', $dir.'/Tests/Controller/'.$controller.'ControllerTest.php', $parameters);
     }
 
     public function generateRestRouting(BundleInterface $bundle, $controller)

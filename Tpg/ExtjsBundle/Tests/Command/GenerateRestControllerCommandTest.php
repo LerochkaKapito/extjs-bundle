@@ -21,5 +21,9 @@ class GenerateRestControllerCommandTest extends \PHPUnit_Framework_TestCase {
             '--entity' => 'TestTestBundle:Car'
         ), array('interactive'=>false));
         $kernel->shutdown();
+        $this->assertTrue(class_exists("\\Test\\TestBundle\\Controller\\CarController"));
+        $this->assertFileExists(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
     }
 }
