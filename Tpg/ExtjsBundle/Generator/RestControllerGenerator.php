@@ -22,7 +22,7 @@ class RestControllerGenerator extends ControllerGenerator {
             throw new \RuntimeException(sprintf('Controller "%s" already exists', $controller));
         }
 
-        $entityClass = $bundle->getNamespace().'\\'.$this->entityName;
+        $entityClass = $bundle->getNamespace().'\\Entity\\'.$this->entityName;
         $tmpEntity = explode('/', $this->entityName);
 
         $parameters = array(

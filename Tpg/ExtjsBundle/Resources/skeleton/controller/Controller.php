@@ -5,7 +5,7 @@ namespace {{ namespace }}\Controller;
 {% block use_statements %}
 use Doctrine\ORM\EntityManager;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcher;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Form;
@@ -16,8 +16,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 {% endif %}
 {% endblock use_statements %}
+use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
+use JMS\SecurityExtraBundle\Annotation\Secure;
 
 {% block class_definition %}
+/**
+ * Class {{ controller }}Controller
+ * @PreAuthorize("hasRole('ROLE_USER')")
+ * @package {{ namespace }}\Controller
+ */
 class {{ controller }}Controller extends FOSRestController
 {% endblock class_definition %}
 {
@@ -40,16 +47,16 @@ class {{ controller }}Controller extends FOSRestController
 
     /**
      * Get list of {{ entity_name }} record
-     * @param ParamFetcher $param
+     * @param ParamFetcherInterface $paramFetcher
      *
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the list.")
      * @QueryParam(name="pageSize", requirements="\d+", default="10", description="Number of warehouse per page.")
-     * @QueryParam(name="sort", description="Sort result by field")
-     * @QueryParam(name="query", description="")
+     * @QueryParam(name="sort", array=true, description="Sort result by field")
+     * @QueryParam(name="query", array=true, description="")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function get{{ entity_name|capitalize }}sAction(ParamFetcher $param) {
+    public function get{{ entity_name|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $list = $manager->getRepository('{{ bundle }}:{{ entity }}')->findBy(
@@ -67,7 +74,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function post{{ entity_name|capitalize }}Action() {
+    public function post{{ entity_name|capitalize }}sAction() {
         $entity = new {{ entity }}();
         $entity->setCreatedBy($this->getUser());
         return $this->processForm($this->createForm(
