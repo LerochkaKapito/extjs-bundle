@@ -33,8 +33,6 @@ class {{ controller }}Controller extends FOSRestController
      * Get detail of a {{ entity_name }} record
      * @param              $id
      *
-     * @QueryParam(name="id", requirements="\d+")
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function get{{ entity_name|capitalize }}Action($id) {
@@ -87,8 +85,6 @@ class {{ controller }}Controller extends FOSRestController
      * Update an existing {{ entity_name }} record
      * @param $id
      *
-     * @QueryParam(name="id", requirements="\d+")
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function put{{ entity_name|capitalize }}Action($id) {
@@ -108,8 +104,6 @@ class {{ controller }}Controller extends FOSRestController
     /**
      * Delete an existing {{ entity_name }} record
      * @param $id
-     *
-     * @QueryParam(name="id", requirements="\d+")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
