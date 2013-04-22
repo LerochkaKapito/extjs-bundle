@@ -19,6 +19,7 @@ Mandatory
  - Serializer library from JMS 0.12.*
  - Doctrine ORM
  - Generator from Sensio 2.2.*
+
 Optional
  - Rest Controller code generator need FOSRestBundle 0.12.*
 
