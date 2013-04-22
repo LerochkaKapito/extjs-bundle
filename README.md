@@ -45,10 +45,13 @@ public function registerBundles()
 
 **Add routing rules**
 ``` yml
+# app/config/routing.yml
 tpg_extjs:
   resource: "@TpgExtjsBundle/Resources/config/routing.yml"
   prefix:   /extjs
 ```
+
+All documentation below, we assume all ExtJs controller path is prefix with /extjs.
 
 Configuration
 -------------
@@ -100,7 +103,35 @@ To reference and load ExtJS code through script tag,
 
 Remoting integration
 --------------------
+You will need to configure remoting parameter to get ExtJs Remoting working with Controller.
 
+To generate the glue for the remoting intergation on the page, just include
+``` html
+<script type="text/javascript" src="/extjs/remoteapi.js"></script>
+```
+
+To enable a controller's action remotable, you need to annotate the function with Tpg\ExtjsBundle\Annotation\Direct.
 
 Code generation of Rest Controller
 ----------------------------------
+The rest controller code generation is an extension of Sensio's controller generator. The generated controller will extend
+FOS\RestBundle\Controller\FOSRestController class.
+
+To generate a rest controller (PeopleController) for entity Acme.DemoBundle.Entity.Person,
+``` bash
+php app/console generate:rest:controller --controller AcmeDemoBundle:People --entity AcmeDemoBundle:Person
+```
+
+Only controller and entity option is require, all the rest of the option can be left as default. The generator will
+create/update 2 files,
+  - Acme\DemoBundle\Controller\PeopleControler will be generated.
+  - Acme\DemoBundle\Resources\config\routing.rest.yml will be updated or created
+
+To include this generated rest controller into the routing table, just include
+``` yml
+# app/config/routing.yml
+acmedemo_api_rest:
+  resource: "@AcemeDemoBundle/Resources/config/routing.rest.yml"
+  prefix: /api
+  type: rest
+```
