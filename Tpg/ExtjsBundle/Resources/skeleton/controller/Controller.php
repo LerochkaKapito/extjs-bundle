@@ -39,7 +39,7 @@ class {{ controller }}Controller extends FOSRestController
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
-        $view = View::create(array($entity), 200);
+        $view = View::create($entity, 200);
         return $this->handleView($view);
     }
 
@@ -88,7 +88,7 @@ class {{ controller }}Controller extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function put{{ entity_name|capitalize }}Action($id) {
-        /** @var $manager EntityManager */
+        /** @var EntityManager $manager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
@@ -108,7 +108,7 @@ class {{ controller }}Controller extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function delete{{ entity_name|capitalize }}Action($id) {
-        /** @var $manager EntityManager */
+        /** @var EntityManager $manager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $manager->remove($entity);
@@ -124,13 +124,13 @@ class {{ controller }}Controller extends FOSRestController
         unset($parameters['id']);
         $form->bind($parameters);
         if ($form->isValid()) {
-            /** @var $model {{ entity }} */
+            /** @var {{ entity }} $model */
             $model = $form->getData();
             if (method_exists($model, 'setModifiedBy')) $model->setModifiedBy($this->getUser());
             $manager = $this->get('doctrine.orm.default_entity_manager');
             $manager->persist($model);
             $manager->flush();
-            return $this->handleView(View::create(array($model), 200));
+            return $this->handleView(View::create($model, 200));
         }
         return $this->handleView(View::create(array('errors'=>$form->getErrors()), 400));
     }
