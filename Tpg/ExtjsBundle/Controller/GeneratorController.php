@@ -81,7 +81,8 @@ class GeneratorController extends Controller {
             $data = $request['data'];
         }
         $controller = str_replace('.', "\\", $bundle)."\\Controller\\".$request['action'].'Controller';
-        $actionMethod = (new \ReflectionClass($controller))->getMethod($request['method'].'Action');
+        $ref = (new \ReflectionClass($controller));
+        $actionMethod = $ref->getMethod($request['method'].'Action');
         $requestData = array();
         $i = 0;
         foreach($actionMethod->getParameters() as $paramter) {

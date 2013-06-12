@@ -38,8 +38,8 @@ class {{ controller }}Controller extends FOSRestController
     public function get{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
-        $view = View::create([$entity], 200);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
+        $view = View::create(array($entity), 200);
         return $this->handleView($view);
     }
 
@@ -57,11 +57,11 @@ class {{ controller }}Controller extends FOSRestController
     public function get{{ entity_name|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $list = $manager->getRepository('{{ bundle }}:{{ entity }}')->findBy(
-            $param->get('query'),
-            $param->get('sort'),
-            (int)$param->get('pageSize'),
-            ($param->get('page')-1)*$param->get('pageSize')
+        $list = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->findBy(
+            $paramFetcher->get('query'),
+            $paramFetcher->get('sort'),
+            (int)$paramFetcher->get('pageSize'),
+            ($paramFetcher->get('page')-1)*$paramFetcher->get('pageSize')
         );
         $view = View::create($list, 200);
         return $this->handleView($view);
@@ -74,7 +74,7 @@ class {{ controller }}Controller extends FOSRestController
      */
     public function post{{ entity_name|capitalize }}sAction() {
         $entity = new {{ entity }}();
-        $entity->setCreatedBy($this->getUser());
+        if (method_exists($entity, 'setCreatedBy')) $entity->setCreatedBy($this->getUser());
         return $this->processForm($this->createForm(
             new {{ entity_type }}(),
             $entity
@@ -90,7 +90,7 @@ class {{ controller }}Controller extends FOSRestController
     public function put{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
             return $this->handleView(View::create(null, 404));
         } else {
@@ -110,7 +110,7 @@ class {{ controller }}Controller extends FOSRestController
     public function delete{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $manager->remove($entity);
         $manager->flush();
         return $this->handleView(View::create(null, 200));
@@ -124,15 +124,15 @@ class {{ controller }}Controller extends FOSRestController
         unset($parameters['id']);
         $form->bind($parameters);
         if ($form->isValid()) {
-            /** @var $model Warehouse */
+            /** @var $model {{ entity }} */
             $model = $form->getData();
-            $model->setModifiedBy($this->getUser());
+            if (method_exists($model, 'setModifiedBy')) $model->setModifiedBy($this->getUser());
             $manager = $this->get('doctrine.orm.default_entity_manager');
             $manager->persist($model);
             $manager->flush();
-            return $this->handleView(View::create([$model], 200));
+            return $this->handleView(View::create(array($model), 200));
         }
-        return $this->handleView(View::create(['errors'=>$form->getErrors()], 400));
+        return $this->handleView(View::create(array('errors'=>$form->getErrors()), 400));
     }
 
 {% for action in actions %}
