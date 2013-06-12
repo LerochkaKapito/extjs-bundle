@@ -38,7 +38,7 @@ class {{ controller }}Controller extends FOSRestController
     public function get{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $view = View::create(array($entity), 200);
         return $this->handleView($view);
     }
@@ -57,7 +57,7 @@ class {{ controller }}Controller extends FOSRestController
     public function get{{ entity_name|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $list = $manager->getRepository('{{ bundle }}:{{ entity }}')->findBy(
+        $list = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->findBy(
             $paramFetcher->get('query'),
             $paramFetcher->get('sort'),
             (int)$paramFetcher->get('pageSize'),
@@ -90,7 +90,7 @@ class {{ controller }}Controller extends FOSRestController
     public function put{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
             return $this->handleView(View::create(null, 404));
         } else {
@@ -110,7 +110,7 @@ class {{ controller }}Controller extends FOSRestController
     public function delete{{ entity_name|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
-        $entity = $manager->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $manager->remove($entity);
         $manager->flush();
         return $this->handleView(View::create(null, 200));

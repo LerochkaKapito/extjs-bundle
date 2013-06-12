@@ -12,6 +12,10 @@ class GenerateRestControllerCommand extends GenerateControllerCommand {
 
     /** @var  InputInterface */
     protected $input;
+    /**
+     * @var OutputInterface
+     */
+    protected $output;
 
     public function configure() {
         parent::configure();
@@ -22,6 +26,7 @@ class GenerateRestControllerCommand extends GenerateControllerCommand {
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
+        $this->output = $output;
         Validators::validateEntityName($input->getOption('entity'));
         parent::execute($input, $output);
     }
@@ -31,6 +36,15 @@ class GenerateRestControllerCommand extends GenerateControllerCommand {
         $generator = new RestControllerGenerator($this->getContainer()->get('filesystem'));
         list($bundle, $entity) = $this->parseShortcutNotation($this->input->getOption('entity'));
         $generator->setEntityName($entity);
+        if (is_string($bundle)) {
+            $bundle = Validators::validateBundleName($bundle);
+            try {
+                $bundle = $this->getContainer()->get('kernel')->getBundle($bundle);
+            } catch (\Exception $e) {
+                $this->output->writeln(sprintf('<bg=red>Bundle "%s" does not exists.</>', $bundle));
+            }
+        }
+        $generator->setEntityBundle($bundle);
         return $generator;
     }
 
