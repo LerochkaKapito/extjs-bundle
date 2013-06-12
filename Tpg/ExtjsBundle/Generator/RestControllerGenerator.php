@@ -10,9 +10,18 @@ class RestControllerGenerator extends ControllerGenerator {
 
     protected $entityName;
 
+    /**
+     * @var BundleInterface $entityBundle
+     */
+    protected $entityBundle;
+
     public function setEntityName($name) {
         $this->entityName = $name;
     }
+    public function setEntityBundle(BundleInterface $bundle) {
+        $this->entityBundle = $bundle;
+    }
+
 
     public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
     {
@@ -22,7 +31,7 @@ class RestControllerGenerator extends ControllerGenerator {
             throw new \RuntimeException(sprintf('Controller "%s" already exists', $controller));
         }
 
-        $entityClass = $bundle->getNamespace().'\\Entity\\'.$this->entityName;
+        $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
         $tmpEntity = explode('/', $this->entityName);
 
         $parameters = array(
@@ -35,6 +44,7 @@ class RestControllerGenerator extends ControllerGenerator {
             'controller'        => $controller,
             'entity_class'      => $entityClass,
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),
+            'entity_bundle'     => $this->entityBundle->getName(),
             'entity'            => array_pop($tmpEntity),
             'entity_type_class' => $bundle->getNamespace().'\\Form\\Type\\'.$this->entityName.'Type',
             'entity_type'       => $this->entityName.'Type'
