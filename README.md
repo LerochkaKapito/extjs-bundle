@@ -3,7 +3,7 @@ extjs-bundle
 
 Use ExtJs with Symfony 2
 
-![Build Status](https://travis-ci.org/jamesmoey/extjs-bundle.png?branch=master)
+![Build Status](https://travis-ci.org/jamesmoey/extjs-bundle.png?branch=2.3)
 
 Packagist: https://packagist.org/packages/tpg/extjs-bundle
 
@@ -15,10 +15,10 @@ The aim of this bundle is to ease the intergration between Symfony 2 and ExtJS c
 Requirement
 -----------
 Mandatory
- - Symfony 2.2.*
+ - Symfony 2.3.*
  - Serializer library from JMS 0.12.*
  - Doctrine ORM
- - Generator from Sensio 2.2.*
+ - Generator from Sensio 2.3.*
 
 Optional
  - Rest Controller code generator need FOSRestBundle 0.12.*
