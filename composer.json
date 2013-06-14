@@ -17,9 +17,7 @@
         "doctrine/orm": ">=2.2.3,<2.4-dev",
         "jms/serializer-bundle": "0.12.*@dev",
         "jms/di-extra-bundle": "~1.4",
-        "sensio/generator-bundle": "2.3.*"
-    },
-    "require-dev": {
+        "sensio/generator-bundle": "2.3.*",
         "friendsofsymfony/rest-bundle": "~0.12"
     },
     "autoload": {
