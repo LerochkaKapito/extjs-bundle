@@ -16,17 +16,16 @@
         "symfony/symfony": "2.3.*",
         "doctrine/orm": ">=2.2.3,<2.4-dev",
         "jms/serializer-bundle": "~0.12@dev",
-        "jms/di-extra-bundle": "~1.3@dev",
-        "sensio/generator-bundle": "2.3.*@dev"
+        "jms/di-extra-bundle": "~1.4",
+        "sensio/generator-bundle": "2.3.*"
     },
     "require-dev": {
-        "friendsofsymfony/rest-bundle": "~0.12@dev"
+        "friendsofsymfony/rest-bundle": "~0.12"
     },
     "autoload": {
         "psr-0": { "Tpg\\ExtjsBundle": "" }
     },
     "config": {
         "bin-dir": "bin/"
-    },
-    "minimum-stability": "alpha"
+    }
 }
