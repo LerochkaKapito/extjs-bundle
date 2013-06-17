@@ -27,4 +27,16 @@ describe('Direct Generator', function () {
             expect(value['result']).toBe('asd');
         });
     });
+    it('Execute test Remoting method with request parameter', function() {
+        var value = "";
+        Test.TestBundle.Test.testRequestParam({"id":"asd"}, function(data) {
+            value = data;
+        });
+        waitsFor(function() {
+            return (value != "")
+        }, "The Value should be set", 2000);
+        runs(function() {
+            expect(value['result']).toBe('asd');
+        });
+    });
 });

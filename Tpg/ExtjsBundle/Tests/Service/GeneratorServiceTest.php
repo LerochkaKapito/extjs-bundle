@@ -105,6 +105,10 @@ class GeneratorServiceTest extends TestCase {
                         'name'=>'test2',
                         'len'=>1,
                     ),
+                    array(
+                        'name'=>'testRequestParam',
+                        'len'=>1,
+                    )
                 ),
             ),
         ), $api);
