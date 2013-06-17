@@ -113,6 +113,23 @@ To generate the glue for the remoting intergation on the page, just include
 
 To enable a controller's action remotable, you need to annotate the function with Tpg\ExtjsBundle\Annotation\Direct.
 
+If controller parameter is expecting Symfony\Component\HttpFoundation\Request object then you need to call the remote
+api with only 1 parameters. You need to wrap parameters in array.
+
+``` php
+public function testRequestParamAction(Symfony\Component\HttpFoundation\Request $request) {
+    $idResult = $request->query->get("id");
+    $nameResult = $request->query->get("name");
+}
+```
+
+$idResult will contain 12 and $nameResult will contain "EFG".
+
+To call that remote api, you need to use.
+``` javascript
+Test.testRequestParam({"id":12, "name":"EFG"});
+```
+
 Code generation of Rest Controller
 ----------------------------------
 The rest controller code generation is an extension of Sensio's controller generator. The generated controller will extend
