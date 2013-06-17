@@ -83,13 +83,34 @@ class GeneratorController extends Controller {
         $controller = str_replace('.', "\\", $bundle)."\\Controller\\".$request['action'].'Controller';
         $ref = (new \ReflectionClass($controller));
         $actionMethod = $ref->getMethod($request['method'].'Action');
-        $requestData = array();
-        $i = 0;
-        foreach($actionMethod->getParameters() as $paramter) {
-            $requestData[$paramter->getName()] = $data[$i++];
+        $actionparams = $actionMethod->getParameters();
+        if (count($actionparams) == 1
+            && is_object($actionparams[0]->getClass())
+            && (
+                $actionparams[0]->getClass()->name == 'FOS\RestBundle\Request\ParamFetcherInterface'
+                || $actionparams[0]->getClass()->name == 'Symfony\Component\HttpFoundation\Request'
+            )) {
+            // if the action expects only a ParamFetcher or Request param just give it the first member of $data
+            $requestData = $data[0];
+        } else {
+            $requestData = array();
+            $i = 0;
+            foreach($actionparams as $parameter) {
+                $requestData[$parameter->getName()] = $data[$i++];
+            }
         }
-        /** @var $response JsonResponse */
-        $response = $this->forward($bundleName.':'.$request['action'].':'.$request['method'], $requestData);
+
+        /* TODO:
+            figure out which request params need to be "path params" and which are "query params".
+            We would need to check the route for the action to figure this out.
+            Meanwhile we just give the complete request param array as both pathParams and queryParams
+            so the action can fetch the params from where it expects them to be.
+        */
+        $pathParams = $requestData;
+        $queryParams = $requestData;
+
+        /** @var JsonResponse $response */
+        $response = $this->forward($bundleName.':'.$request['action'].':'.$request['method'], $pathParams, $queryParams);
         return new JsonResponse(array(
             'type'=>$request['type'],
             'tid'=>$request['tid'],
