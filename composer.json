@@ -20,6 +20,9 @@
         "sensio/generator-bundle": "2.3.*",
         "friendsofsymfony/rest-bundle": "~0.12"
     },
+    "require-dev": {
+        "doctrine/doctrine-bundle": "1.2.*"
+    },
     "autoload": {
         "psr-0": { "Tpg\\ExtjsBundle": "" }
     },

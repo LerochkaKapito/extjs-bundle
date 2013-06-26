@@ -11,6 +11,9 @@
          syntaxCheck="false"
          bootstrap="./Tpg/ExtjsBundle/Tests/bootstrap.php"
         >
+    <php>
+        <server name="KERNEL_DIR" value="Tpg/ExtjsBundle/Tests/app" />
+    </php>
 
     <testsuites>
         <testsuite name="TestBundle Test Suite">

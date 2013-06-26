@@ -16,13 +16,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 {% endif %}
 {% endblock use_statements %}
-use JMS\SecurityExtraBundle\Annotation\PreAuthorize;
-use JMS\SecurityExtraBundle\Annotation\Secure;
 
 {% block class_definition %}
 /**
  * Class {{ controller }}Controller
- * @PreAuthorize("hasRole('ROLE_USER')")
  * @package {{ namespace }}\Controller
  */
 class {{ controller }}Controller extends FOSRestController

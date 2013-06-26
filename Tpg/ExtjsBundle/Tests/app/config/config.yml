@@ -3,11 +3,23 @@ framework:
     #translator:      { fallback: %locale% }
     secret:          test_blah
     default_locale:  en
-    router:          { resource: "%kernel.root_dir%/../../Resources/config/routing.yml" }
+    router:          { resource: "%kernel.root_dir%/config/routing.yml" }
     form:            true
     csrf_protection: true
+    session:         ~
     validation:      { enable_annotations: true }
     templating:      { engines: ['twig'] }
+
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     127.0.0.1
+        dbname:   testing
+        user:     root
+        password: ~
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        auto_mapping: true
 
 tpg_extjs:
     entities:
@@ -16,3 +28,8 @@ tpg_extjs:
     remoting:
         bundles:
             - TestTestBundle
+
+fos_rest:
+    routing_loader:
+        default_format: json
+    param_fetcher_listener: true
