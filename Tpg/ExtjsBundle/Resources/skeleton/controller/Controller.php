@@ -48,20 +48,39 @@ class {{ controller }}Controller extends FOSRestController
      * @param ParamFetcherInterface $paramFetcher
      *
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the list.")
-     * @QueryParam(name="pageSize", requirements="\d+", default="10", description="Number of warehouse per page.")
-     * @QueryParam(name="sort", array=true, description="Sort result by field")
-     * @QueryParam(name="query", array=true, description="")
+     * @QueryParam(name="start", requirements="\d+", default="0", description="Offset of the list")
+     * @QueryParam(name="limit", requirements="\d+", default="25", description="Number of record per fetch.")
+     * @QueryParam(name="sort", description="Sort result by field in URL encoded JSON format", default="[]")
+     * @QueryParam(name="filter", description="Search filter in URL encoded JSON format", default="[]")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function get{{ entity_name|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
+        $rawSorters = json_decode($paramFetcher->get("sort"), true);
+        $sorters = [];
+        foreach ($rawSorters as $s) {
+            $sorters[$s['property']] = $s['direction'];
+        }
+        $rawFilters = json_decode($paramFetcher->get("filter"), true);
+        $filters = [];
+        foreach ($rawFilters as $f) {
+            $filters[$f['property']] = $f['value'];
+        }
+        $start = 0;
+        if ($paramFetcher->get("start") === "0") {
+            if ($paramFetcher->get("page") > 1) {
+                $start = ($paramFetcher->get("page")-1) * $paramFetcher->get("limit");
+            }
+        } else {
+            $start = $paramFetcher->get("start");
+        }
         $list = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->findBy(
-            $paramFetcher->get('query'),
-            $paramFetcher->get('sort'),
-            (int)$paramFetcher->get('pageSize'),
-            ($paramFetcher->get('page')-1)*$paramFetcher->get('pageSize')
+            $filters,
+            $sorters,
+            $paramFetcher->get("limit"),
+            $start
         );
         $view = View::create($list, 200);
         return $this->handleView($view);
