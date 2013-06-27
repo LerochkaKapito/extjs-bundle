@@ -207,7 +207,7 @@ class GeneratedRestControllerTest extends WebTestCase {
     public function testPostAction() {
         $this->client->request('POST', '/cars.json', array(), array(), array(), json_encode(array(
             'name'=>'BMW',
-            'plateNumber'=>'ZZ1267'
+            'plateNumber'=>'ZZ1267',
         )));
         $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
@@ -217,6 +217,19 @@ class GeneratedRestControllerTest extends WebTestCase {
         $record = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('BMW', $record['name']);
         $this->assertEquals('ZZ1267', $record['plateNumber']);
+    }
+
+    public function testPostActionWithJMSGroup() {
+        $this->client->request('POST', '/cars.json', array(), array(), array(), json_encode(array(
+            'name'=>'BMW',
+            'plateNumber'=>'ZZ1267',
+            'password'=>'xxx',
+        )));
+        $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
+        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
+        $record = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertNull($record['password']);
+        $this->assertEquals('xxx', $repo->find($record['id'])->getPassword());
     }
 
     public function testPostActionWithError() {

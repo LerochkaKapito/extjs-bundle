@@ -15,6 +15,7 @@ use \Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy;
 use \Doctrine\DBAL\DBALException;
 use Tpg\ExtjsBundle\Component\FailedObjectConstructor;
 use JMS\Serializer\Construction\DoctrineObjectConstructor;
+use \JMS\Serializer\DeserializationContext;
 use {{ entity_class }};
 use {{ entity_type_class }};
 {% if 'annotation' == format.routing -%}
@@ -42,7 +43,7 @@ class {{ controller }}Controller extends FOSRestController
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
-        $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext());;
+        $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")));;
         return $this->handleView($view);
     }
 
@@ -85,7 +86,7 @@ class {{ controller }}Controller extends FOSRestController
             $paramFetcher->get("limit"),
             $start
         );
-        $view = View::create($list, 200)->setSerializationContext($this->getSerializerContext());
+        $view = View::create($list, 200)->setSerializationContext($this->getSerializerContext(array("list")));
         return $this->handleView($view);
     }
 
@@ -96,7 +97,12 @@ class {{ controller }}Controller extends FOSRestController
      */
     public function post{{ entity_name|capitalize }}sAction() {
         $serializer = $this->get('jms_serializer');
-        $entity = $serializer->deserialize($this->getRequest()->getContent(), '{{ entity_class }}', 'json');
+        $entity = $serializer->deserialize(
+            $this->getRequest()->getContent(),
+            '{{ entity_class }}',
+            'json',
+            DeserializationContext::create()->setGroups(array("Default", "post"))
+        );
         $validator = $this->get('validator');
         $validations = $validator->validate($entity);
         if ($validations->count() === 0) {
@@ -114,7 +120,7 @@ class {{ controller }}Controller extends FOSRestController
                     "{{route_name_prefix}}get_{{ entity_name|lower }}",
                     array('id'=>$entity->getId()),
                     true
-                )))
+                )))->setSerializationContext($this->getSerializerContext())
             );
         } else {
             return $this->handleView(
@@ -137,7 +143,12 @@ class {{ controller }}Controller extends FOSRestController
             return $this->handleView(View::create('', 404));
         }
         $serializer = $this->get('jms_serializer');
-        $entity = $serializer->deserialize($this->getRequest()->getContent(), '{{ entity_class }}', 'json');
+        $entity = $serializer->deserialize(
+            $this->getRequest()->getContent(),
+            '{{ entity_class }}',
+            'json',
+            DeserializationContext::create()->setGroups(array("Default", "put"))
+        );
         $entity->setId($id);
         $validator = $this->get('validator');
         $validations = $validator->validate($entity);
@@ -151,7 +162,7 @@ class {{ controller }}Controller extends FOSRestController
                 );
             }
             return $this->handleView(
-                View::create($entity, 200)->setSerializationContext($this->getSerializerContext())
+                View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")))
             );
         } else {
             return $this->handleView(
@@ -178,9 +189,14 @@ class {{ controller }}Controller extends FOSRestController
         $serializer = SerializerBuilder::create()->setObjectConstructor(
             new DoctrineObjectConstructor($this->get("doctrine"), new FailedObjectConstructor())
         )->setPropertyNamingStrategy(
-                new JMSCamelCaseNamingStrategy()
-            )->build();
-        $entity = $serializer->deserialize(json_encode($content), '{{ entity_class }}', 'json');
+            new JMSCamelCaseNamingStrategy()
+        )->build();
+        $entity = $serializer->deserialize(
+            json_encode($content),
+            '{{ entity_class }}',
+            'json',
+            DeserializationContext::create()->setGroups(array("Default", "patch"))
+        );
         $validator = $this->get('validator');
         $validations = $validator->validate($entity);
         if ($validations->count() === 0) {
@@ -192,7 +208,7 @@ class {{ controller }}Controller extends FOSRestController
                 );
             }
             return $this->handleView(
-                View::create($entity, 200)->setSerializationContext($this->getSerializerContext())
+                View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")))
             );
         } else {
             return $this->handleView(
@@ -236,9 +252,11 @@ class {{ controller }}Controller extends FOSRestController
 {% endfor -%}
 {% endblock class_body %}
 
-    protected function getSerializerContext() {
+    protected function getSerializerContext($groups = array(), $version = null) {
         $serializeContext = SerializationContext::create();
         $serializeContext->enableMaxDepthChecks();
+        $serializeContext->setGroups(array(\JMS\Serializer\Exclusion\GroupsExclusionStrategy::DEFAULT_GROUP)+$groups);
+        if ($version !== null) $serializeContext->setVersion($version);
         return $serializeContext;
     }
 }

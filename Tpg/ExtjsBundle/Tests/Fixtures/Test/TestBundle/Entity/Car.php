@@ -32,6 +32,13 @@ class Car {
     protected $plateNumber;
 
     /**
+     * @ORM\Column(type="string", nullable=true)
+     * @JMS\Type("string")
+     * @JMS\Groups({"post"})
+     */
+    protected $password;
+
+    /**
      * @param mixed $id
      *
      * @return Car
@@ -91,5 +98,23 @@ class Car {
         return $this->plateNumber;
     }
 
+    /**
+     * @param mixed $password
+     *
+     * @return Car
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
 }

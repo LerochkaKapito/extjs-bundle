@@ -135,6 +135,28 @@ Code generation of Rest Controller
 The rest controller code generation is an extension of Sensio's controller generator. The generated controller will extend
 FOS\RestBundle\Controller\FOSRestController class.
 
+You will need to enable the following bundles.
+``` php
+new \JMS\SerializerBundle\JMSSerializerBundle(),
+new \FOS\RestBundle\FOSRestBundle(),
+```
+
+You also need to make sure the following configuration for fos_rest.
+``` yaml
+fos_rest:
+    routing_loader:
+        default_format: json
+    param_fetcher_listener: true
+```
+
+Generated controller set different groups on JMS serializer context during serialization and deserialization process.
+  - get: Serialization on individual entity during GET, POST, PUT, PATCH action.
+  - list: Serialization on list of entity during GET action.
+  - post: Deserialization on individual entity during POST action.
+  - put: Deserialization on individual entity during PUT action.
+  - patch: Deserialization on individual entity during PATCH action.
+
+## For example,
 To generate a rest controller (PeopleController) for entity Acme.DemoBundle.Entity.Person,
 ``` bash
 php app/console generate:rest:controller --controller AcmeDemoBundle:People --entity AcmeDemoBundle:Person
@@ -154,18 +176,4 @@ acmedemo_api_rest:
   resource: "@AcemeDemoBundle/Resources/config/routing.rest.yml"
   prefix: /api
   type: rest
-```
-
-You will need to enable the following bundles.
-``` php
-new \JMS\SerializerBundle\JMSSerializerBundle(),
-new \FOS\RestBundle\FOSRestBundle(),
-```
-
-You also need to make sure the following configuration fos_rest.
-``` yaml
-fos_rest:
-    routing_loader:
-        default_format: json
-    param_fetcher_listener: true
 ```
