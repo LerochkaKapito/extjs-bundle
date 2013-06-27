@@ -10,13 +10,13 @@ Packagist: https://packagist.org/packages/tpg/extjs-bundle
 The aim of this bundle is to ease the intergration between Symfony 2 and ExtJS client side framework. It support
  - Dynamic runtime generation of Ext.data.Model based on entities/models implement on the server side.
  - Auto integrate of Ext Remoting integration with Symfony 2 Controller.
- - Code generation of Rest Controller per entities.
+ - Code generation of Rest Controller per entities, support GET, POST, PUT, PATCH and DELETE.
 
 Requirement
 -----------
 Mandatory
  - Symfony 2.3.*
- - Serializer library from JMS 0.12.*
+ - Serializer library from JMS 0.13.*
  - Doctrine ORM
  - Generator from Sensio 2.3.*
 
@@ -140,6 +140,8 @@ To generate a rest controller (PeopleController) for entity Acme.DemoBundle.Enti
 php app/console generate:rest:controller --controller AcmeDemoBundle:People --entity AcmeDemoBundle:Person
 ```
 
+Attributes in entity need to be have JMS type specify for deserializing to work.
+
 Only controller and entity option is require, all the rest of the option can be left as default. The generator will
 create/update 2 files,
   - Acme\DemoBundle\Controller\PeopleControler will be generated.
@@ -152,4 +154,18 @@ acmedemo_api_rest:
   resource: "@AcemeDemoBundle/Resources/config/routing.rest.yml"
   prefix: /api
   type: rest
+```
+
+You will need to enable the following bundles.
+``` php
+new \JMS\SerializerBundle\JMSSerializerBundle(),
+new \FOS\RestBundle\FOSRestBundle(),
+```
+
+You also need to make sure the following configuration fos_rest.
+``` yaml
+fos_rest:
+    routing_loader:
+        default_format: json
+    param_fetcher_listener: true
 ```
