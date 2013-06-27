@@ -24,8 +24,8 @@ class GeneratedRestControllerTest extends WebTestCase {
     protected $client;
 
     public static function setUpBeforeClass() {
-        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
+        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->addCommands(array(
@@ -52,15 +52,15 @@ class GeneratedRestControllerTest extends WebTestCase {
             'command' => $command->getName(),
         ));
         $kernel->shutdown();
-        unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php.meta');
-        unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php');
-        unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php.meta');
-        unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php');
+        @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php.meta');
+        @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php');
+        @unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php.meta');
+        @unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php');
     }
 
     public static function tearDownAfterClass() {
-        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
+        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->addCommands(array(
