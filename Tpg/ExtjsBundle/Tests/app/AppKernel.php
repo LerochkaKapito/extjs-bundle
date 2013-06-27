@@ -11,9 +11,9 @@ class AppKernel extends Kernel
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new \Symfony\Bundle\TwigBundle\TwigBundle(),
-            new \Tpg\ExtjsBundle\TpgExtjsBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \FOS\RestBundle\FOSRestBundle(),
+            new \Tpg\ExtjsBundle\TpgExtjsBundle(),
             new \Test\TestBundle\TestTestBundle(),
         );
 

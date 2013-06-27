@@ -9,6 +9,8 @@ use Tpg\ExtjsBundle\Command\GenerateRestControllerCommand;
 
 class GenerateRestControllerCommandTest extends \PHPUnit_Framework_TestCase {
     public function testGenerateController() {
+        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->add(new GenerateRestControllerCommand());

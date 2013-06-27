@@ -47,7 +47,8 @@ class RestControllerGenerator extends ControllerGenerator {
             'entity_bundle'     => $this->entityBundle->getName(),
             'entity'            => array_pop($tmpEntity),
             'entity_type_class' => $bundle->getNamespace().'\\Form\\Type\\'.$this->entityName.'Type',
-            'entity_type'       => $this->entityName.'Type'
+            'entity_type'       => $this->entityName.'Type',
+            'route_name_prefix' => strtolower(preg_replace('/([A-Z])/', '_\\1', $bundle->getName().'_api_'))
         );
 
         $this->generateRestRouting($bundle, $controller);

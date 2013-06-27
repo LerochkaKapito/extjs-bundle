@@ -32,5 +32,7 @@
             </call>
             <tag name="twig.extension" />
         </service>
+
+        <service id="jms_serializer.camel_case_naming_strategy" class="Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy" public="false" />
     </services>
 </container>

@@ -3,6 +3,7 @@ namespace Test\TestBundle\Entity;
 
 use Tpg\ExtjsBundle\Annotation as Extjs;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @Extjs\Model
@@ -14,16 +15,19 @@ class Car {
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Type("integer")
      */
     protected $id;
 
     /**
      * @ORM\Column(type="string")
+     * @JMS\Type("string")
      */
     protected $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", name="plate_number")
+     * @JMS\Type("string")
      */
     protected $plateNumber;
 

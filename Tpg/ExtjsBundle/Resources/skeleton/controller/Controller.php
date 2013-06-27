@@ -9,6 +9,12 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Form\Form;
+use \JMS\Serializer\SerializationContext;
+use \JMS\Serializer\SerializerBuilder;
+use \Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy;
+use \Doctrine\DBAL\DBALException;
+use Tpg\ExtjsBundle\Component\FailedObjectConstructor;
+use JMS\Serializer\Construction\DoctrineObjectConstructor;
 use {{ entity_class }};
 use {{ entity_type_class }};
 {% if 'annotation' == format.routing -%}
@@ -36,7 +42,7 @@ class {{ controller }}Controller extends FOSRestController
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
-        $view = View::create($entity, 200);
+        $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext());;
         return $this->handleView($view);
     }
 
@@ -79,7 +85,7 @@ class {{ controller }}Controller extends FOSRestController
             $paramFetcher->get("limit"),
             $start
         );
-        $view = View::create($list, 200);
+        $view = View::create($list, 200)->setSerializationContext($this->getSerializerContext());
         return $this->handleView($view);
     }
 
@@ -89,12 +95,32 @@ class {{ controller }}Controller extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function post{{ entity_name|capitalize }}sAction() {
-        $entity = new {{ entity }}();
-        if (method_exists($entity, 'setCreatedBy')) $entity->setCreatedBy($this->getUser());
-        return $this->processForm($this->createForm(
-            new {{ entity_type }}(),
-            $entity
-        ));
+        $serializer = $this->get('jms_serializer');
+        $entity = $serializer->deserialize($this->getRequest()->getContent(), '{{ entity_class }}', 'json');
+        $validator = $this->get('validator');
+        $validations = $validator->validate($entity);
+        if ($validations->count() === 0) {
+            $manager = $this->get('doctrine.orm.default_entity_manager');
+            $manager->persist($entity);
+            try {
+                $manager->flush();
+            } catch (DBALException $e) {
+                return $this->handleView(
+                    View::create(array('errors'=>array($e->getMessage())), 400)
+                );
+            }
+            return $this->handleView(
+                View::create($entity, 201, array('Location'=>$this->generateUrl(
+                    "{{route_name_prefix}}get_{{ entity_name|lower }}",
+                    array('id'=>$entity->getId()),
+                    true
+                )))
+            );
+        } else {
+            return $this->handleView(
+                View::create(array('errors'=>$validations), 400)
+            );
+        }
     }
 
     /**
@@ -108,12 +134,70 @@ class {{ controller }}Controller extends FOSRestController
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
-            return $this->handleView(View::create(null, 404));
+            return $this->handleView(View::create('', 404));
+        }
+        $serializer = $this->get('jms_serializer');
+        $entity = $serializer->deserialize($this->getRequest()->getContent(), '{{ entity_class }}', 'json');
+        $entity->setId($id);
+        $validator = $this->get('validator');
+        $validations = $validator->validate($entity);
+        if ($validations->count() === 0) {
+            try {
+                $manager->merge($entity);
+                $manager->flush();
+            } catch (DBALException $e) {
+                return $this->handleView(
+                    View::create(array('errors'=>array($e->getMessage())), 400)
+                );
+            }
+            return $this->handleView(
+                View::create($entity, 200)->setSerializationContext($this->getSerializerContext())
+            );
         } else {
-            return $this->processForm($this->createForm(
-                new {{ entity_type }}(),
-                $entity
-            ));
+            return $this->handleView(
+                View::create(array('errors'=>$validations), 400)
+            );
+        }
+    }
+
+    /**
+     * Patch an existing {{ entity_name }} record
+     * @param $id
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function patch{{ entity_name|capitalize }}Action($id) {
+        /** @var EntityManager $manager */
+        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
+        if ($entity === null) {
+            return $this->handleView(View::create('', 404));
+        }
+        $content = json_decode($this->getRequest()->getContent(), true);
+        $content['id'] = $id;
+        $serializer = SerializerBuilder::create()->setObjectConstructor(
+            new DoctrineObjectConstructor($this->get("doctrine"), new FailedObjectConstructor())
+        )->setPropertyNamingStrategy(
+                new JMSCamelCaseNamingStrategy()
+            )->build();
+        $entity = $serializer->deserialize(json_encode($content), '{{ entity_class }}', 'json');
+        $validator = $this->get('validator');
+        $validations = $validator->validate($entity);
+        if ($validations->count() === 0) {
+            try {
+                $manager->flush();
+            } catch (DBALException $e) {
+                return $this->handleView(
+                    View::create(array('errors'=>array($e->getMessage())), 400)
+                );
+            }
+            return $this->handleView(
+                View::create($entity, 200)->setSerializationContext($this->getSerializerContext())
+            );
+        } else {
+            return $this->handleView(
+                View::create(array('errors'=>$validations), 400)
+            );
         }
     }
 
@@ -129,26 +213,7 @@ class {{ controller }}Controller extends FOSRestController
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $manager->remove($entity);
         $manager->flush();
-        return $this->handleView(View::create(null, 200));
-    }
-
-    /**
-     * Process Form.
-     */
-    protected function processForm(Form $form) {
-        $parameters = $this->getRequest()->request->all();
-        unset($parameters['id']);
-        $form->bind($parameters);
-        if ($form->isValid()) {
-            /** @var {{ entity }} $model */
-            $model = $form->getData();
-            if (method_exists($model, 'setModifiedBy')) $model->setModifiedBy($this->getUser());
-            $manager = $this->get('doctrine.orm.default_entity_manager');
-            $manager->persist($model);
-            $manager->flush();
-            return $this->handleView(View::create($model, 200));
-        }
-        return $this->handleView(View::create(array('errors'=>$form->getErrors()), 400));
+        return $this->handleView(View::create(null, 204));
     }
 
 {% for action in actions %}
@@ -170,4 +235,10 @@ class {{ controller }}Controller extends FOSRestController
     }
 {% endfor -%}
 {% endblock class_body %}
+
+    protected function getSerializerContext() {
+        $serializeContext = SerializationContext::create();
+        $serializeContext->enableMaxDepthChecks();
+        return $serializeContext;
+    }
 }
