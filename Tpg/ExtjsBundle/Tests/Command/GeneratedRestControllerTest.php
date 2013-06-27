@@ -228,7 +228,7 @@ class GeneratedRestControllerTest extends WebTestCase {
         $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $record = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertNull($record['password']);
+        $this->assertArrayNotHasKey('password', $record);
         $this->assertEquals('xxx', $repo->find($record['id'])->getPassword());
     }
 
