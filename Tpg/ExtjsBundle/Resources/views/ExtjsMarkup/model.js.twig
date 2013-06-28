@@ -3,7 +3,8 @@ Ext.define("{{ name }}", {
     uses: [
         {%- for assoc in associations %}
 
-        '{{ assoc.model }}',
+        '{{ assoc.model }}'
+        {%- if not loop.last %},{% endif %}
 
         {%- endfor %}
 
@@ -11,7 +12,8 @@ Ext.define("{{ name }}", {
     fields: [
         {%-for field in fields %}
 
-        { name: "{{ field.name }}", type: "{{ field.type }}" },
+        { name: "{{ field.name }}", type: "{{ field.type }}" }
+        {%- if not loop.last %},{% endif %}
 
         {%- endfor %}
 
@@ -22,15 +24,18 @@ Ext.define("{{ name }}", {
 
         {
             type: '{{ validator.name }}',
-            field: '{{ field.name }}',
+            field: '{{ field.name }}'
             {%- for key,value in validator %}
             {%- if key != "name" %}
+            {%- spaceless %},{% endspaceless %}
 
-            {{ key }}: {{ value|json_encode()|raw }},
+            {{ key }}: {{ value|json_encode()|raw }}
 
             {%- endif %}
             {%- endfor %}
-        },
+
+        }
+        {%- if (not loop.last) or (not loop.parent.last) %},{% endif %}
 
         {%- endfor %}
         {%- endfor %}
@@ -64,7 +69,9 @@ Ext.define("{{ name }}", {
             foreignKey: '{{ assoc.key }}'
 
             {%- endif %}
-        },
+
+        }
+        {%- if not loop.last %},{% endif %}
 
         {%- endfor %}
 
