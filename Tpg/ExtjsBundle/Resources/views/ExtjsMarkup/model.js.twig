@@ -22,15 +22,16 @@ Ext.define("{{ name }}", {
         {%-for validator in validators %}
 
         {
-            {%- for key,value in validator %}
 
+            {%- for key,value in validator %}
             {%- if value.skipEncode %}
+
             {{ key }}: {{ value.value|raw }}
             {%- else %}
+
             {{ key }}: {{ value|json_encode()|raw }}
             {%- endif %}
             {%- if not loop.last %},{% endif %}
-
             {%- endfor %}
 
         }
