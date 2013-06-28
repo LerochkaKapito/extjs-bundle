@@ -19,8 +19,8 @@ describe('Model Generator', function () {
                 return list[name];
             }
         })();
-        it('contain 7 fields', function () {
-            expect(Test.model.Person.getFields().length).toBe(7);
+        it('contain 9 fields', function () {
+            expect(Test.model.Person.getFields().length).toBe(9);
         });
         it('age field', function () {
             expect(getField('age').type).toBe(Ext.data.Types.INT);
@@ -33,6 +33,9 @@ describe('Model Generator', function () {
         });
         it('email field', function () {
             expect(getField('email').type).toBe(Ext.data.Types.STRING);
+        });
+        it('exclude dob field', function() {
+            expect(getField('dob')).toBeUndefined();
         });
     });
     describe('Model Validations', function() {
@@ -74,6 +77,30 @@ describe('Model Generator', function () {
             p.set("email", "as@adas.com.au");
             var errors = p.validate();
             expect(errors.getByField("email").length).toBe(0);
+        });
+        it('Regex Success', function() {
+            var p = Ext.create('Test.model.Person');
+            p.set("regex", "81 4");
+            var errors = p.validate();
+            expect(errors.getByField("regex").length).toBe(0);
+        });
+        it('Regex Failed', function() {
+            var p = Ext.create('Test.model.Person');
+            p.set("regex", "a1 4");
+            var errors = p.validate();
+            expect(errors.getByField("regex").length).toBe(1);
+        });
+        it('Choice Success', function() {
+            var p = Ext.create('Test.model.Person');
+            p.set("color", "red");
+            var errors = p.validate();
+            expect(errors.getByField("color").length).toBe(0);
+        });
+        it('Choice Failed', function() {
+            var p = Ext.create('Test.model.Person');
+            p.set("color", "green");
+            var errors = p.validate();
+            expect(errors.getByField("color").length).toBe(1);
         });
     });
     describe('Model Associations', function() {

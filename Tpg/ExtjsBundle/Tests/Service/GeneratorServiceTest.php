@@ -2,7 +2,6 @@
 namespace Tpg\ExtjsBundle\Tests\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\Form\Util\PropertyPath;
 use Test\TestBundle\Mockup\TwigEngineMokcup;
 use Symfony\Bundle\FrameworkBundle\Tests\TestCase;
 use Tpg\ExtjsBundle\Service\GeneratorService;
@@ -49,10 +48,8 @@ class GeneratorServiceTest extends TestCase {
     public function testEntityPropertyValidation() {
         $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
         $fields = array();
-        foreach ($this->twigEngine->renderParameters['fields'] as $field) {
-            foreach ($field['validators'] as $validator) {
-                $fields[$field['name']][] = $validator['name'];
-            }
+        foreach ($this->twigEngine->renderParameters['validators'] as $validator) {
+            $fields[$validator['field']][] = $validator['type'];
         }
         $this->assertContains("presence", $fields['first_name']);
         $this->assertContains("presence", $fields['last_name']);

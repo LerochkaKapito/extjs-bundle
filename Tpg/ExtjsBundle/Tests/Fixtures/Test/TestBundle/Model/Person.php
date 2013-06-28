@@ -54,4 +54,12 @@ class Person {
      * @ORM\OneToMany(targetEntity="Test\TestBundle\Model\Book", mappedBy="person")
      */
     protected $books;
+    /**
+     * @Assert\Regex("/^\d+\s\d$/")
+     */
+    protected $regex;
+    /**
+     * @Assert\Choice(choices={"blue","red"})
+     */
+    protected $color;
 }

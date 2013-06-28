@@ -85,6 +85,7 @@ class GeneratorService {
                 'extend' => $classModelAnnotation->extend,
                 'fields' => array(),
                 'associations' => array(),
+                'validators' => array(),
             );
             if ($classModelProxyAnnotation !== null) {
                 $structure['proxy'] = array(
@@ -111,6 +112,7 @@ class GeneratorService {
                 }
                 $this->buildPropertyAnnotation($property, $structure);
             }
+            $this->removeDuplicate($structure['validators']);
             return $this->twig->render('TpgExtjsBundle:ExtjsMarkup:model.js.twig', $structure);
         } else {
             return "";
@@ -127,22 +129,24 @@ class GeneratorService {
         $field = array(
             'name' => $this->convertNaming($property->name),
             'type' => 'string',
-            'validators' => array(),
         );
         $association = array();
+        $validators = array();
         $saveField = false;
         $annotations = $this->annoReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
             $className = get_class($annotation);
+            /** Get Constraints from Symfony Validator */
             if (strpos(get_class($annotation), 'Symfony\Component\Validator\Constraints') === 0) {
-                $field['validators'][] = $this->getValidator(
-                    substr($className, 40),
-                    $annotation
+                $validators[] = array_merge(
+                    array('field'=>$this->convertNaming($property->name)),
+                    $this->getValidator(substr($className, 40),$annotation)
                 );
             }
             switch(get_class($annotation)) {
                 case 'Doctrine\ORM\Mapping\Column':
                     $field['type'] = $this->getColumnType($annotation->type);
+                    $validators[] = array('type'=>'presence', 'field'=>$this->convertNaming($property->name));
                     break;
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
@@ -178,6 +182,9 @@ class GeneratorService {
         }
         if ($saveField || empty($association)) {
             $structure['fields'][] = $field;
+        }
+        if (!empty($validators)) {
+            $structure['validators'] = array_merge($structure['validators'], $validators);
         }
         return $field;
     }
@@ -219,10 +226,26 @@ class GeneratorService {
      */
     protected function getColumnType($type) {
         switch ($type) {
+            case 'decimal':
+                return 'float';
             case 'integer':
+            case 'smallint':
+            case 'bigint':
                 return 'int';
             case 'datetime':
+            case 'time':
+            case 'date':
+            case 'datetimetz':
                 return 'date';
+            case 'text':
+            case 'guid':
+                return 'string';
+            case 'object':
+            case 'array':
+            case 'simple_array':
+            case 'json_array':
+            case 'blob':
+                return 'auto';
             default:
                 return $type;
         }
@@ -240,22 +263,38 @@ class GeneratorService {
         switch($name) {
             case 'NotBlank':
             case 'NotNull':
-                $validate['name'] = "presence";
+                $validate['type'] = "presence";
                 break;
             case 'Email':
-                $validate['name'] = "email";
+                $validate['type'] = "email";
+                break;
+            case 'Length':
+                $validate['type'] = "length";
+                $validate['max'] = (int)$annotation->max;
+                $validate['min'] = (int)$annotation->min;
+                break;
+            case 'Regex':
+                if ($annotation->match) {
+                    $validate['type'] = "format";
+                    $validate['matcher']['skipEncode'] = true;
+                    $validate['matcher']['value'] = $annotation->pattern;
+                }
                 break;
             case 'MaxLength':
             case 'MinLength':
-                $validate['name'] = "length";
+                $validate['type'] = "length";
                 if ($name == "MaxLength") {
-                    $validate['max'] = $annotation->limit;
+                    $validate['max'] = (int)$annotation->limit;
                 } else {
-                    $validate['min'] = $annotation->limit;
+                    $validate['min'] = (int)$annotation->limit;
                 }
                 break;
+            case 'Choice':
+                $validate['type'] = "inclusion";
+                $validate['list'] = $annotation->choices;
+                break;
             default:
-                $validate['name'] = strtolower($name);
+                $validate['type'] = strtolower($name);
                 $validate += get_object_vars($annotation);
                 break;
         }
@@ -273,5 +312,22 @@ class GeneratorService {
             return $classModelAnnotation->name;
         }
         return null;
+    }
+
+    protected function removeDuplicate(&$list) {
+        $secondList = $list;
+        $duplicateList = array();
+        foreach ($list as $index=>$row) {
+            if (in_array($index, $duplicateList)) continue;
+            foreach ($secondList as $index2 => $row2) {
+                if ($index === $index2) continue;
+                if ($row == $row2) {
+                    $duplicateList[] = $index2;
+                }
+            }
+        }
+        foreach(array_reverse($duplicateList) as $index) {
+            unset($list[$index]);
+        }
     }
 }

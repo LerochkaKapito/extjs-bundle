@@ -19,25 +19,23 @@ Ext.define("{{ name }}", {
 
     ],
     validations: [
-        {%- for field in fields %}
-        {%- for validator in field.validators %}
+        {%-for validator in validators %}
 
         {
-            type: '{{ validator.name }}',
-            field: '{{ field.name }}'
             {%- for key,value in validator %}
-            {%- if key != "name" %}
-            {%- spaceless %},{% endspaceless %}
 
+            {%- if value.skipEncode %}
+            {{ key }}: {{ value.value|raw }}
+            {%- else %}
             {{ key }}: {{ value|json_encode()|raw }}
-
             {%- endif %}
+            {%- if not loop.last %},{% endif %}
+
             {%- endfor %}
 
         }
-        {%- if (not loop.last) or (not loop.parent.last) %},{% endif %}
+        {%- if not loop.last %},{% endif %}
 
-        {%- endfor %}
         {%- endfor %}
 
     ],
