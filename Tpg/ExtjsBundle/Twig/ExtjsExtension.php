@@ -32,6 +32,12 @@ class ExtjsExtension extends \Twig_Extension {
         return 'extjs';
     }
 
+    public function getFilters() {
+        return array(
+            new \Twig_SimpleFilter('ucfirst', array($this, 'ucfirst')),
+        );
+    }
+
     public function getFunctions()
     {
         return array(
@@ -58,5 +64,10 @@ class ExtjsExtension extends \Twig_Extension {
             }
             return $code;
         }
+    }
+
+    public function ucfirst($string) {
+        return ucfirst($string);
+
     }
 }

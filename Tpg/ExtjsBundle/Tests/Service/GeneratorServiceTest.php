@@ -30,8 +30,8 @@ class GeneratorServiceTest extends TestCase {
             $fieldsName[] = $field['name'];
         }
         $this->assertContains("id", $fieldsName);
-        $this->assertContains("first_name", $fieldsName);
-        $this->assertContains("last_name", $fieldsName);
+        $this->assertContains("firstName", $fieldsName);
+        $this->assertContains("lastName", $fieldsName);
         $this->assertNotContains("dob", $fieldsName);
     }
 
@@ -42,7 +42,7 @@ class GeneratorServiceTest extends TestCase {
             $fieldsType[$field['name']] = $field['type'];
         }
         $this->assertEquals("int", $fieldsType['id']);
-        $this->assertEquals("string", $fieldsType['first_name']);
+        $this->assertEquals("string", $fieldsType['firstName']);
     }
 
     public function testEntityPropertyValidation() {
@@ -51,8 +51,8 @@ class GeneratorServiceTest extends TestCase {
         foreach ($this->twigEngine->renderParameters['validators'] as $validator) {
             $fields[$validator['field']][] = $validator['type'];
         }
-        $this->assertContains("presence", $fields['first_name']);
-        $this->assertContains("presence", $fields['last_name']);
+        $this->assertContains("presence", $fields['firstName']);
+        $this->assertContains("presence", $fields['lastName']);
         $this->assertContains("email", $fields['email']);
         $this->assertContains("length", $fields['email']);
         $this->assertContains("length", $fields['email']);
@@ -79,7 +79,6 @@ class GeneratorServiceTest extends TestCase {
         foreach ($this->twigEngine->renderParameters['fields'] as $field) {
             $fieldsName[] = $field['name'];
         }
-        $this->assertContains('person_id', $fieldsName);
     }
 
     public function testEntityProxy() {

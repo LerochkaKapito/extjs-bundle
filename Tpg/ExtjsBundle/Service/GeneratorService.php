@@ -169,7 +169,7 @@ class GeneratorService {
                     break;
                 case 'Doctrine\ORM\Mapping\ManyToOne':
                     $association['type'] = substr(get_class($annotation), 21);
-                    $association['name'] = ucfirst($property->getName());
+                    $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
                     break;
