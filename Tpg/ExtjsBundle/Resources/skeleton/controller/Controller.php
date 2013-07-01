@@ -8,21 +8,11 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
-use Symfony\Component\Form\Form;
 use \JMS\Serializer\SerializationContext;
-use \JMS\Serializer\SerializerBuilder;
-use \Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy;
 use \Doctrine\DBAL\DBALException;
-use Tpg\ExtjsBundle\Component\FailedObjectConstructor;
-use JMS\Serializer\Construction\DoctrineObjectConstructor;
-use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use \JMS\Serializer\DeserializationContext;
 use {{ entity_class }};
 use {{ entity_type_class }};
-{% if 'annotation' == format.routing -%}
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-{% endif %}
 {% endblock use_statements %}
 
 {% block class_definition %}
@@ -37,6 +27,9 @@ class {{ controller }}Controller extends FOSRestController
     /**
      * Get detail of a {{ entity_name }} record
      * @param              $id
+     *
+     * @QueryParam(name="group", description="The JMS Serializer group", default="")
+     * @QueryParam(name="depth", description="The depth to use for serialization", default="1")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -57,6 +50,8 @@ class {{ controller }}Controller extends FOSRestController
      * @QueryParam(name="limit", requirements="\d+", default="25", description="Number of record per fetch.")
      * @QueryParam(name="sort", description="Sort result by field in URL encoded JSON format", default="[]")
      * @QueryParam(name="filter", description="Search filter in URL encoded JSON format", default="[]")
+     * @QueryParam(name="group", description="The JMS Serializer group", default="")
+     * @QueryParam(name="depth", description="The depth to use for serialization", default="1")
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -87,7 +82,8 @@ class {{ controller }}Controller extends FOSRestController
             $paramFetcher->get("limit"),
             $start
         );
-        $view = View::create($list, 200)->setSerializationContext($this->getSerializerContext(array("list")));
+        $context = $this->getSerializerContext(array('list'));
+        $view = View::create($list, 200)->setSerializationContext($context);
         return $this->handleView($view);
     }
 
@@ -229,24 +225,6 @@ class {{ controller }}Controller extends FOSRestController
         return $this->handleView(View::create(null, 204));
     }
 
-{% for action in actions %}
-    {% if 'annotation' == format.routing -%}
-    /**
-     * @Route("{{ action.route }}")
-    {% if 'default' == action.template -%}
-     * @Template()
-    {% else -%}
-     * @Template("{{ action.template }}")
-    {% endif -%}
-     */
-    {% endif -%}
-    public function {{ action.name }}(
-        {%- if action.placeholders|length > 0 -%}
-            ${{- action.placeholders|join(', $') -}}
-        {%- endif -%})
-    {
-    }
-{% endfor -%}
 {% endblock class_body %}
 
     protected function getSerializerContext($groups = array(), $version = null) {

@@ -23,7 +23,7 @@ class RestControllerGenerator extends ControllerGenerator {
     }
 
 
-    public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
+    public function generate(BundleInterface $bundle, $controller)
     {
         $dir = $bundle->getPath();
         $controllerFile = $dir.'/Controller/'.$controller.'Controller.php';
@@ -37,10 +37,6 @@ class RestControllerGenerator extends ControllerGenerator {
         $parameters = array(
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
-            'format'     => array(
-                'routing'    => $routeFormat,
-                'templating' => $templateFormat,
-            ),
             'controller'        => $controller,
             'entity_class'      => $entityClass,
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),
@@ -52,8 +48,6 @@ class RestControllerGenerator extends ControllerGenerator {
         );
 
         $this->generateRestRouting($bundle, $controller);
-
-        $parameters['actions'] = $actions;
 
         $this->renderFile('controller/Controller.php', $controllerFile, $parameters);
     }
