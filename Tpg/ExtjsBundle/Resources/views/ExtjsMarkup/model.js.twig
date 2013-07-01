@@ -48,24 +48,21 @@ Ext.define("{{ name }}", {
 
             type: 'hasMany',
             model: '{{ assoc.model }}',
-            name: '{{ assoc.name }}',
-            foreignKey: '{{ assoc.key }}'
+            name: '{{ assoc.name }}'
 
             {%- elseif assoc.type == "ManyToOne" %}
 
             type: 'belongsTo',
             model: '{{ assoc.model }}',
-            getterName: 'get{{ assoc.name|capitalize }}',
-            setterName: 'set{{ assoc.name|capitalize }}',
-            foreignKey: '{{ assoc.key }}'
+            getterName: 'get{{ assoc.name }}',
+            setterName: 'set{{ assoc.name }}'
 
             {%- elseif assoc.type == "OneToOne" %}
 
             type: 'hasOne',
             model: '{{ assoc.model }}',
-            getterName: 'get{{ assoc.name|capitalize }}',
-            setterName: 'set{{ assoc.name|capitalize }}',
-            foreignKey: '{{ assoc.key }}'
+            getterName: 'get{{ assoc.name }}',
+            setterName: 'set{{ assoc.name }}'
 
             {%- endif %}
 

@@ -120,14 +120,18 @@ class GeneratorService {
     }
 
     protected function convertNaming($name) {
-        $separator = "_";
-        $name = preg_replace('/[A-Z]/', $separator.'\\0', $name);
-        return strtolower($name);
+        return $name;
     }
 
+    /**
+     * @param \ReflectionProperty $property
+     * @param $structure
+     *
+     * @return array
+     */
     protected function buildPropertyAnnotation($property, &$structure) {
         $field = array(
-            'name' => $this->convertNaming($property->name),
+            'name' => $this->convertNaming($property->getName()),
             'type' => 'string',
         );
         $association = array();
@@ -139,14 +143,14 @@ class GeneratorService {
             /** Get Constraints from Symfony Validator */
             if (strpos(get_class($annotation), 'Symfony\Component\Validator\Constraints') === 0) {
                 $validators[] = array_merge(
-                    array('field'=>$this->convertNaming($property->name)),
+                    array('field'=>$this->convertNaming($property->getName())),
                     $this->getValidator(substr($className, 40),$annotation)
                 );
             }
             switch(get_class($annotation)) {
                 case 'Doctrine\ORM\Mapping\Column':
                     $field['type'] = $this->getColumnType($annotation->type);
-                    $validators[] = array('type'=>'presence', 'field'=>$this->convertNaming($property->name));
+                    $validators[] = array('type'=>'presence', 'field'=>$this->convertNaming($property->getName()));
                     break;
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
@@ -154,7 +158,7 @@ class GeneratorService {
                 case 'Doctrine\ORM\Mapping\OneToMany':
                 case 'Doctrine\ORM\Mapping\OneToOne':
                     $association['type'] = substr(get_class($annotation), 21);
-                    $association['name'] = $this->convertNaming($property->name);
+                    $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
                     $association['key'] = $this->getAnnotation(
@@ -165,15 +169,9 @@ class GeneratorService {
                     break;
                 case 'Doctrine\ORM\Mapping\ManyToOne':
                     $association['type'] = substr(get_class($annotation), 21);
-                    $association['name'] = $this->convertNaming($property->name);
+                    $association['name'] = ucfirst($property->getName());
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
-                    break;
-                case 'Doctrine\ORM\Mapping\JoinColumn':
-                    $saveField = true;
-                    $field['name'] = $this->convertNaming($annotation->name);
-                    $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->referencedColumnName);
-                    $association['key'] = $this->convertNaming($annotation->name);
                     break;
             }
         }
@@ -309,7 +307,11 @@ class GeneratorService {
         $classRef = new \ReflectionClass($entity);
         $classModelAnnotation = $this->annoReader->getClassAnnotation($classRef, 'Tpg\ExtjsBundle\Annotation\Model');
         if ($classModelAnnotation !== null) {
-            return $classModelAnnotation->name;
+            if ($classModelAnnotation->name) {
+                return $classModelAnnotation->name;
+            } else {
+                return str_replace("\\", ".", $classRef->getName());
+            }
         }
         return null;
     }

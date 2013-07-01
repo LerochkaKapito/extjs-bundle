@@ -43,9 +43,9 @@ class Person {
      */
     protected $age;
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", name="created_at")
      */
-    protected $created_at;
+    protected $createdAt;
     /**
      * @ORM\Column(type="boolean")
      */

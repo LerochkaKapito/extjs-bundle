@@ -28,8 +28,8 @@ describe('Model Generator', function () {
         it('active field', function () {
             expect(getField('active').type).toBe(Ext.data.Types.BOOLEAN);
         });
-        it('created_at field', function () {
-            expect(getField('created_at').type).toBe(Ext.data.Types.DATE);
+        it('createdAt field', function () {
+            expect(getField('createdAt').type).toBe(Ext.data.Types.DATE);
         });
         it('email field', function () {
             expect(getField('email').type).toBe(Ext.data.Types.STRING);
@@ -41,15 +41,15 @@ describe('Model Generator', function () {
     describe('Model Validations', function() {
         it('Presence Failed', function() {
             var p = Ext.create('Test.model.Person');
-            p.set("first_name", "");
+            p.set("firstName", "");
             var errors = p.validate();
-            expect(errors.getByField("first_name").length).toBe(1);
+            expect(errors.getByField("firstName").length).toBe(1);
         });
         it('Presence Success', function() {
             var p = Ext.create('Test.model.Person');
-            p.set("last_name", "test");
+            p.set("lastName", "test");
             var errors = p.validate();
-            expect(errors.getByField("last_name").length).toBe(0);
+            expect(errors.getByField("lastName").length).toBe(0);
         });
         it('Length Failed', function() {
             var p = Ext.create('Test.model.Person');

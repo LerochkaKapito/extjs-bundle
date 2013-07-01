@@ -79,7 +79,7 @@ EOT
 
         /** @var RestControllerGenerator $generator */
         $generator = $this->getGenerator($bundle);
-        $generator->generate($bundle,$controller);
+        $generator->generate($bundle,$controller, '', '');
 
         $output->writeln('Generating the bundle code: <info>OK</info>');
 

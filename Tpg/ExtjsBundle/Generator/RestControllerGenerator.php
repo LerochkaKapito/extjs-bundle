@@ -23,7 +23,7 @@ class RestControllerGenerator extends ControllerGenerator {
     }
 
 
-    public function generate(BundleInterface $bundle, $controller)
+    public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
     {
         $dir = $bundle->getPath();
         $controllerFile = $dir.'/Controller/'.$controller.'Controller.php';

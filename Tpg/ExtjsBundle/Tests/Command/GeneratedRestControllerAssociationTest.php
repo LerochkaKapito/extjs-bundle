@@ -143,7 +143,9 @@ class GeneratedRestControllerAssociationTest extends BaseTestGeneratedRestContro
 
     public function testPatchWithDifferentAssociation() {
         $this->client->request('PATCH', '/cars/'.$this->records[0]->getId().'.json', array(), array(), array(), json_encode(array(
-            'carOwner'=>$this->altOwner->getId()
+            'carOwner'=>array(
+                'id'=>$this->altOwner->getId()
+            )
         )));
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
@@ -159,12 +161,5 @@ class GeneratedRestControllerAssociationTest extends BaseTestGeneratedRestContro
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $car = $repo->find($this->records[0]->getId());
         $this->assertNull($car->getCarOwner());
-    }
-
-    public function testPatchWithIncorrectAssociation() {
-        $this->client->request('PATCH', '/cars/'.$this->records[0]->getId().'.json', array(), array(), array(), json_encode(array(
-            'carOwner'=>-1
-        )));
-        $this->assertEquals("400", $this->client->getResponse()->getStatusCode());
     }
 }
