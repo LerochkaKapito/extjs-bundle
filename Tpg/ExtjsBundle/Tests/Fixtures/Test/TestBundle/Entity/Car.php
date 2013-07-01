@@ -4,6 +4,7 @@ namespace Test\TestBundle\Entity;
 use Tpg\ExtjsBundle\Annotation as Extjs;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use \Test\TestBundle\Entity\CarOwner;
 
 /**
  * @Extjs\Model
@@ -37,6 +38,13 @@ class Car {
      * @JMS\Groups({"post"})
      */
     protected $password;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Test\TestBundle\Entity\CarOwner", inversedBy="cars", cascade={"persist"})
+     * @ORM\JoinColumn(name="car_owner_id", referencedColumnName="id")
+     * @JMS\Type("Test\TestBundle\Entity\CarOwner")
+     */
+    protected $carOwner;
 
     /**
      * @param mixed $id
@@ -116,5 +124,28 @@ class Car {
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * Set carOwner
+     *
+     * @param CarOwner $carOwner
+     * @return Car
+     */
+    public function setCarOwner(CarOwner $carOwner = null)
+    {
+        $this->carOwner = $carOwner;
+    
+        return $this;
+    }
+
+    /**
+     * Get carOwner
+     *
+     * @return CarOwner
+     */
+    public function getCarOwner()
+    {
+        return $this->carOwner;
     }
 }

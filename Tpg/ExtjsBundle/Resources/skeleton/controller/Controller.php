@@ -15,6 +15,7 @@ use \Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy;
 use \Doctrine\DBAL\DBALException;
 use Tpg\ExtjsBundle\Component\FailedObjectConstructor;
 use JMS\Serializer\Construction\DoctrineObjectConstructor;
+use JMS\Serializer\Construction\UnserializeObjectConstructor;
 use \JMS\Serializer\DeserializationContext;
 use {{ entity_class }};
 use {{ entity_type_class }};
@@ -96,7 +97,11 @@ class {{ controller }}Controller extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function post{{ entity_name|capitalize }}sAction() {
-        $serializer = $this->get('jms_serializer');
+        $serializer = SerializerBuilder::create()->setObjectConstructor(
+            new DoctrineObjectConstructor($this->get("doctrine"), new UnserializeObjectConstructor())
+        )->setPropertyNamingStrategy(
+            new JMSCamelCaseNamingStrategy()
+        )->build();
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
@@ -142,7 +147,11 @@ class {{ controller }}Controller extends FOSRestController
         if ($entity === null) {
             return $this->handleView(View::create('', 404));
         }
-        $serializer = $this->get('jms_serializer');
+        $serializer = SerializerBuilder::create()->setObjectConstructor(
+            new DoctrineObjectConstructor($this->get("doctrine"), new UnserializeObjectConstructor())
+        )->setPropertyNamingStrategy(
+            new JMSCamelCaseNamingStrategy()
+        )->build();
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
