@@ -97,11 +97,7 @@ class {{ controller }}Controller extends FOSRestController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function post{{ entity_name|capitalize }}sAction() {
-        $serializer = SerializerBuilder::create()->setObjectConstructor(
-            new DoctrineObjectConstructor($this->get("doctrine"), new UnserializeObjectConstructor())
-        )->setPropertyNamingStrategy(
-            new JMSCamelCaseNamingStrategy()
-        )->build();
+        $serializer = $this->get("tpg_extjs.serializer");
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
@@ -147,11 +143,7 @@ class {{ controller }}Controller extends FOSRestController
         if ($entity === null) {
             return $this->handleView(View::create('', 404));
         }
-        $serializer = SerializerBuilder::create()->setObjectConstructor(
-            new DoctrineObjectConstructor($this->get("doctrine"), new UnserializeObjectConstructor())
-        )->setPropertyNamingStrategy(
-            new JMSCamelCaseNamingStrategy()
-        )->build();
+        $serializer = $this->get("tpg_extjs.serializer");
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
@@ -195,11 +187,7 @@ class {{ controller }}Controller extends FOSRestController
         }
         $content = json_decode($this->getRequest()->getContent(), true);
         $content['id'] = $id;
-        $serializer = SerializerBuilder::create()->setObjectConstructor(
-            new DoctrineObjectConstructor($this->get("doctrine"), new FailedObjectConstructor())
-        )->setPropertyNamingStrategy(
-            new JMSCamelCaseNamingStrategy()
-        )->build();
+        $serializer = $this->get("tpg_extjs.serializer");
         $entity = $serializer->deserialize(
             json_encode($content),
             '{{ entity_class }}',

@@ -144,6 +144,8 @@ new \FOS\RestBundle\FOSRestBundle(),
 You also need to make sure the following configuration for fos_rest.
 ``` yaml
 fos_rest:
+    service:
+        serializer: tpg_extjs.serializer
     routing_loader:
         default_format: json
     param_fetcher_listener: true
@@ -156,7 +158,7 @@ Generated controller set different groups on JMS serializer context during seria
   - put: Deserialization on individual entity during PUT action.
   - patch: Deserialization on individual entity during PATCH action.
 
-## For example,
+# For example,
 To generate a rest controller (PeopleController) for entity Acme.DemoBundle.Entity.Person,
 ``` bash
 php app/console generate:rest:controller --controller AcmeDemoBundle:People --entity AcmeDemoBundle:Person

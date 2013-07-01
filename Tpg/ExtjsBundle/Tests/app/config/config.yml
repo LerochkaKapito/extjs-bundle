@@ -33,3 +33,5 @@ fos_rest:
     routing_loader:
         default_format: json
     param_fetcher_listener: true
+    service:
+        serializer: tpg_extjs.serializer
