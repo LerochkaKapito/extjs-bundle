@@ -33,7 +33,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function get{{ entity_name|capitalize }}Action($id) {
+    public function get{{ controller|capitalize }}Action($id) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
@@ -55,7 +55,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function get{{ entity_name|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
+    public function get{{ controller|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         /** @var $manager EntityManager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $rawSorters = json_decode($paramFetcher->get("sort"), true);
@@ -92,7 +92,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function post{{ entity_name|capitalize }}sAction() {
+    public function post{{ controller|capitalize }}sAction() {
         $serializer = $this->get("tpg_extjs.serializer");
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
@@ -132,7 +132,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function put{{ entity_name|capitalize }}Action($id) {
+    public function put{{ controller|capitalize }}Action($id) {
         /** @var EntityManager $manager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
@@ -174,7 +174,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function patch{{ entity_name|capitalize }}Action($id) {
+    public function patch{{ controller|capitalize }}Action($id) {
         /** @var EntityManager $manager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
@@ -216,7 +216,7 @@ class {{ controller }}Controller extends FOSRestController
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function delete{{ entity_name|capitalize }}Action($id) {
+    public function delete{{ controller|capitalize }}Action($id) {
         /** @var EntityManager $manager */
         $manager = $this->get('doctrine.orm.default_entity_manager');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
