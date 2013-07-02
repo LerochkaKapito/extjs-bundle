@@ -124,7 +124,6 @@ describe('Model Generator', function () {
             person.books().remove(book2);
             expect(person.books().count()).toEqual(1);
             expect(book1.dirty).toBeTruthy();
-            expect(book1.getPerson().get('id')).toBe(10);
         })
     });
 });

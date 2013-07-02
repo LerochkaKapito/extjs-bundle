@@ -1,7 +1,7 @@
 <?php
 
-if (is_file(__DIR__.$_SERVER['REQUEST_URI'])) {
-    echo file_get_contents(__DIR__.$_SERVER['REQUEST_URI']);
+if (is_file(__DIR__.$_SERVER['PHP_SELF'])) {
+    echo file_get_contents(__DIR__.$_SERVER['PHP_SELF']);
     exit(0);
 }
 

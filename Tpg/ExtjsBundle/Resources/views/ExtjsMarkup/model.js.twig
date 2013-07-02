@@ -12,7 +12,20 @@ Ext.define("{{ name }}", {
     fields: [
         {%-for field in fields %}
 
-        { name: "{{ field.name }}", type: "{{ field.type }}" }
+        {
+
+            {%- for key,value in field %}
+            {%- if value.skipEncode %}
+
+                {{ key }}: {{ value.value|raw }}
+            {%- else %}
+
+                {{ key }}: {{ value|json_encode()|raw }}
+            {%- endif %}
+            {%- if not loop.last %},{% endif %}
+            {% endfor %}
+
+        }
         {%- if not loop.last %},{% endif %}
 
         {%- endfor %}
@@ -79,11 +92,7 @@ Ext.define("{{ name }}", {
     {%- else %}
 
     proxy: {
-        type: 'memory',
-        reader: {
-            type: 'json',
-            root: 'data'
-        }
+        type: 'memory'
     }
 
     {%- endif %}
