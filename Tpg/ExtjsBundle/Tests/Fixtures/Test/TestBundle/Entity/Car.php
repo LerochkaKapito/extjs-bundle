@@ -8,18 +8,7 @@ use \Test\TestBundle\Entity\CarOwner;
 
 /**
  * @Extjs\Model
- * @Extjs\ModelProxy(
- *  name="rest",
- *  option={
- *      "url"="/mycars",
- *      "format"="json"
- *  },
- *  writer={
- *      "type"="json",
- *      "writeRecordId"=false,
- *      "writeAllFields"=false
- *  }
- * )
+ * @Extjs\ModelProxy("/mycars")
  * @ORM\Entity
  * @ORM\Table(name="car")
  */

@@ -179,3 +179,18 @@ acmedemo_api_rest:
   prefix: /api
   type: rest
 ```
+
+Connecting ExtJS Rest Proxy with Rest Controller in Symfony
+-----------------------------------------------------------
+To specify rest proxy in extjs model, you need
+``` php
+// in file Acme\TestBundle\Entity\Car.php
+/**
+ * @Extjs\Model
+ * @Extjs\ModelProxy("/api/cars")
+ * @ORM\Entity
+ * @ORM\Table(name="car")
+ */
+class Car {
+...
+```
