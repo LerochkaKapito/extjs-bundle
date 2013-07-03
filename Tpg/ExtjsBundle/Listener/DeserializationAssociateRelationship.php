@@ -31,9 +31,15 @@ class DeserializationAssociateRelationship {
                 if (array_key_exists($joinColumnAnnotation->name, $e->getData())) {
                     $idValue = $e->getData();
                     $idValue = $idValue[$joinColumnAnnotation->name];
-                    $e->setData(
-                        $e->getData() + array($propertyMetadata->name => array('id' => $idValue))
-                    );
+                    if ($idValue !== null) {
+                        $e->setData(
+                            $e->getData() + array($propertyMetadata->name => array('id' => $idValue))
+                        );
+                    } else {
+                        $e->setData(
+                            $e->getData() + array($propertyMetadata->name => null)
+                        );
+                    }
                 }
             }
         }
