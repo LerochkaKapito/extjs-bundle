@@ -23,6 +23,12 @@
             </call>
         </service>
 
+        <service id="tpg_extjs.deserialization_associate_relationship_listener" class="Tpg\ExtjsBundle\Listener\DeserializationAssociateRelationship">
+            <argument type="service" id="annotation_reader" />
+
+            <tag name="jms_serializer.event_listener" event="serializer.pre_deserialize" />
+        </service>
+
         <service id="tpg.twig.extjs_extension" class="%tpg.twig.extjs_extension.class%">
             <call method="setGenerator">
                 <argument type="service" id="tpg_extjs.generator"/>

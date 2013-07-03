@@ -12,4 +12,9 @@ before_script:
 
 script:
     - phpunit -c phpunit.xml.dist
+    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller --controller TestTestBundle:MyCar --entity TestTestBundle:Car
+    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
+    - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:create
+    - php Tpg/ExtjsBundle/Tests/app/console doctrine:schema:create
     - phantomjs --web-security=no Tpg/ExtjsBundle/Tests/testrunner.js Tpg/ExtjsBundle/Tests/SpecRunner.html
+    - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:drop --force

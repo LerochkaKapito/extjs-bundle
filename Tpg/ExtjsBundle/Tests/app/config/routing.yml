@@ -1,2 +1,6 @@
 tpg_extjsbundle:
     resource: "@TpgExtjsBundle/Resources/config/routing.yml"
+
+test_testbundle:
+    resource: "@TestTestBundle/Resources/config/routing.rest.yml"
+    type: "rest"

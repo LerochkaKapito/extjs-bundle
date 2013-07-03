@@ -114,7 +114,7 @@ class {{ controller }}Controller extends FOSRestController
             }
             return $this->handleView(
                 View::create($entity, 201, array('Location'=>$this->generateUrl(
-                    "{{route_name_prefix}}get_{{ entity_name|lower }}",
+                    "{{route_name_prefix}}get_{{ controller|lower }}",
                     array('id'=>$entity->getId()),
                     true
                 )))->setSerializationContext($this->getSerializerContext())

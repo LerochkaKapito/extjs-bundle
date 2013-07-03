@@ -136,6 +136,7 @@ class GeneratorService {
         );
         $association = array();
         $validators = array();
+        $skipValidator = false;
         $saveField = false;
         $annotations = $this->annoReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
@@ -148,6 +149,11 @@ class GeneratorService {
                 );
             }
             switch(get_class($annotation)) {
+                case 'Doctrine\ORM\Mapping\Id':
+                    $field['useNull'] = true;
+                    $field['persist'] = false;
+                    $skipValidator = true;
+                    break;
                 case 'Doctrine\ORM\Mapping\Column':
                     $field['type'] = $this->getColumnType($annotation->type);
                     $validators[] = array('type'=>'presence', 'field'=>$this->convertNaming($property->getName()));
@@ -173,6 +179,12 @@ class GeneratorService {
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
                     break;
+                case 'Doctrine\ORM\Mapping\JoinColumn':
+                    $saveField = true;
+                    $field['name'] = $this->convertNaming($annotation->name);
+                    $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->referencedColumnName);
+                    $association['key'] = $this->convertNaming($annotation->name);
+                    break;
             }
         }
         if (!empty($association)) {
@@ -181,7 +193,7 @@ class GeneratorService {
         if ($saveField || empty($association)) {
             $structure['fields'][] = $field;
         }
-        if (!empty($validators)) {
+        if (!empty($validators) && !$skipValidator) {
             $structure['validators'] = array_merge($structure['validators'], $validators);
         }
         return $field;
