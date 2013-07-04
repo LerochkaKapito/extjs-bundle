@@ -15,6 +15,6 @@ before_script:
     - sh -e /etc/init.d/xvfb start
 
 script:
-    - phantomjs --web-security=no Tpg/ExtjsBundle/Tests/testrunner.js Tpg/ExtjsBundle/Tests/SpecRunner.html
+    - phantomjs --web-security=no Tpg/ExtjsBundle/Tests/testrunner.js http://127.0.0.1:8888/SpecRunner.html
     - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:drop --force
     - phpunit -c phpunit.xml.dist
