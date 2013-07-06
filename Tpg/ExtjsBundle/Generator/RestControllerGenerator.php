@@ -9,6 +9,8 @@ use Symfony\Component\Yaml\Yaml;
 class RestControllerGenerator extends ControllerGenerator {
 
     protected $entityName;
+    protected $trait = false;
+    protected $template = 'Controller.php';
 
     /**
      * @var BundleInterface $entityBundle
@@ -22,19 +24,33 @@ class RestControllerGenerator extends ControllerGenerator {
         $this->entityBundle = $bundle;
     }
 
+    public function setUseTrait($flag) {
+        $this->trait = $flag;
+    }
+
+    public function setTemplateFile($file) {
+        $this->template = $file;
+    }
 
     public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
     {
         $dir = $bundle->getPath();
-        $controllerFile = $dir.'/Controller/'.$controller.'Controller.php';
-        if (file_exists($controllerFile)) {
-            throw new \RuntimeException(sprintf('Controller "%s" already exists', $controller));
+        $controllerFile = $dir.'/Controller/';
+        if ($this->trait) {
+            $controllerFile .= 'Generated/';
+            @mkdir($controllerFile);
+        }
+        $controllerFile .= $controller.'Controller.php';
+
+        if (file_exists($controllerFile) && !$this->trait) {
+            throw new \RuntimeException(sprintf('Controller "%s" already exists', $controllerFile));
         }
 
         $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
         $tmpEntity = explode('/', $this->entityName);
 
         $parameters = array(
+            'trait'      => $this->trait,
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
             'controller'        => $controller,
@@ -42,14 +58,12 @@ class RestControllerGenerator extends ControllerGenerator {
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),
             'entity_bundle'     => $this->entityBundle->getName(),
             'entity'            => array_pop($tmpEntity),
-            'entity_type_class' => $bundle->getNamespace().'\\Form\\Type\\'.$this->entityName.'Type',
-            'entity_type'       => $this->entityName.'Type',
             'route_name_prefix' => strtolower(preg_replace('/([A-Z])/', '_\\1', $bundle->getName().'_api_'))
         );
 
         $this->generateRestRouting($bundle, $controller);
 
-        $this->renderFile('controller/Controller.php', $controllerFile, $parameters);
+        $this->renderFile('controller/'.$this->template, $controllerFile, $parameters);
     }
 
     public function generateRestRouting(BundleInterface $bundle, $controller)

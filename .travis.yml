@@ -6,8 +6,8 @@ php:
 before_script:
     - curl -s http://getcomposer.org/installer | php
     - php composer.phar install --dev
-    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller --controller TestTestBundle:MyCar --entity TestTestBundle:Car
-    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
+    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCar --entity TestTestBundle:Car
+    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
     - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:create
     - php Tpg/ExtjsBundle/Tests/app/console doctrine:schema:create
     - php -S 127.0.0.1:8888 -t Tpg/ExtjsBundle/Tests Tpg/ExtjsBundle/Tests/app_test.php &

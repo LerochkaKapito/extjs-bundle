@@ -6,6 +6,7 @@ use Sensio\Bundle\GeneratorBundle\Command\Validators;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tpg\ExtjsBundle\Generator\RestControllerGenerator;
 
 class GenerateRestControllerCommand extends GeneratorCommand {
@@ -31,6 +32,12 @@ class GenerateRestControllerCommand extends GeneratorCommand {
                         '',
                         InputOption::VALUE_REQUIRED,
                         "Entity this rest controller will manage"
+                    ),
+                    new InputOption(
+                        'trait',
+                        't',
+                        InputOption::VALUE_NONE,
+                        "Generate Trait and Rest Controller"
                     ),
                 ))
             ->setDescription('Generates a controller')
@@ -60,11 +67,18 @@ EOT
 
         $dialog = $this->getDialogHelper();
 
+        if ($input->getOption('trait')) {
+            if (PHP_MAJOR_VERSION < 5 || PHP_MINOR_VERSION < 4) {
+                throw new \RuntimeException('You need PHP > 5.4 to use trait feature');
+            }
+        }
+
         if (null === $input->getOption('controller')) {
             throw new \RuntimeException('The controller option must be provided.');
         }
 
         list($bundle, $controller) = $this->parseShortcutNotation($input->getOption('controller'));
+        /** @var Bundle $bundle */
         if (is_string($bundle)) {
             $bundle = Validators::validateBundleName($bundle);
 
@@ -75,11 +89,27 @@ EOT
             }
         }
 
-        $dialog->writeSection($output, 'Controller generation');
+        $dialog->writeSection($output, 'Controller generation: ' . $controller . 'Controller (' . $bundle->getName() . ')');
 
         /** @var RestControllerGenerator $generator */
         $generator = $this->getGenerator($bundle);
-        $generator->generate($bundle,$controller, '', '');
+        if ($input->getOption('trait')) {
+            $output->writeln("<info>Generating Controller with Traits</info>");
+            $generator->setUseTrait(true);
+            $generator->generate($bundle,$controller,'','');
+            $output->writeln("<info>Trait Controller Generated</info>");
+            $generator->setUseTrait(false);
+            $generator->setTemplateFile('UseTraitController.php');
+            try {
+                $generator->generate($bundle,$controller,'','');
+                $output->writeln("<info>Controller Generated</info>");
+            } catch (\RuntimeException $e) {
+                $output->writeln("<info>Controller Skipped</info>");
+            }
+        } else {
+            $generator->generate($bundle,$controller,'','');
+            $output->writeln("<info>Controller Generated</info>");
+        }
 
         $output->writeln('Generating the bundle code: <info>OK</info>');
 

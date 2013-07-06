@@ -180,6 +180,14 @@ acmedemo_api_rest:
   type: rest
 ```
 
+PHP 5.4 Trait Support
+Using generate:rest:controller with --trait option the generator will generate 2 class for you,
+ - Trait Controller Class
+ - Actual Controller Class
+
+Seperating the generated code and the your custom implementation on the controller. This will allow you to regenerate
+the controller without affecting your custom implementation.
+
 Connecting ExtJS Rest Proxy with Rest Controller in Symfony
 -----------------------------------------------------------
 To specify rest proxy in extjs model, you need

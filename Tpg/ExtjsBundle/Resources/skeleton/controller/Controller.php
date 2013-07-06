@@ -1,6 +1,10 @@
 <?php
 
-namespace {{ namespace }}\Controller;
+namespace {{ namespace }}\Controller
+{%- if trait %}
+\Generated
+{%- endif %}
+;
 
 {% block use_statements %}
 use Doctrine\ORM\EntityManager;
@@ -12,17 +16,26 @@ use \JMS\Serializer\SerializationContext;
 use \Doctrine\DBAL\DBALException;
 use \JMS\Serializer\DeserializationContext;
 use {{ entity_class }};
-use {{ entity_type_class }};
 {% endblock use_statements %}
 
 {% block class_definition %}
 /**
- * Class {{ controller }}Controller
- * @package {{ namespace }}\Controller
+ * {%- if trait %} Trait{%- else %} Class{%- endif %} {{ controller }}Controller
  */
-class {{ controller }}Controller extends FOSRestController
+
+{%- if trait %}
+
+trait
+{%- else %}
+
+class
+{%- endif %}
+ {{ controller }}Controller
+{%- if not trait %}
+ extends FOSRestController
+{%- endif %}
 {% endblock class_definition %}
-{
+ {
 {% block class_body %}
     /**
      * Get detail of a {{ entity_name }} record
@@ -35,7 +48,7 @@ class {{ controller }}Controller extends FOSRestController
      */
     public function get{{ controller|capitalize }}Action($id) {
         /** @var $manager EntityManager */
-        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager = $this->get("doctrine.orm.default_entity_manager");
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")));;
         return $this->handleView($view);
