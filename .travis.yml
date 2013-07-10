@@ -3,6 +3,9 @@ language: php
 php:
     - 5.4
 
+services:
+    - mongodb
+
 before_script:
     - curl -s http://getcomposer.org/installer | php
     - php composer.phar install --dev

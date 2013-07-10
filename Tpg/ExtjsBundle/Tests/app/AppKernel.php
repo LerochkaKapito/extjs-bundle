@@ -15,6 +15,7 @@ class AppKernel extends Kernel
             new \FOS\RestBundle\FOSRestBundle(),
             new \Tpg\ExtjsBundle\TpgExtjsBundle(),
             new \Test\TestBundle\TestTestBundle(),
+            new \Doctrine\Bundle\MongoDBBundle\DoctrineMongoDBBundle(),
         );
 
         return $bundles;
