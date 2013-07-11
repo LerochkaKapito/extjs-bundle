@@ -2,8 +2,10 @@
 namespace Test\TestBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Tpg\ExtjsBundle\Annotation as Extjs;
 
 /**
+ * @Extjs\Model(name="Test.document.Order")
  * @MongoDB\Document(collection="order")
  */
 class Order {
@@ -13,7 +15,7 @@ class Order {
     protected $id;
 
     /**
-     * @MongoDB\String
+     * @MongoDB\Field(type="string")
      */
     protected $name;
 
@@ -26,6 +28,7 @@ class Order {
      * @MongoDB\Float
      */
     protected $totalPrice;
+
     public function __construct()
     {
         $this->lineItems = new \Doctrine\Common\Collections\ArrayCollection();

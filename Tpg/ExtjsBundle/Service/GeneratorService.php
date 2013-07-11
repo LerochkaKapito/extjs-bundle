@@ -150,9 +150,33 @@ class GeneratorService {
             }
             switch(get_class($annotation)) {
                 case 'Doctrine\ORM\Mapping\Id':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Id':
                     $field['useNull'] = true;
                     $field['persist'] = false;
                     $skipValidator = true;
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Timestamp':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Date':
+                    $field['type'] = "date";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Float':
+                    $field['type'] = "float";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Boolean':
+                    $field['type'] = "boolean";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Hash':
+                    $field['type'] = "auto";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Int':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Increment':
+                    $field['type'] = "int";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\String':
+                    $field['type'] = "string";
+                    break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Field':
+                    $field['type'] = $this->getColumnType($annotation->type);
                     break;
                 case 'Doctrine\ORM\Mapping\Column':
                     $field['type'] = $this->getColumnType($annotation->type);
@@ -226,6 +250,24 @@ class GeneratorService {
             }
         } else {
             return $this->getColumnType($columnRef->type);
+        }
+    }
+
+    /**
+     * Translate Mongo Field Type to ExtJs
+     *
+     * @param $type
+     * @return string
+     */
+    protected function getFieldType($type) {
+        switch ($type) {
+            case 'hash':
+                return "auto";
+            case 'timestamp':
+            case 'date':
+                return "date";
+            default:
+                return $type;
         }
     }
 
