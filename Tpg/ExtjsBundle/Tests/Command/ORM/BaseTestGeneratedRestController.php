@@ -1,5 +1,5 @@
 <?php
-namespace Tpg\ExtjsBundle\Tests\Command;
+namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
@@ -22,8 +22,8 @@ class BaseTestGeneratedRestController extends WebTestCase {
     protected $client;
 
     public static function setUpBeforeClass() {
-        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
+        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Controller/CarController.php');
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->addCommands(array(
@@ -50,15 +50,15 @@ class BaseTestGeneratedRestController extends WebTestCase {
             'command' => $command->getName(),
         ));
         $kernel->shutdown();
-        @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php.meta');
-        @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php');
-        @unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php.meta');
-        @unlink(__DIR__.'/../app/cache/test/appTestUrlMatcher.php');
+        @unlink(__DIR__.'/../../app/cache/test/appTestUrlGenerator.php.meta');
+        @unlink(__DIR__.'/../../app/cache/test/appTestUrlGenerator.php');
+        @unlink(__DIR__.'/../../app/cache/test/appTestUrlMatcher.php.meta');
+        @unlink(__DIR__.'/../../app/cache/test/appTestUrlMatcher.php');
     }
 
     public static function tearDownAfterClass() {
-        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
+        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
+        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Controller/CarController.php');
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->addCommands(array(
@@ -94,7 +94,7 @@ class BaseTestGeneratedRestController extends WebTestCase {
         $loader = $client->getContainer()->get("fos_rest.routing.loader.yaml_collection");
         $router = $client->getContainer()->get('router');
         $router->getRouteCollection()->addCollection(
-            $loader->load(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml')
+            $loader->load(__DIR__.'/../../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml')
         );
         $this->client = $client;
     }

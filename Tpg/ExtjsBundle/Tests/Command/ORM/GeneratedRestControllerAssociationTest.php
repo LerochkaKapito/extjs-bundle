@@ -1,5 +1,5 @@
 <?php
-namespace Tpg\ExtjsBundle\Tests\Command;
+namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
 use Doctrine\ORM\EntityManager;
 use Test\TestBundle\Entity\Car;
