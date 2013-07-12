@@ -35,6 +35,7 @@ tpg_extjs:
     entities:
         - @TestTestBundle/Entity/
         - @TestTestBundle/Model/Auto
+        - @TestTestBundle/Document/
     remoting:
         bundles:
             - TestTestBundle

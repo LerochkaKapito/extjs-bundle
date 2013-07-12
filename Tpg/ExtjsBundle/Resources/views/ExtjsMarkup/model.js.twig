@@ -57,11 +57,11 @@ Ext.define("{{ name }}", {
         {%- for assoc in associations %}
 
         {
-            {%- if assoc.type == "OneToMany" %}
+            {%- if assoc.type == "OneToMany" or assoc.type == "EmbedMany" or assoc.type == "ReferenceMany" %}
 
             type: 'hasMany',
             model: '{{ assoc.model }}',
-            name: '{{ assoc.name|lower }}',
+            name: '{{ assoc.name }}',
             foreignKey: '{{ assoc.key }}'
 
             {%- elseif assoc.type == "ManyToOne" %}
@@ -72,7 +72,7 @@ Ext.define("{{ name }}", {
             setterName: 'set{{ assoc.name|ucfirst }}',
             foreignKey: '{{ assoc.key }}'
 
-            {%- elseif assoc.type == "OneToOne" %}
+            {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
 
             type: 'hasOne',
             model: '{{ assoc.model }}',
