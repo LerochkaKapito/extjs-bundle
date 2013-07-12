@@ -1,9 +1,11 @@
 <?php
 namespace Test\TestBundle\Document;
 
+use Tpg\ExtjsBundle\Annotation as Extjs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
+ * @Extjs\Model(name="Test.document.OrderLineItem")
  * @MongoDB\EmbeddedDocument
  */
 class OrderLineItem {

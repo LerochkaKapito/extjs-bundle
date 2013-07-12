@@ -22,7 +22,17 @@ class Order {
     /**
      * @MongoDB\EmbedMany(targetDocument="Test\TestBundle\Document\OrderLineItem")
      */
-    protected $lineItems = array();
+    protected $lineItems;
+
+    /**
+     * @MongoDB\EmbedOne(targetDocument="Test\TestBundle\Document\OrderLineItem")
+     */
+    protected $lastLineItem;
+
+    /**
+     * @MongoDB\ReferenceOne(targetDocument="Test\TestBundle\Document\Client", inversedBy="orders")
+     */
+    protected $client;
 
     /**
      * @MongoDB\Float

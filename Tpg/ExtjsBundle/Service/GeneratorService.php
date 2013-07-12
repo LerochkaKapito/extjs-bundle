@@ -197,6 +197,19 @@ class GeneratorService {
                         'Doctrine\ORM\Mapping\JoinColumn'
                     )->name;
                     break;
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany':
+                case 'Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne':
+                    if ($annotation->targetDocument) {
+                        $association['type'] = substr(get_class($annotation), 41);
+                        $association['name'] = $property->getName();
+                        $association['model'] = $this->getModelName($annotation->targetDocument);
+                        $association['entity'] = $annotation->targetDocument;
+                    } else {
+                        $field['type'] = "auto";
+                    }
+                    break;
                 case 'Doctrine\ORM\Mapping\ManyToOne':
                     $association['type'] = substr(get_class($annotation), 21);
                     $association['name'] = $property->getName();
