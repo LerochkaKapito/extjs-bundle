@@ -47,8 +47,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function get{{ controller|capitalize }}Action($id) {
-        /** @var $manager EntityManager */
-        $manager = $this->get("doctrine.orm.default_entity_manager");
+        $manager = $this->get("{{ manager }}");
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")));;
         return $this->handleView($view);
@@ -69,8 +68,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function get{{ controller|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
-        /** @var $manager EntityManager */
-        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager = $this->get('{{ manager }}');
         $rawSorters = json_decode($paramFetcher->get("sort"), true);
         $sorters = [];
         foreach ($rawSorters as $s) {
@@ -116,7 +114,7 @@ class
         $validator = $this->get('validator');
         $validations = $validator->validate($entity);
         if ($validations->count() === 0) {
-            $manager = $this->get('doctrine.orm.default_entity_manager');
+            $manager = $this->get('{{ manager }}');
             $manager->persist($entity);
             try {
                 $manager->flush();
@@ -146,8 +144,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function put{{ controller|capitalize }}Action($id) {
-        /** @var EntityManager $manager */
-        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager = $this->get('{{ manager }}');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
             return $this->handleView(View::create('', 404));
@@ -188,8 +185,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function patch{{ controller|capitalize }}Action($id) {
-        /** @var EntityManager $manager */
-        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager = $this->get('{{ manager }}');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         if ($entity === null) {
             return $this->handleView(View::create('', 404));
@@ -230,8 +226,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function delete{{ controller|capitalize }}Action($id) {
-        /** @var EntityManager $manager */
-        $manager = $this->get('doctrine.orm.default_entity_manager');
+        $manager = $this->get('{{ manager }}');
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
         $manager->remove($entity);
         $manager->flush();

@@ -2,30 +2,30 @@
 namespace Test\TestBundle\Document;
 
 use Tpg\ExtjsBundle\Annotation as Extjs;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @Extjs\Model(name="Test.document.OrderLineItem")
- * @MongoDB\EmbeddedDocument
+ * @ODM\EmbeddedDocument
  */
 class OrderLineItem {
     /**
-     * @MongoDB\Int
+     * @ODM\Int
      */
     protected $productId;
 
     /**
-     * @MongoDB\Int
+     * @ODM\Int
      */
     protected $quantity;
 
     /**
-     * @MongoDB\Float
+     * @ODM\Float
      */
     protected $price;
 
     /**
-     * @MongoDB\Float
+     * @ODM\Float
      */
     protected $total;
 
@@ -115,5 +115,13 @@ class OrderLineItem {
     public function getTotal()
     {
         return $this->total;
+    }
+
+    /**
+     * Static class to create a new instance of OrderLineItem
+     * @return OrderLineItem
+     */
+    public static function newInstance() {
+        return new OrderLineItem();
     }
 }

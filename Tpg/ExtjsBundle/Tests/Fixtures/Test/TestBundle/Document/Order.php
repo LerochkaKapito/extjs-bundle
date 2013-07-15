@@ -1,41 +1,41 @@
 <?php
 namespace Test\TestBundle\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Tpg\ExtjsBundle\Annotation as Extjs;
 
 /**
  * @Extjs\Model(name="Test.document.Order")
- * @MongoDB\Document(collection="order")
+ * @ODM\Document(collection="order")
  */
 class Order {
     /**
-     * @MongoDB\Id
+     * @ODM\Id
      */
     protected $id;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $name;
 
     /**
-     * @MongoDB\EmbedMany(targetDocument="Test\TestBundle\Document\OrderLineItem")
+     * @ODM\EmbedMany(targetDocument="Test\TestBundle\Document\OrderLineItem")
      */
     protected $lineItems;
 
     /**
-     * @MongoDB\EmbedOne(targetDocument="Test\TestBundle\Document\OrderLineItem")
+     * @ODM\EmbedOne(targetDocument="Test\TestBundle\Document\OrderLineItem")
      */
     protected $lastLineItem;
 
     /**
-     * @MongoDB\ReferenceOne(targetDocument="Test\TestBundle\Document\Client", inversedBy="orders")
+     * @ODM\ReferenceOne(targetDocument="Test\TestBundle\Document\Client", inversedBy="orders")
      */
     protected $client;
 
     /**
-     * @MongoDB\Float
+     * @ODM\Float
      */
     protected $totalPrice;
 
@@ -84,6 +84,7 @@ class Order {
     public function addLineItem(\Test\TestBundle\Document\OrderLineItem $lineItems)
     {
         $this->lineItems[] = $lineItems;
+        return $this;
     }
 
     /**

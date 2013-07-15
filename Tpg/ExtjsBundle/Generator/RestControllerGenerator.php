@@ -10,6 +10,7 @@ class RestControllerGenerator extends ControllerGenerator {
 
     protected $entityName;
     protected $trait = false;
+    protected $mongo = false;
     protected $template = 'Controller.php';
 
     /**
@@ -32,6 +33,10 @@ class RestControllerGenerator extends ControllerGenerator {
         $this->template = $file;
     }
 
+    public function setMongo($mongo) {
+        $this->mongo = $mongo;
+    }
+
     public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
     {
         $dir = $bundle->getPath();
@@ -46,13 +51,20 @@ class RestControllerGenerator extends ControllerGenerator {
             throw new \RuntimeException(sprintf('Controller "%s" already exists', $controllerFile));
         }
 
-        $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
+        if ($this->mongo) {
+            $entityClass = $this->entityBundle->getNamespace().'\\Document\\'.$this->entityName;
+        } else {
+            $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
+        }
+
         $tmpEntity = explode('/', $this->entityName);
 
         $parameters = array(
+            'mongo'      => $this->mongo,
             'trait'      => $this->trait,
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
+            "manager"    => ($this->mongo===true)?"doctrine_mongodb.odm.default_document_manager":"doctrine.orm.default_entity_manager",
             'controller'        => $controller,
             'entity_class'      => $entityClass,
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),

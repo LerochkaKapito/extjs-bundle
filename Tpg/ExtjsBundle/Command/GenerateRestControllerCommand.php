@@ -39,6 +39,12 @@ class GenerateRestControllerCommand extends GeneratorCommand {
                         InputOption::VALUE_NONE,
                         "Generate Trait and Rest Controller"
                     ),
+                    new InputOption(
+                        'mongo',
+                        'm',
+                        InputOption::VALUE_NONE,
+                        "Generate Rest Controller for Mongo Document"
+                    )
                 ))
             ->setDescription('Generates a controller')
             ->setHelp(<<<EOT
@@ -129,6 +135,9 @@ EOT
             } catch (\Exception $e) {
                 $this->output->writeln(sprintf('<bg=red>Bundle "%s" does not exists.</>', $bundle));
             }
+        }
+        if ($this->input->getOption("mongo")) {
+            $generator->setMongo(true);
         }
         $generator->setEntityBundle($bundle);
         return $generator;

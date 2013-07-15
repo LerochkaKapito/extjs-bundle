@@ -1,31 +1,31 @@
 <?php
 namespace Test\TestBundle\Document;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Tpg\ExtjsBundle\Annotation as Extjs;
 
 /**
  * @Extjs\Model(name="Test.document.Client")
- * @MongoDB\Document(collection="client")
+ * @ODM\Document(collection="client")
  */
 class Client {
     /**
-     * @MongoDB\Id
+     * @ODM\Id
      */
     protected $id;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @ODM\Field(type="string")
      */
     protected $firstName;
 
     /**
-     * @MongoDB\String
+     * @ODM\String
      */
     protected $lastName;
 
     /**
-     * @MongoDB\ReferenceMany(targetDocument="Test\TestBundle\Document\Order", mappedBy="client")
+     * @ODM\ReferenceMany(targetDocument="Test\TestBundle\Document\Order", mappedBy="client")
      */
     protected $orders;
 }
