@@ -1,78 +1,20 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
-use Doctrine\Bundle\DoctrineBundle\Command\Proxy\CreateSchemaDoctrineCommand;
 use Doctrine\ORM\EntityManager;
 use FOS\RestBundle\Routing\Loader\RestYamlCollectionLoader;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Entity\Car;
 use Symfony\Bundle\FrameworkBundle\Client;
-use Tpg\ExtjsBundle\Command\GenerateRestControllerCommand;
+use Tpg\ExtjsBundle\Tests\Command\BaseTestGeneratedRestController as Base;
 
-class BaseTestGeneratedRestController extends WebTestCase {
+class BaseTestGeneratedRestController extends Base {
     /** @var Car[] $records */
     protected $records = array();
     /** @var Client */
     protected $client;
-
-    public static function setUpBeforeClass() {
-        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Controller/CarController.php');
-        $kernel = new \AppKernel('test', true);
-        $app = new Application($kernel);
-        $app->addCommands(array(
-            new GenerateRestControllerCommand(),
-            new CreateDatabaseDoctrineCommand(),
-            new CreateSchemaDoctrineCommand(),
-        ));
-        $kernel->boot();
-        $command = $app->find('generate:rest:controller');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-            '--controller' => 'TestTestBundle:Car',
-            '--entity' => 'TestTestBundle:Car'
-        ), array('interactive'=>false));
-        $command = $app->find('doctrine:database:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $command = $app->find('doctrine:schema:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $kernel->shutdown();
-        @unlink(__DIR__.'/../../app/cache/test/appTestUrlGenerator.php.meta');
-        @unlink(__DIR__.'/../../app/cache/test/appTestUrlGenerator.php');
-        @unlink(__DIR__.'/../../app/cache/test/appTestUrlMatcher.php.meta');
-        @unlink(__DIR__.'/../../app/cache/test/appTestUrlMatcher.php');
-    }
-
-    public static function tearDownAfterClass() {
-        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
-        @unlink(__DIR__.'/../../Fixtures/Test/TestBundle/Controller/CarController.php');
-        $kernel = new \AppKernel('test', true);
-        $app = new Application($kernel);
-        $app->addCommands(array(
-                new DropDatabaseDoctrineCommand(),
-            ));
-        $kernel->boot();
-        $command = $app->find('doctrine:database:drop');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-                'command' => $command->getName(),
-                '--force' => true,
-            ));
-        $kernel->shutdown();
-    }
 
     protected function setUp() {
         parent::setUp();

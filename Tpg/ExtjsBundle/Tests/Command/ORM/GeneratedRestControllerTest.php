@@ -1,8 +1,6 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
-include_once(__DIR__.'/../../app/AppKernel.php');
-
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Entity\Car;

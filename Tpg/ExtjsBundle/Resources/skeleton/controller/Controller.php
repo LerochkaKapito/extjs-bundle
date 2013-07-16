@@ -49,6 +49,11 @@ class
     public function get{{ controller|capitalize }}Action($id) {
         $manager = $this->get("{{ manager }}");
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
+        {%- if mongo %}
+
+        $entity = array_values($entity->toArray());
+        {%- endif %}
+
         $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")));;
         return $this->handleView($view);
     }
@@ -93,6 +98,11 @@ class
             $paramFetcher->get("limit"),
             $start
         );
+        {%- if mongo %}
+
+        $list = array_values($list->toArray());
+        {%- endif %}
+
         $context = $this->getSerializerContext(array('list'));
         $view = View::create($list, 200)->setSerializationContext($context);
         return $this->handleView($view);

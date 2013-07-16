@@ -1,7 +1,5 @@
 <?php
-namespace Tpg\ExtjsBundle\Tests\Command\Mongo;
-
-include_once(__DIR__.'/../../app/AppKernel.php');
+namespace Tpg\ExtjsBundle\Tests\Command\ODM;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
 use Symfony\Component\Routing\Router;

@@ -1,5 +1,5 @@
 <?php
-namespace Tpg\ExtjsBundle\Tests\Command\Mongo;
+namespace Tpg\ExtjsBundle\Tests\Command\ODM;
 
 include_once(__DIR__ . '/../../app/AppKernel.php');
 
@@ -20,7 +20,8 @@ class GenerateRestControllerCommandTest extends \PHPUnit_Framework_TestCase {
         $commandTester->execute(array(
             'command' => $command->getName(),
             '--controller' => 'TestTestBundle:Order',
-            '--entity' => 'TestTestBundle:Order'
+            '--entity' => 'TestTestBundle:Order',
+            '--mongo' => true,
         ), array('interactive'=>false));
         $kernel->shutdown();
         $this->assertTrue(class_exists("\\Test\\TestBundle\\Controller\\OrderController"));
