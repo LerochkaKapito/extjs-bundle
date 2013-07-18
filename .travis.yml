@@ -10,15 +10,15 @@ before_script:
     - echo "extension=mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - curl -s http://getcomposer.org/installer | php
     - php composer.phar install --dev
-    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCar --entity TestTestBundle:Car
-    - php Tpg/ExtjsBundle/Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
-    - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:create
-    - php Tpg/ExtjsBundle/Tests/app/console doctrine:schema:create
-    - php -S 127.0.0.1:8888 -t Tpg/ExtjsBundle/Tests Tpg/ExtjsBundle/Tests/app_test.php &
+    - php Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCar --entity TestTestBundle:Car
+    - php Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
+    - php Tests/app/console doctrine:database:create
+    - php Tests/app/console doctrine:schema:create
+    - php -S 127.0.0.1:8888 -t Tests Tests/app_test.php &
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
 
 script:
-    - phantomjs --web-security=no Tpg/ExtjsBundle/Tests/testrunner.js http://127.0.0.1:8888/SpecRunner.html
-    - php Tpg/ExtjsBundle/Tests/app/console doctrine:database:drop --force
+    - phantomjs --web-security=no Tests/testrunner.js http://127.0.0.1:8888/SpecRunner.html
+    - php Tests/app/console doctrine:database:drop --force
     - phpunit -c phpunit.xml.dist

@@ -1,7 +1,7 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command;
 
-include_once(__DIR__.'/../app/AppKernel.php');
+include_once(__DIR__ . '/../app/AppKernel.php');
 
 use Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand;
 use Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand;
