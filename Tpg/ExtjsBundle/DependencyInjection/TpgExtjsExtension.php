@@ -27,11 +27,15 @@ class TpgExtjsExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
 
-        //@todo Check Mongo or Doctrine bundle is loaded
-        $loader->load('orm.services.xml');
-        $loader->load('odm.services.xml');
-
         $bundles = $container->getParameter('kernel.bundles');
+        //Check Mongo or Doctrine bundle is loaded
+        if (isset($bundles['DoctrineBundle'])) {
+            $loader->load('orm.services.xml');
+        }
+        if (isset($bundles['DoctrineMongoDBBundle'])) {
+            $loader->load('odm.services.xml');
+        }
+
         $list = array();
         if (isset($config['remoting'])) {
             foreach ($config['remoting']['bundles'] as $bundleName) {
