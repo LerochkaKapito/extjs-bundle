@@ -1,10 +1,14 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
+use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
+use Doctrine\Bundle\DoctrineBundle\Command\Proxy\CreateSchemaDoctrineCommand;
 use Doctrine\ORM\EntityManager;
 use FOS\RestBundle\Routing\Loader\RestYamlCollectionLoader;
 
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Entity\Car;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -52,5 +56,44 @@ class BaseTestGeneratedRestController extends Base {
         $manager = $this->createClient()->getContainer()->get("doctrine.orm.default_entity_manager");
         $manager->createQueryBuilder()->delete('Test\TestBundle\Entity\Car', 'c')->getQuery()->execute();
         parent::tearDown();
+    }
+
+    public static function setUpBeforeClass() {
+        parent::setUpBeforeClass();
+        $kernel = new \AppKernel('test', true);
+        $app = new Application($kernel);
+        $app->addCommands(array(
+            new CreateDatabaseDoctrineCommand(),
+            new CreateSchemaDoctrineCommand(),
+        ));
+        $kernel->boot();
+        $command = $app->find('doctrine:database:create');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+        ));
+        $command = $app->find('doctrine:schema:create');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+        ));
+        $kernel->shutdown();
+    }
+
+    public static function tearDownAfterClass() {
+        parent::tearDownAfterClass();
+        $kernel = new \AppKernel('test', true);
+        $app = new Application($kernel);
+        $app->addCommands(array(
+            new DropDatabaseDoctrineCommand(),
+        ));
+        $kernel->boot();
+        $command = $app->find('doctrine:database:drop');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+            '--force' => true,
+        ));
+        $kernel->shutdown();
     }
 }

@@ -40,7 +40,7 @@ class Order {
     protected $lastLineItem;
 
     /**
-     * @ODM\ReferenceOne(targetDocument="Test\TestBundle\Document\Client", inversedBy="orders")
+     * @ODM\ReferenceOne(targetDocument="Test\TestBundle\Document\Client", inversedBy="orders", cascade={"persist"})
      * @JMS\Type("Test\TestBundle\Document\Client")
      */
     protected $client;

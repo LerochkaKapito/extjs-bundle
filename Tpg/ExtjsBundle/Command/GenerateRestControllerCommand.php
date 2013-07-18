@@ -136,6 +136,7 @@ EOT
                 $this->output->writeln(sprintf('<bg=red>Bundle "%s" does not exists.</>', $bundle));
             }
         }
+        /** @todo Check entity is a valid entity */
         if ($this->input->getOption("mongo")) {
             $generator->setMongo(true);
         }

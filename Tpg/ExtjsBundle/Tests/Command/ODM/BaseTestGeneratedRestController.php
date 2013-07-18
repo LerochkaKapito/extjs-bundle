@@ -1,9 +1,13 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command\ODM;
 
+use Doctrine\Bundle\MongoDBBundle\Command\CreateSchemaDoctrineODMCommand;
+use Doctrine\Bundle\MongoDBBundle\Command\DropSchemaDoctrineODMCommand;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use FOS\RestBundle\Routing\Loader\RestYamlCollectionLoader;
 
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Document\Order;
 use Test\TestBundle\Document\OrderLineItem;
@@ -13,6 +17,8 @@ use Tpg\ExtjsBundle\Tests\Command\BaseTestGeneratedRestController as Base;
 class BaseTestGeneratedRestController extends Base {
     /** @var Order[] $records */
     protected $records = array();
+    /** @var \Test\TestBundle\Document\Client $clientDocument */
+    protected $clientDocument;
     /** @var Client */
     protected $client;
 
@@ -21,6 +27,14 @@ class BaseTestGeneratedRestController extends Base {
         $client = $this->createClient();
         /** @var DocumentManager $manager */
         $manager = $client->getContainer()->get("doctrine.odm.mongodb.document_manager");
+        $clientDocument = new \Test\TestBundle\Document\Client();
+        $clientDocument->setFirstName('Test')
+            ->setLastName('Test');
+        $manager->persist($clientDocument);
+        $this->clientDocument = new \Test\TestBundle\Document\Client();
+        $this->clientDocument->setFirstName('Jimmy')
+            ->setLastName('Bob');
+        $manager->persist($this->clientDocument);
         $order = new Order();
         $order->setName("Invoice 1")
             ->setTotalPrice(5.02)
@@ -30,7 +44,9 @@ class BaseTestGeneratedRestController extends Base {
                     ->setQuantity(1)
                     ->setPrice(5.02)
                     ->setTotal(5.02)
-            );
+            )
+            ->setClient($clientDocument)
+        ;
         $manager->persist($order);
         $this->records[] = $order;
         $order = new Order();
@@ -49,7 +65,9 @@ class BaseTestGeneratedRestController extends Base {
                     ->setQuantity(1)
                     ->setPrice(5.58)
                     ->setTotal(5.58)
-            );
+            )
+            ->setClient($clientDocument)
+        ;
         $manager->persist($order);
         $this->records[] = $order;
         $manager->flush();
@@ -66,6 +84,39 @@ class BaseTestGeneratedRestController extends Base {
         /** @var DocumentManager $manager */
         $manager = $this->createClient()->getContainer()->get("doctrine.odm.mongodb.document_manager");
         $manager->createQueryBuilder()->remove('Test\TestBundle\Document\Order')->getQuery()->execute();
+        $manager->createQueryBuilder()->remove('Test\TestBundle\Document\Client')->getQuery()->execute();
         parent::tearDown();
+    }
+
+    public static function setUpBeforeClass() {
+        parent::setUpBeforeClass();
+        $kernel = new \AppKernel('test', true);
+        $app = new Application($kernel);
+        $app->addCommands(array(
+            new CreateSchemaDoctrineODMCommand(),
+        ));
+        $kernel->boot();
+        $command = $app->find('doctrine:mongodb:schema:create');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+        ));
+        $kernel->shutdown();
+    }
+
+    public static function tearDownAfterClass() {
+        parent::tearDownAfterClass();
+        $kernel = new \AppKernel('test', true);
+        $app = new Application($kernel);
+        $app->addCommands(array(
+            new DropSchemaDoctrineODMCommand(),
+        ));
+        $kernel->boot();
+        $command = $app->find('doctrine:mongodb:schema:drop');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+                'command' => $command->getName(),
+            ));
+        $kernel->shutdown();
     }
 }

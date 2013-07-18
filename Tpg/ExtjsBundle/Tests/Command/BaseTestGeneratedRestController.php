@@ -24,9 +24,6 @@ class BaseTestGeneratedRestController extends WebTestCase {
         $app = new Application($kernel);
         $app->addCommands(array(
             new GenerateRestControllerCommand(),
-            new CreateDatabaseDoctrineCommand(),
-            new CreateSchemaDoctrineCommand(),
-            new CreateSchemaDoctrineODMCommand(),
         ));
         $kernel->boot();
         $command = $app->find('generate:rest:controller');
@@ -41,11 +38,8 @@ class BaseTestGeneratedRestController extends WebTestCase {
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
         $app->addCommands(array(
-                new GenerateRestControllerCommand(),
-                new CreateDatabaseDoctrineCommand(),
-                new CreateSchemaDoctrineCommand(),
-                new CreateSchemaDoctrineODMCommand(),
-            ));
+            new GenerateRestControllerCommand(),
+        ));
         $kernel->boot();
         $command = $app->find('generate:rest:controller');
         $commandTester = new CommandTester($command);
@@ -54,21 +48,6 @@ class BaseTestGeneratedRestController extends WebTestCase {
             '--controller' => 'TestTestBundle:Car',
             '--entity' => 'TestTestBundle:Car'
         ), array('interactive'=>false));
-        $command = $app->find('doctrine:database:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $command = $app->find('doctrine:schema:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $command = $app->find('doctrine:mongodb:schema:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
         $kernel->shutdown();
         @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php.meta');
         @unlink(__DIR__.'/../app/cache/test/appTestUrlGenerator.php');
@@ -80,24 +59,5 @@ class BaseTestGeneratedRestController extends WebTestCase {
         @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Resources/config/routing.rest.yml');
         @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/CarController.php');
         @unlink(__DIR__.'/../Fixtures/Test/TestBundle/Controller/OrderController.php');
-        $kernel = new \AppKernel('test', true);
-        $app = new Application($kernel);
-        $app->addCommands(array(
-            new DropDatabaseDoctrineCommand(),
-            new DropSchemaDoctrineODMCommand(),
-        ));
-        $kernel->boot();
-        $command = $app->find('doctrine:database:drop');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-            '--force' => true,
-        ));
-        $command = $app->find('doctrine:mongodb:schema:drop');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $kernel->shutdown();
     }
 }
