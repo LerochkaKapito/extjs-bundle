@@ -32,6 +32,7 @@ class CarOwner {
      * @JMS\Type("ArrayCollection<Test\TestBundle\Entity\Car>")
      */
     protected $cars;
+
     /**
      * Constructor
      */

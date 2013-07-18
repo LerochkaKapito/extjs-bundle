@@ -162,4 +162,20 @@ class GeneratedRestControllerAssociationTest extends BaseTestGeneratedRestContro
         $car = $repo->find($this->records[0]->getId());
         $this->assertNull($car->getCarOwner());
     }
+
+    public function testPatchWithDifferentHasManyAssociation() {
+        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
+        /** @var Car $car */
+        $car = $repo->find($this->records[0]->getId());
+        $this->assertEquals(1, $car->getRelatedCars()->count());
+        $this->client->request('PATCH', '/cars/'.$this->records[0]->getId().'.json', array(), array(), array(), json_encode(array(
+            'relatedCars'=>array(
+                array('id'=>$this->records[1]->getId())
+            )
+        )));
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        /** @var Car $car */
+        $car = $repo->find($this->records[0]->getId());
+        $this->assertEquals(2, $car->getRelatedCars()->count());
+    }
 }

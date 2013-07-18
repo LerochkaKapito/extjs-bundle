@@ -1,6 +1,7 @@
 <?php
 namespace Test\TestBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Tpg\ExtjsBundle\Annotation as Extjs;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -46,6 +47,19 @@ class Car {
      * @JMS\Type("Test\TestBundle\Entity\CarOwner")
      */
     protected $carOwner;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Test\TestBundle\Entity\Car", inversedBy="relatedCars", cascade={"persist"})
+     * @ORM\JoinColumn(name="related_to_id", referencedColumnName="id")
+     * @JMS\Type("Test\TestBundle\Entity\Car")
+     */
+    protected $relatedTo;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Test\TestBundle\Entity\Car", mappedBy="relatedTo", cascade={"persist"})
+     * @JMS\Type("ArrayCollection<Test\TestBundle\Entity\Car>")
+     */
+    protected $relatedCars;
 
     /**
      * @param mixed $id
@@ -148,5 +162,72 @@ class Car {
     public function getCarOwner()
     {
         return $this->carOwner;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->relatedCars = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Add relatedCars
+     *
+     * @param \Test\TestBundle\Entity\Car $relatedCars
+     * @return Car
+     */
+    public function addRelatedCar(\Test\TestBundle\Entity\Car $relatedCars)
+    {
+        $this->relatedCars[] = $relatedCars;
+    
+        return $this;
+    }
+
+    /**
+     * Remove relatedCars
+     *
+     * @param \Test\TestBundle\Entity\Car $relatedCars
+     */
+    public function removeRelatedCar(\Test\TestBundle\Entity\Car $relatedCars)
+    {
+        $this->relatedCars->removeElement($relatedCars);
+    }
+
+    /**
+     * Get relatedCars
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRelatedCars()
+    {
+        return $this->relatedCars;
+    }
+
+    /**
+     * Set relatedTo
+     *
+     * @param \Test\TestBundle\Entity\Car $relatedTo
+     * @return Car
+     */
+    public function setRelatedTo(\Test\TestBundle\Entity\Car $relatedTo = null)
+    {
+        $this->relatedTo = $relatedTo;
+    
+        return $this;
+    }
+
+    /**
+     * Get relatedTo
+     *
+     * @return \Test\TestBundle\Entity\Car 
+     */
+    public function getRelatedTo()
+    {
+        return $this->relatedTo;
+    }
+
+    public function mergeRelatedCars(ArrayCollection $list) {
+        $this->relatedCars = new ArrayCollection(array_merge($this->relatedCars->toArray(), $list->toArray()));
     }
 }

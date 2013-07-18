@@ -19,6 +19,11 @@ class DeserializationAssociateRelationship {
     public function onSerializerPreDeserialize(PreDeserializeEvent $e) {
         $className = $e->getType();
         $className = $className['name'];
+        /** Handle ArrayCollection or array JMS type. */
+        if ($className == "ArrayCollection" || $className == "array") {
+            $className = $e->getType();
+            $className = $className['params'][0]['name'];
+        }
         $classMetadata = $e->getContext()->getMetadataFactory()->getMetadataForClass($className);
         /** @var PropertyMetadata $propertyMetadata */
         foreach ($classMetadata->propertyMetadata as $propertyMetadata) {

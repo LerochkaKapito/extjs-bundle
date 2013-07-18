@@ -2,6 +2,7 @@
 namespace Tpg\ExtjsBundle\Tests\Command\ODM;
 
 use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
+use Doctrine\ODM\MongoDB\LoggableCursor;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Document\Order;
 
@@ -14,182 +15,140 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->assertEquals(2, count($content));
     }
 
-//    public function testGetsActionWithFilterOnName() {
-//        $filter = json_encode(array(
-//            array('property'=>'name','value'=>'Ford')
-//        ));
-//        $this->client->request('GET', '/cars.json?filter='.$filter);
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(1, count($content));
-//        $this->assertEquals('AA123', $content[0]['plateNumber']);
-//    }
-//
-//    public function testGetsActionWithFilterOnPlateNumner() {
-//        $filter = json_encode(array(
-//            array('property'=>'plateNumber','value'=>'BB243')
-//        ));
-//        $this->client->request('GET', '/cars.json?filter='.$filter);
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(1, count($content));
-//    }
-//
-//    public function testGetsActionWithFilterOnBothReturnNothing() {
-//        $filter = json_encode(array(
-//            array('property'=>'name', 'value'=>'Ford'),
-//            array('property'=>'plateNumber', 'value'=>'BB243')
-//        ));
-//        $this->client->request('GET', '/cars.json?filter='.$filter);
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(0, count($content));
-//    }
-//
-//    public function testGetsActionWithSortASC() {
-//        $sort = json_encode(array(
-//            array('property'=>'name', 'direction'=>'ASC')
-//        ));
-//        $this->client->request('GET', '/cars.json?sort='.$sort);
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals('Ford', $content[0]['name']);
-//        $this->assertEquals('Honda', $content[1]['name']);
-//    }
-//
-//    public function testGetsActionWithSortDESC() {
-//        $sort = json_encode(array(
-//            array('property'=>'name', 'direction'=>'DESC')
-//        ));
-//        $this->client->request('GET', '/cars.json?sort='.$sort);
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals('Ford', $content[1]['name']);
-//        $this->assertEquals('Honda', $content[0]['name']);
-//    }
-//
-//    public function testGetsActionWithStart() {
-//        $this->client->request('GET', '/cars.json?start=1');
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(1, count($content));
-//    }
-//
-//    public function testGetsActionWithLimit() {
-//        $this->client->request('GET', '/cars.json?limit=1');
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(1, count($content));
-//    }
-//
-//    public function testGetsActionWithPage() {
-//        $this->client->request('GET', '/cars.json?page=2');
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(0, count($content));
-//        $this->client->request('GET', '/cars.json?page=2&limit=1');
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals(1, count($content));
-//    }
-//
-//    public function testGetActionWithId() {
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $cars = $repo->findAll();
-//        /** @var Car $car */
-//        $car = $cars[0];
-//        $this->client->request('GET', '/cars/'.$car->getId().'.json');
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $content = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals($car->getId(), $content['id']);
-//        $this->assertEquals($car->getName(), $content['name']);
-//        $this->assertEquals($car->getPlateNumber(), $content['plateNumber']);
-//    }
-//
-//    public function testPostAction() {
-//        $this->client->request('POST', '/cars.json', array(), array(), array(), json_encode(array(
-//            'name'=>'BMW',
-//            'plateNumber'=>'ZZ1267',
-//        )));
-//        $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $this->assertEquals(
-//            3, count($repo->findAll())
-//        );
-//        $record = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertEquals('BMW', $record['name']);
-//        $this->assertEquals('ZZ1267', $record['plateNumber']);
-//    }
-//
-//    public function testPostActionWithJMSGroup() {
-//        $this->client->request('POST', '/cars.json', array(), array(), array(), json_encode(array(
-//            'name'=>'BMW',
-//            'plateNumber'=>'ZZ1267',
-//            'password'=>'xxx',
-//        )));
-//        $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $record = json_decode($this->client->getResponse()->getContent(), true);
-//        $this->assertArrayNotHasKey('password', $record);
-//        $this->assertEquals('xxx', $repo->find($record['id'])->getPassword());
-//    }
-//
-//    public function testPostActionWithError() {
-//        $this->client->request('POST', '/cars.json', array(), array(), array(), json_encode(array(
-//            'name'=>'BMW',
-//        )));
-//        $this->assertEquals("400", $this->client->getResponse()->getStatusCode(), $this->client->getResponse()->getContent());
-//    }
-//
-//    public function testPutAction() {
-//        $record = $this->records[0];
-//        $this->client->request('PUT', '/cars/'.$record->getId().'.json', array(), array(), array(), json_encode(array(
-//            'name'=>'Mazda',
-//            'plateNumber'=>'AA00',
-//        )));
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode(), $this->client->getResponse()->getContent());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $this->assertEquals(
-//            2, count($repo->findAll())
-//        );
-//        $record = $repo->find($record->getId());
-//        $this->assertEquals('Mazda', $record->getName());
-//        $this->assertEquals('AA00', $record->getPlateNumber());
-//    }
-//
-//    public function testPutActionWithSomeEmpty() {
-//        $record = $this->records[0];
-//        $this->client->request('PUT', '/cars/'.$record->getId().'.json', array(), array(), array(), json_encode(array(
-//            'name'=>'Mazda',
-//        )));
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $this->assertEquals(
-//            2, count($repo->findAll())
-//        );
-//        $record = $repo->find($record->getId());
-//        $this->assertEquals('Mazda', $record->getName());
-//        $this->assertEquals(null, $record->getPlateNumber());
-//    }
-//
-//    public function testPatchAction() {
-//        $originalRecord = $this->records[0];
-//        $this->client->request('PATCH', '/cars/'.$originalRecord->getId().'.json', array(), array(), array(), json_encode(array(
-//            'name'=>'Mazda',
-//        )));
-//        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $record = $repo->find($originalRecord->getId());
-//        $this->assertEquals(
-//            2, count($repo->findAll())
-//        );
-//        $this->assertEquals('Mazda', $record->getName());
-//        $this->assertEquals($originalRecord->getPlateNumber(), $record->getPlateNumber());
-//    }
-//
-//    public function testDeleteAction() {
-//        $record = $this->records[0];
-//        $id = $record->getId();
-//        $this->client->request('DELETE', '/cars/'.$id.'.json');
-//        $this->assertEquals("204", $this->client->getResponse()->getStatusCode());
-//        $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
-//        $this->assertNull($repo->find($id));
-//    }
+    public function testGetsActionWithFilterOnTotalPrice() {
+        $filter = json_encode(array(
+            array('property'=>'totalPrice', 'value'=>10.58)
+        ));
+        $this->client->request('GET', '/orders.json?filter='.$filter);
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(1, count($content));
+        $this->assertEquals('Invoice 2', $content[0]['name']);
+    }
+
+    public function testGetsActionWithSortDESC() {
+        $sort = json_encode(array(
+            array('property'=>'totalPrice', 'direction'=>'DESC')
+        ));
+        $this->client->request('GET', '/orders.json?sort='.$sort);
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Invoice 2', $content[0]['name']);
+        $this->assertEquals('Invoice 1', $content[1]['name']);
+    }
+
+    public function testGetsActionWithStart() {
+        $this->client->request('GET', '/orders.json?start=1');
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(1, count($content));
+    }
+
+    public function testGetsActionWithLimit() {
+        $this->client->request('GET', '/orders.json?limit=1');
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(1, count($content));
+    }
+
+    public function testGetsActionWithPage() {
+        $this->client->request('GET', '/orders.json?page=2');
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(0, count($content));
+        $this->client->request('GET', '/orders.json?page=2&limit=1');
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals(1, count($content));
+    }
+
+    public function testGetActionWithId() {
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        /** @var LoggableCursor $orders */
+        $orders = $repo->findAll();
+        $order = $orders->getNext();
+        $this->client->request('GET', '/orders/'.$order->getId().'.json');
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $content = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals($order->getId(), $content['id']);
+        $this->assertEquals($order->getName(), $content['name']);
+        $this->assertEquals($order->getTotalPrice(), $content['totalPrice']);
+    }
+
+    public function testPostAction() {
+        $this->client->request('POST', '/orders.json', array(), array(), array(), json_encode(array(
+            'name'=>'Inveoice 3',
+            'totalPrice'=>11,
+        )));
+        $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        $this->assertEquals(
+            3, count($repo->findAll())
+        );
+        $record = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertEquals('Inveoice 3', $record['name']);
+        $this->assertEquals(11, $record['totalPrice']);
+    }
+
+    public function testPostActionWithError() {
+        $this->client->request('POST', '/orders.json', array(), array(), array(), json_encode(array(
+            'name'=>'BMW',
+        )));
+        $this->assertEquals("400", $this->client->getResponse()->getStatusCode(), $this->client->getResponse()->getContent());
+    }
+
+    public function testPutAction() {
+        $record = $this->records[0];
+        $this->client->request('PUT', '/orders/'.$record->getId().'.json', array(), array(), array(), json_encode(array(
+            'name'=>'Invoice A',
+            'totalPrice'=>12.11,
+        )));
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode(), $this->client->getResponse()->getContent());
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        $this->assertEquals(
+            2, count($repo->findAll())
+        );
+        $record = $repo->find($record->getId());
+        $this->assertEquals('Invoice A', $record->getName());
+        $this->assertEquals(12.11, $record->getTotalPrice());
+    }
+
+    public function testPutActionWithSomeEmpty() {
+        $record = $this->records[0];
+        $this->client->request('PUT', '/orders/'.$record->getId().'.json', array(), array(), array(), json_encode(array(
+            'name'=>'Invoice B',
+        )));
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        $this->assertEquals(
+            2, count($repo->findAll())
+        );
+        $record = $repo->find($record->getId());
+        $this->assertEquals('Invoice B', $record->getName());
+        $this->assertEquals(null, $record->getTotalPrice());
+    }
+
+    public function testPatchAction() {
+        $originalRecord = $this->records[0];
+        $this->client->request('PATCH', '/orders/'.$originalRecord->getId().'.json', array(), array(), array(), json_encode(array(
+            'name'=>'Invoice A',
+        )));
+        $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        $record = $repo->find($originalRecord->getId());
+        $this->assertEquals(
+            2, count($repo->findAll())
+        );
+        $this->assertEquals('Invoice A', $record->getName());
+        $this->assertEquals($originalRecord->getTotalPrice(), $record->getTotalPrice());
+    }
+
+    public function testDeleteAction() {
+        $record = $this->records[0];
+        $id = $record->getId();
+        $this->client->request('DELETE', '/orders/'.$id.'.json');
+        $this->assertEquals("204", $this->client->getResponse()->getStatusCode());
+        $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
+        $this->assertNull($repo->find($id));
+    }
 }

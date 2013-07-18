@@ -49,11 +49,6 @@ class
     public function get{{ controller|capitalize }}Action($id) {
         $manager = $this->get("{{ manager }}");
         $entity = $manager->getRepository('{{ entity_bundle }}:{{ entity }}')->find($id);
-        {%- if mongo %}
-
-        $entity = array_values($entity->toArray());
-        {%- endif %}
-
         $view = View::create($entity, 200)->setSerializationContext($this->getSerializerContext(array("get")));;
         return $this->handleView($view);
     }
@@ -114,7 +109,7 @@ class
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function post{{ controller|capitalize }}sAction() {
-        $serializer = $this->get("tpg_extjs.serializer");
+        $serializer = $this->get("{{ serializer }}");
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
@@ -122,7 +117,7 @@ class
             DeserializationContext::create()->setGroups(array("Default", "post"))
         );
         $validator = $this->get('validator');
-        $validations = $validator->validate($entity);
+        $validations = $validator->validate($entity, array('Default', 'post'));
         if ($validations->count() === 0) {
             $manager = $this->get('{{ manager }}');
             $manager->persist($entity);
@@ -159,7 +154,7 @@ class
         if ($entity === null) {
             return $this->handleView(View::create('', 404));
         }
-        $serializer = $this->get("tpg_extjs.serializer");
+        $serializer = $this->get("{{ serializer }}");
         $entity = $serializer->deserialize(
             $this->getRequest()->getContent(),
             '{{ entity_class }}',
@@ -167,7 +162,7 @@ class
             DeserializationContext::create()->setGroups(array("Default", "put"))
         );
         $entity->setId($id);
-        $validator = $this->get('validator');
+        $validator = $this->get('validator', array('Default', 'put'));
         $validations = $validator->validate($entity);
         if ($validations->count() === 0) {
             try {
@@ -202,15 +197,17 @@ class
         }
         $content = json_decode($this->getRequest()->getContent(), true);
         $content['id'] = $id;
-        $serializer = $this->get("tpg_extjs.serializer");
+        $serializer = $this->get("{{ serializer }}");
+        $dContext = DeserializationContext::create()->setGroups(array("Default", "patch"));
+        $dContext->attributes->set('related_action', 'merge');
         $entity = $serializer->deserialize(
             json_encode($content),
             '{{ entity_class }}',
             'json',
-            DeserializationContext::create()->setGroups(array("Default", "patch"))
+            $dContext
         );
         $validator = $this->get('validator');
-        $validations = $validator->validate($entity);
+        $validations = $validator->validate($entity, array('Default', 'patch'));
         if ($validations->count() === 0) {
             try {
                 $manager->flush();

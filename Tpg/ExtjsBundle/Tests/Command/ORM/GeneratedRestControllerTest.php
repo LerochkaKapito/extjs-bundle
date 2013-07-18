@@ -11,7 +11,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->client->request('GET', '/cars.json');
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $content = json_decode($this->client->getResponse()->getContent());
-        $this->assertEquals(2, count($content));
+        $this->assertEquals(3, count($content));
     }
 
     public function testGetsActionWithFilterOnName() {
@@ -61,15 +61,16 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->client->request('GET', '/cars.json?sort='.$sort);
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $content = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals('Ford', $content[1]['name']);
-        $this->assertEquals('Honda', $content[0]['name']);
+        $this->assertEquals('Ford', $content[2]['name']);
+        $this->assertEquals('Honda', $content[1]['name']);
+        $this->assertEquals('Toyota', $content[0]['name']);
     }
 
     public function testGetsActionWithStart() {
         $this->client->request('GET', '/cars.json?start=1');
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $content = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertEquals(1, count($content));
+        $this->assertEquals(2, count($content));
     }
 
     public function testGetsActionWithLimit() {
@@ -111,7 +112,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->assertEquals("201", $this->client->getResponse()->getStatusCode());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $this->assertEquals(
-            3, count($repo->findAll())
+            4, count($repo->findAll())
         );
         $record = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertEquals('BMW', $record['name']);
@@ -147,7 +148,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode(), $this->client->getResponse()->getContent());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $this->assertEquals(
-            2, count($repo->findAll())
+            3, count($repo->findAll())
         );
         $record = $repo->find($record->getId());
         $this->assertEquals('Mazda', $record->getName());
@@ -162,7 +163,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $this->assertEquals(
-            2, count($repo->findAll())
+            3, count($repo->findAll())
         );
         $record = $repo->find($record->getId());
         $this->assertEquals('Mazda', $record->getName());
@@ -178,7 +179,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $repo = $this->client->getContainer()->get('doctrine.orm.default_entity_manager')->getRepository('TestTestBundle:Car');
         $record = $repo->find($originalRecord->getId());
         $this->assertEquals(
-            2, count($repo->findAll())
+            3, count($repo->findAll())
         );
         $this->assertEquals('Mazda', $record->getName());
         $this->assertEquals($originalRecord->getPlateNumber(), $record->getPlateNumber());

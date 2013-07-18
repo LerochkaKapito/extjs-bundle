@@ -13,12 +13,18 @@ class TpgExtjsBundle extends Bundle
     {
         $builder->addCompilerPass(new LazyServiceMapPass('tpg_extjs.serialization_visitor', 'format',
             function(ContainerBuilder $container, Definition $def) {
-                $container->getDefinition('tpg_extjs.serializer')->replaceArgument(3, $def);
+                if ($container->hasDefinition("tpg_extjs.orm_serializer"))
+                    $container->getDefinition('tpg_extjs.orm_serializer')->replaceArgument(3, $def);
+                if ($container->hasDefinition("tpg_extjs.odm_serializer"))
+                    $container->getDefinition('tpg_extjs.odm_serializer')->replaceArgument(3, $def);
             }
         ));
         $builder->addCompilerPass(new LazyServiceMapPass('tpg_extjs.deserialization_visitor', 'format',
             function(ContainerBuilder $container, Definition $def) {
-                $container->getDefinition('tpg_extjs.serializer')->replaceArgument(4, $def);
+                if ($container->hasDefinition("tpg_extjs.orm_serializer"))
+                    $container->getDefinition('tpg_extjs.orm_serializer')->replaceArgument(4, $def);
+                if ($container->hasDefinition("tpg_extjs.odm_serializer"))
+                    $container->getDefinition('tpg_extjs.odm_serializer')->replaceArgument(4, $def);
             }
         ));
     }

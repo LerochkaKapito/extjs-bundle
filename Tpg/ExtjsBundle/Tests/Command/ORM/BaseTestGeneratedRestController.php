@@ -21,9 +21,14 @@ class BaseTestGeneratedRestController extends Base {
         $client = $this->createClient();
         /** @var EntityManager $manager */
         $manager = $client->getContainer()->get("doctrine.orm.default_entity_manager");
+        $toyota = new Car();
+        $toyota->setName("Toyota")
+            ->setPlateNumber("KJ342");
+        $manager->persist($toyota);
         $car = new Car();
         $car->setName("Ford")
-            ->setPlateNumber("AA123");
+            ->setPlateNumber("AA123")
+            ->addRelatedCar($toyota);
         $manager->persist($car);
         $this->records[] = $car;
         $car = new Car();
@@ -31,6 +36,7 @@ class BaseTestGeneratedRestController extends Base {
             ->setPlateNumber("BB243");
         $manager->persist($car);
         $this->records[] = $car;
+        $this->records[] = $toyota;
         $manager->flush();
         /** @var RestYamlCollectionLoader $loader */
         $loader = $client->getContainer()->get("fos_rest.routing.loader.yaml_collection");

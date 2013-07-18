@@ -3,6 +3,7 @@ namespace Test\TestBundle\Document;
 
 use Tpg\ExtjsBundle\Annotation as Extjs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @Extjs\Model(name="Test.document.OrderLineItem")
@@ -11,21 +12,25 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 class OrderLineItem {
     /**
      * @ODM\Int
+     * @JMS\Type("integer")
      */
     protected $productId;
 
     /**
      * @ODM\Int
+     * @JMS\Type("integer")
      */
     protected $quantity;
 
     /**
      * @ODM\Float
+     * @JMS\Type("double")
      */
     protected $price;
 
     /**
      * @ODM\Float
+     * @JMS\Type("double")
      */
     protected $total;
 

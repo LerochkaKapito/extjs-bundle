@@ -7,12 +7,11 @@ use FOS\RestBundle\Routing\Loader\RestYamlCollectionLoader;
 use Symfony\Component\Routing\Router;
 use Test\TestBundle\Document\Order;
 use Test\TestBundle\Document\OrderLineItem;
-use Test\TestBundle\Entity\Car;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Tpg\ExtjsBundle\Tests\Command\BaseTestGeneratedRestController as Base;
 
 class BaseTestGeneratedRestController extends Base {
-    /** @var Car[] $records */
+    /** @var Order[] $records */
     protected $records = array();
     /** @var Client */
     protected $client;

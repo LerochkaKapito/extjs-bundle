@@ -65,6 +65,7 @@ class RestControllerGenerator extends ControllerGenerator {
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
             "manager"    => ($this->mongo===true)?"doctrine_mongodb.odm.default_document_manager":"doctrine.orm.default_entity_manager",
+            'serializer' => ($this->mongo===true)?"tpg_extjs.odm_serializer":"tpg_extjs.orm_serializer",
             'controller'        => $controller,
             'entity_class'      => $entityClass,
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),

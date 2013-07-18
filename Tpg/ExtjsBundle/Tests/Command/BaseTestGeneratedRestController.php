@@ -33,14 +33,26 @@ class BaseTestGeneratedRestController extends WebTestCase {
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            '--controller' => 'TestTestBundle:Car',
-            '--entity' => 'TestTestBundle:Car'
-        ), array('interactive'=>false));
-        $commandTester->execute(array(
-            'command' => $command->getName(),
             '--controller' => 'TestTestBundle:Order',
             '--entity' => 'TestTestBundle:Order',
             '--mongo' => true,
+        ), array('interactive'=>false));
+        $kernel->shutdown();
+        $kernel = new \AppKernel('test', true);
+        $app = new Application($kernel);
+        $app->addCommands(array(
+                new GenerateRestControllerCommand(),
+                new CreateDatabaseDoctrineCommand(),
+                new CreateSchemaDoctrineCommand(),
+                new CreateSchemaDoctrineODMCommand(),
+            ));
+        $kernel->boot();
+        $command = $app->find('generate:rest:controller');
+        $commandTester = new CommandTester($command);
+        $commandTester->execute(array(
+            'command' => $command->getName(),
+            '--controller' => 'TestTestBundle:Car',
+            '--entity' => 'TestTestBundle:Car'
         ), array('interactive'=>false));
         $command = $app->find('doctrine:database:create');
         $commandTester = new CommandTester($command);
