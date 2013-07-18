@@ -17,7 +17,7 @@ Requirement
 Mandatory
  - Symfony 2.3.*
  - Serializer library from JMS 0.13.*
- - Doctrine ORM
+ - Doctrine ORM or ODM
  - Generator from Sensio 2.3.*
 
 Optional
@@ -75,7 +75,7 @@ Model/Entities Code Generation
 You may need to configure the additional routing rule for this feature to work. To generate Ext.data.Model code, you just
 need to include script tag pointing to generateModel.js
 
-To generate all entities configured in the configuration,
+To generate all entities and document configured in the configuration,
 ``` html
 <script type="text/javascript" src="/extjs/generateModel.js"></script>
 ```
