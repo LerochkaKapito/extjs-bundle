@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="tpg_extjs.json_deserialization_visitor.class">Tpg\ExtjsBundle\Component\JsonDeserializationVisitor</parameter>
+    </parameters>
+
+    <services>
+        <!-- Serializer service from JMS Serializer -->
+        <service id="tpg_extjs.odm_serializer" class="%jms_serializer.serializer.class%">
+            <argument type="service" id="jms_serializer.metadata_factory" />
+            <argument type="service" id="jms_serializer.handler_registry" />
+            <argument type="service" id="tpg_extjs.doctrine_odm_object_constructor" />
+            <argument type="collection" /><!-- Serialization Visitors -->
+            <argument type="collection" /><!-- Deserialization Visitors -->
+            <argument type="service" id="jms_serializer.event_dispatcher" />
+        </service>
+        <service id="tpg_extjs.serializer" alias="tpg_extjs.odm_serializer" />
+
+        <service id="tpg_extjs.doctrine_odm_object_constructor" class="%jms_serializer.doctrine_object_constructor.class%" public="false">
+            <argument type="service" id="doctrine_mongodb"/>
+            <argument type="service" id="jms_serializer.unserialize_object_constructor"/>
+        </service>
+
+        <service id="tpg_extjs.json_deserialization_visitor" class="%tpg_extjs.json_deserialization_visitor.class%">
+            <argument type="service" id="tpg_extjs.naming_strategy" />
+            <argument type="service" id="tpg_extjs.doctrine_odm_object_constructor" />
+            <tag name="tpg_extjs.deserialization_visitor" format="json" />
+        </service>
+
+        <service id="tpg_extjs.naming_strategy" class="Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy" public="false"/>
+    </services>
+</container>

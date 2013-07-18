@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Jasmine Spec Runner</title>
+
+    <script type="text/javascript" src="http://searls.github.io/jasmine-all/jasmine-all-min.js"></script>
+    <script type="text/javascript" src="lib/console-runner.js"></script>
+    <script type="text/javascript" src="lib/ext-all-debug.js"></script>
+
+    <!-- include source files here... -->
+    <script type="text/javascript" src="http://127.0.0.1:8888/generateModel.js?model[]=Test.TestBundle.Model.Person&model[]=Test.TestBundle.Model.Book"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8888/generateModel.js"></script>
+    <script type="text/javascript" src="http://127.0.0.1:8888/remoteapi.js"></script>
+    <script type="text/javascript" src="javascripts/book.js"></script>
+
+    <!-- include spec files here... -->
+    <script type="text/javascript" src="spec/extjs.spec.js"></script>
+    <script type="text/javascript" src="spec/generatemodel.spec.js"></script>
+    <script type="text/javascript" src="spec/direct.spec.js"></script>
+    <script type="text/javascript" src="spec/generateconfiguredmodel.spec.js"></script>
+    <script type="text/javascript" src="spec/restproxystore.spec.js"></script>
+    <script type="text/javascript" src="spec/mongogeneratemodel.spec.js"></script>
+
+    <script type="text/javascript">
+        var console_reporter = new jasmine.ConsoleReporter();
+        jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+        jasmine.getEnv().addReporter(console_reporter);
+        jasmine.getEnv().execute();
+    </script>
+</head>
+<body>
+</body>
+</html>

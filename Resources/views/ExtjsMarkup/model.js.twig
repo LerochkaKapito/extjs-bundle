@@ -1,0 +1,102 @@
+Ext.define("{{ name }}", {
+    extend: "{{ extend }}",
+    uses: [
+        {%- for assoc in associations %}
+
+        '{{ assoc.model }}'
+        {%- if not loop.last %},{% endif %}
+
+        {%- endfor %}
+
+    ],
+    fields: [
+        {%-for field in fields %}
+
+        {
+
+            {%- for key,value in field %}
+            {%- if value.skipEncode %}
+
+                {{ key }}: {{ value.value|raw }}
+            {%- else %}
+
+                {{ key }}: {{ value|json_encode()|raw }}
+            {%- endif %}
+            {%- if not loop.last %},{% endif %}
+            {% endfor %}
+
+        }
+        {%- if not loop.last %},{% endif %}
+
+        {%- endfor %}
+
+    ],
+    validations: [
+        {%-for validator in validators %}
+
+        {
+
+            {%- for key,value in validator %}
+            {%- if value.skipEncode %}
+
+            {{ key }}: {{ value.value|raw }}
+            {%- else %}
+
+            {{ key }}: {{ value|json_encode()|raw }}
+            {%- endif %}
+            {%- if not loop.last %},{% endif %}
+            {%- endfor %}
+
+        }
+        {%- if not loop.last %},{% endif %}
+
+        {%- endfor %}
+
+    ],
+    associations: [
+        {%- for assoc in associations %}
+
+        {
+            {%- if assoc.type == "OneToMany" or assoc.type == "EmbedMany" or assoc.type == "ReferenceMany" %}
+
+            type: 'hasMany',
+            model: '{{ assoc.model }}',
+            name: '{{ assoc.name }}',
+            foreignKey: '{{ assoc.key }}'
+
+            {%- elseif assoc.type == "ManyToOne" %}
+
+            type: 'belongsTo',
+            model: '{{ assoc.model }}',
+            getterName: 'get{{ assoc.name|ucfirst }}',
+            setterName: 'set{{ assoc.name|ucfirst }}',
+            foreignKey: '{{ assoc.key }}'
+
+            {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
+
+            type: 'hasOne',
+            model: '{{ assoc.model }}',
+            getterName: 'get{{ assoc.name|ucfirst }}',
+            setterName: 'set{{ assoc.name|ucfirst }}'
+
+            {%- endif %}
+
+        }
+        {%- if not loop.last %},{% endif %}
+
+        {%- endfor %}
+
+    ],
+    {%- if proxy %}
+
+    proxy: {{ proxy|json_encode|raw }}
+
+    {%- else %}
+
+    proxy: {
+        type: 'memory'
+    }
+
+    {%- endif %}
+
+});
