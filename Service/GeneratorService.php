@@ -227,6 +227,7 @@ class GeneratorService {
                     $field['name'] = $this->convertNaming($annotation->name);
                     $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->referencedColumnName);
                     $field['useNull'] = true;
+                    $field['persist'] = false;
                     $association['key'] = $this->convertNaming($annotation->name);
                     break;
             }
