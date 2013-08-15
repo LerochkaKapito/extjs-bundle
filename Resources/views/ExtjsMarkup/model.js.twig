@@ -64,6 +64,12 @@ Ext.define("{{ name }}", {
             name: '{{ assoc.name }}',
             foreignKey: '{{ assoc.key }}'
 
+            {%- elseif assoc.type == "ManyToMany" %}
+
+            type: 'hasMany',
+            model: '{{ assoc.model }}',
+            name: '{{ assoc.name|lower }}'
+
             {%- elseif assoc.type == "ManyToOne" %}
 
             type: 'belongsTo',
