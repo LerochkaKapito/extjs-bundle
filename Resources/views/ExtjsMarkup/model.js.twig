@@ -70,7 +70,8 @@ Ext.define("{{ name }}", {
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
             setterName: 'set{{ assoc.name|ucfirst }}',
-            foreignKey: '{{ assoc.key }}'
+            foreignKey: '{{ assoc.key }}',
+            associationKey: '{{ assoc.name }}'
 
             {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
 
