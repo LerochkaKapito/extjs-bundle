@@ -144,7 +144,7 @@ EOT
         return $generator;
     }
 
-    protected function getSkeletonDirs($bundle = null)
+    protected function getSkeletonDirs(BundleInterface $bundle = null)
     {
         $dirs = parent::getSkeletonDirs($bundle);
         array_unshift($dirs, __DIR__.'/../Resources/skeleton');
