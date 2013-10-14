@@ -89,7 +89,7 @@ Ext.define("{{ name }}", {
     ],
     {%- if proxy %}
 
-    proxy: {{ proxy|json_encode|raw }}
+    proxy: {{ proxy|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}
 
     {%- else %}
 
