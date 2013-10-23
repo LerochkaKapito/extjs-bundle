@@ -192,17 +192,25 @@ class GeneratorService {
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
                     break;
-                case 'Doctrine\ORM\Mapping\OneToMany':
                 case 'Doctrine\ORM\Mapping\OneToOne':
                     $association['type'] = substr(get_class($annotation), 21);
                     $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
-                    $association['key'] = $this->getAnnotation(
-                        $annotation->targetEntity,
-                        $annotation->mappedBy,
-                        'Doctrine\ORM\Mapping\JoinColumn'
-                    )->name;
+
+                    if(
+                        ($joinColumnAnno = $this->annoReader->getPropertyAnnotation($property,'Doctrine\ORM\Mapping\JoinColumn')) ||
+                        ($joinColumnAnno = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation))
+                    ) {
+                        $association['key'] = $joinColumnAnno->name;
+                    }
+                    break;
+                case 'Doctrine\ORM\Mapping\OneToMany':
+                    $association['type'] = substr(get_class($annotation), 21);
+                    $association['name'] = $property->getName();
+                    $association['model'] = $this->getModelName($annotation->targetEntity);
+                    $association['entity'] = $annotation->targetEntity;
+                    $association['key'] = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation)->name;
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne':
@@ -256,6 +264,17 @@ class GeneratorService {
             $structure['validators'] = array_merge($structure['validators'], $validators);
         }
         return $field;
+    }
+    protected function tryToGetJoinColumnAnnotationOfMappedBy($annotation){
+        $result = null;
+        if($annotation->targetEntity && $annotation->mappedBy) {
+            $result = $this->getAnnotation(
+                $annotation->targetEntity,
+                $annotation->mappedBy,
+                'Doctrine\ORM\Mapping\JoinColumn'
+            );
+        }
+        return $result;
     }
 
     protected function getAnnotation($entity, $property, $annotation) {

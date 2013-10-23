@@ -75,20 +75,21 @@ Ext.define("{{ name }}", {
 
             type: 'belongsTo',
             name: '{{ assoc.name }}',
+            associationKey: '{{ assoc.name }}',
+            foreignKey: '{{ assoc.key }}',
             instanceName: '{{ assoc.name }}',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}',
-            foreignKey: '{{ assoc.key }}',
-            associationKey: '{{ assoc.name }}'
-
+            setterName: 'set{{ assoc.name|ucfirst }}'
 
             {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
 
             type: 'hasOne',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}'
+            setterName: 'set{{ assoc.name|ucfirst }}',
+            foreignKey: '{{ assoc.key }}',
+            associationKey: '{{ assoc.name }}'
 
             {%- endif %}
 
