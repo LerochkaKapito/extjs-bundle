@@ -22,6 +22,7 @@ class GeneratorService {
     protected $twig;
 
     protected $remotingBundles = array();
+    protected $fieldsParams = array();
 
     public function setAnnotationReader($reader) {
         $this->annoReader = $reader;
@@ -33,6 +34,9 @@ class GeneratorService {
 
     public function setRemotingBundles($bundles) {
         $this->remotingBundles = $bundles;
+    }
+    public function setModelFieldsParameters($fieldsParams) {
+        $this->fieldsParams = $fieldsParams;
     }
 
     /**
@@ -236,6 +240,11 @@ class GeneratorService {
         }
         if($fieldIsId){
             $structure['idProperty'] = $field['name'];
+        }
+
+        if($field['type'] === 'date') {
+            $field['format'] = $this->fieldsParams['date']['format'];
+            $field['useNull'] = true;
         }
         if (!empty($association)) {
             $structure['associations'][] = $association;
