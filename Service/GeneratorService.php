@@ -216,6 +216,12 @@ class GeneratorService {
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
                     break;
+                case 'Doctrine\ORM\Mapping\ManyToMany':
+                    $association['type'] = 'ManyToMany';
+                    $association['name'] = $property->getName();
+                    $association['model'] = $this->getModelName($annotation->targetEntity);
+                    $association['entity'] = $annotation->targetEntity;
+                    break;
                 case 'Doctrine\ORM\Mapping\JoinColumn':
                     $saveField = true;
                     $field['name'] = $this->convertNaming($annotation->name);
