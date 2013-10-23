@@ -86,6 +86,7 @@ class GeneratorService {
                 'fields' => array(),
                 'associations' => array(),
                 'validators' => array(),
+                'idProperty' => 'id'
             );
             if ($classModelProxyAnnotation !== null) {
                 $structure['proxy'] = array(
@@ -138,6 +139,7 @@ class GeneratorService {
         $validators = array();
         $skipValidator = false;
         $saveField = false;
+        $fieldIsId = false;
         $annotations = $this->annoReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
             $className = get_class($annotation);
@@ -154,6 +156,7 @@ class GeneratorService {
                     $field['useNull'] = true;
                     $field['persist'] = false;
                     $skipValidator = true;
+                    $fieldIsId = true;
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Timestamp':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Date':
@@ -230,6 +233,9 @@ class GeneratorService {
                     $association['key'] = $this->convertNaming($annotation->name);
                     break;
             }
+        }
+        if($fieldIsId){
+            $structure['idProperty'] = $field['name'];
         }
         if (!empty($association)) {
             $structure['associations'][] = $association;
