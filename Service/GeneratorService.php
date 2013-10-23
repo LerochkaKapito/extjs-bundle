@@ -241,7 +241,7 @@ class GeneratorService {
             $structure['associations'][] = $association;
         }
         if ($saveField || empty($association)) {
-            $structure['fields'][] = $field;
+            $structure['fields'][$field['name']] = $field;
         }
         if (!empty($validators) && !$skipValidator) {
             $structure['validators'] = array_merge($structure['validators'], $validators);
