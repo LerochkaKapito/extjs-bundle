@@ -9,6 +9,7 @@ Ext.define("{{ name }}", {
         {%- endfor %}
 
     ],
+    idProperty: "{{ idProperty }}",
     fields: [
         {%-for field in fields %}
 
@@ -61,23 +62,34 @@ Ext.define("{{ name }}", {
 
             type: 'hasMany',
             model: '{{ assoc.model }}',
-            name: '{{ assoc.name }}',
+            name: '{{ assoc.name|lower }}',
             foreignKey: '{{ assoc.key }}'
+
+            {%- elseif assoc.type == "ManyToMany" %}
+
+                type: 'hasMany',
+                model: '{{ assoc.model }}',
+                name: '{{ assoc.name|lower }}'
 
             {%- elseif assoc.type == "ManyToOne" %}
 
             type: 'belongsTo',
+            name: '{{ assoc.name }}',
+            associationKey: '{{ assoc.name }}',
+            foreignKey: '{{ assoc.key }}',
+            instanceName: '{{ assoc.name }}',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}',
-            foreignKey: '{{ assoc.key }}'
+            setterName: 'set{{ assoc.name|ucfirst }}'
 
             {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
 
             type: 'hasOne',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}'
+            setterName: 'set{{ assoc.name|ucfirst }}',
+            foreignKey: '{{ assoc.key }}',
+            associationKey: '{{ assoc.name }}'
 
             {%- endif %}
 

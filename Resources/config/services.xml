@@ -8,6 +8,11 @@
         <parameter key="tpg_extjs.generator.class">Tpg\ExtjsBundle\Service\GeneratorService</parameter>
         <parameter key="tpg.twig.extjs_extension.class">Tpg\ExtjsBundle\Twig\ExtjsExtension</parameter>
         <parameter key="tpg_extjs.remoting.bundles" type="collection"></parameter>
+        <parameter key="tpg_extjs.field_types" type="collection">
+            <parameter key="date" type="collection">
+                <parameter key="format">Y-m-d\TH:i:sO</parameter>
+            </parameter>
+        </parameter>
     </parameters>
 
     <services>
@@ -20,6 +25,9 @@
             </call>
             <call method="setRemotingBundles">
                 <argument>%tpg_extjs.remoting.bundles%</argument>
+            </call>
+            <call method="setModelFieldsParameters">
+                <argument>%tpg_extjs.field_types%</argument>
             </call>
         </service>
 

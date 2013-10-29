@@ -70,12 +70,12 @@ class
     public function get{{ controller|capitalize }}sAction(ParamFetcherInterface $paramFetcher) {
         $manager = $this->get('{{ manager }}');
         $rawSorters = json_decode($paramFetcher->get("sort"), true);
-        $sorters = [];
+        $sorters = array();
         foreach ($rawSorters as $s) {
             $sorters[$s['property']] = $s['direction'];
         }
         $rawFilters = json_decode($paramFetcher->get("filter"), true);
-        $filters = [];
+        $filters = array();
         foreach ($rawFilters as $f) {
             $filters[$f['property']] = $f['value'];
         }
@@ -245,7 +245,10 @@ class
     protected function getSerializerContext($groups = array(), $version = null) {
         $serializeContext = SerializationContext::create();
         $serializeContext->enableMaxDepthChecks();
-        $serializeContext->setGroups(array(\JMS\Serializer\Exclusion\GroupsExclusionStrategy::DEFAULT_GROUP)+$groups);
+        $serializeContext->setGroups(array_merge(
+            array(\JMS\Serializer\Exclusion\GroupsExclusionStrategy::DEFAULT_GROUP),
+            $groups
+        ));
         if ($version !== null) $serializeContext->setVersion($version);
         return $serializeContext;
     }
