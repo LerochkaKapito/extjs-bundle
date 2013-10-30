@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Tpg\ExtjsBundle\Generator\RestControllerGenerator;
 
 class GenerateRestControllerCommand extends GeneratorCommand {
@@ -144,10 +145,10 @@ EOT
         return $generator;
     }
 
-    protected function getSkeletonDirs($bundle = null)
+    protected function getSkeletonDirs(BundleInterface $bundle = null)
     {
         $dirs = parent::getSkeletonDirs($bundle);
-        array_unshift($dirs, __DIR__.'/../Resources/skeleton');
+        $dirs[] = __DIR__.'/../Resources/skeleton';
         return $dirs;
     }
 

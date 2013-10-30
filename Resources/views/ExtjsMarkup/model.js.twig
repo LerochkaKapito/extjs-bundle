@@ -9,6 +9,7 @@ Ext.define("{{ name }}", {
         {%- endfor %}
 
     ],
+    idProperty: "{{ idProperty }}",
     fields: [
         {%-for field in fields %}
 
@@ -64,20 +65,31 @@ Ext.define("{{ name }}", {
             name: '{{ assoc.name }}',
             foreignKey: '{{ assoc.key }}'
 
+            {%- elseif assoc.type == "ManyToMany" %}
+
+            type: 'hasMany',
+            model: '{{ assoc.model }}',
+            name: '{{ assoc.name }}'
+
             {%- elseif assoc.type == "ManyToOne" %}
 
             type: 'belongsTo',
+            name: '{{ assoc.name }}',
+            associationKey: '{{ assoc.name }}',
+            foreignKey: '{{ assoc.key }}',
+            instanceName: '{{ assoc.name }}',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}',
-            foreignKey: '{{ assoc.key }}'
+            setterName: 'set{{ assoc.name|ucfirst }}'
 
             {%- elseif assoc.type == "OneToOne"  or assoc.type == "EmbedOne" or assoc.type == "ReferenceOne" %}
 
             type: 'hasOne',
             model: '{{ assoc.model }}',
             getterName: 'get{{ assoc.name|ucfirst }}',
-            setterName: 'set{{ assoc.name|ucfirst }}'
+            setterName: 'set{{ assoc.name|ucfirst }}',
+            foreignKey: '{{ assoc.key }}',
+            associationKey: '{{ assoc.name }}'
 
             {%- endif %}
 
@@ -89,7 +101,7 @@ Ext.define("{{ name }}", {
     ],
     {%- if proxy %}
 
-    proxy: {{ proxy|json_encode|raw }}
+    proxy: {{ proxy|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}
 
     {%- else %}
 

@@ -60,6 +60,7 @@ class ExtjsExtension extends \Twig_Extension {
         } else {
             $code = '';
             foreach ($params as $model) {
+                $model = str_replace(".", "\\", $model);
                 $code .= $this->generator->generateMarkupForEntity($model);
             }
             return $code;

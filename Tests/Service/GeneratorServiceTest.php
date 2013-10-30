@@ -20,6 +20,20 @@ class GeneratorServiceTest extends TestCase {
         $this->service->setAnnotationReader(new AnnotationReader());
         $this->twigEngine = new TwigEngineMokcup();
         $this->service->setTwigEngine($this->twigEngine);
+        $this->service->setModelFieldsParameters(array(
+          "date" => array( "format" => "d-m-y")
+        ));
+    }
+
+    public function testCustomFieldParameters() {
+      $this->service->generateMarkupForEntity('Test\TestBundle\Model\Person');
+      $fieldsType = array();
+      foreach ($this->twigEngine->renderParameters['fields'] as $field) {
+        if (isset($field['format'])) {
+          $fieldsType[$field['name']] = $field['format'];
+        }
+      }
+      $this->assertEquals("d-m-y", $fieldsType['createdAt']);
     }
 
     public function testEntityProperty() {
