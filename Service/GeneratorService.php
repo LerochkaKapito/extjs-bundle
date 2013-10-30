@@ -250,10 +250,11 @@ class GeneratorService {
             $structure['idProperty'] = $field['name'];
         }
 
-        if($field['type'] === 'date') {
-            $field['format'] = $this->fieldsParams['date']['format'];
-            $field['useNull'] = true;
+        /** Add the ability to override field parameter */
+        if (isset($this->fieldsParams[$field['type']])) {
+          $field = array_merge($field, $this->fieldsParams[$field['type']]);
         }
+
         if (!empty($association)) {
             $structure['associations'][] = $association;
         }
