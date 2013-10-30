@@ -19,7 +19,7 @@
         "jms/serializer-bundle": ">=0.12,<=0.13",
         "jms/di-extra-bundle": "~1.4",
         "sensio/generator-bundle": "2.3.*",
-        "friendsofsymfony/rest-bundle": ">0.12"
+        "friendsofsymfony/rest-bundle": ">=0.12"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "1.2.*",
