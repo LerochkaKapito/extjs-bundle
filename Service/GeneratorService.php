@@ -22,6 +22,7 @@ class GeneratorService {
     protected $twig;
 
     protected $remotingBundles = array();
+    protected $fieldsParams = array();
 
     public function setAnnotationReader($reader) {
         $this->annoReader = $reader;
@@ -33,6 +34,9 @@ class GeneratorService {
 
     public function setRemotingBundles($bundles) {
         $this->remotingBundles = $bundles;
+    }
+    public function setModelFieldsParameters($fieldsParams) {
+        $this->fieldsParams = $fieldsParams;
     }
 
     /**
@@ -86,6 +90,7 @@ class GeneratorService {
                 'fields' => array(),
                 'associations' => array(),
                 'validators' => array(),
+                'idProperty' => 'id'
             );
             if ($classModelProxyAnnotation !== null) {
                 $structure['proxy'] = array(
@@ -138,6 +143,7 @@ class GeneratorService {
         $validators = array();
         $skipValidator = false;
         $saveField = false;
+        $fieldIsId = false;
         $annotations = $this->annoReader->getPropertyAnnotations($property);
         foreach ($annotations as $annotation) {
             $className = get_class($annotation);
@@ -154,6 +160,7 @@ class GeneratorService {
                     $field['useNull'] = true;
                     $field['persist'] = false;
                     $skipValidator = true;
+                    $fieldIsId = true;
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Timestamp':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Date':
@@ -185,17 +192,25 @@ class GeneratorService {
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
                     break;
-                case 'Doctrine\ORM\Mapping\OneToMany':
                 case 'Doctrine\ORM\Mapping\OneToOne':
                     $association['type'] = substr(get_class($annotation), 21);
                     $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
-                    $association['key'] = $this->getAnnotation(
-                        $annotation->targetEntity,
-                        $annotation->mappedBy,
-                        'Doctrine\ORM\Mapping\JoinColumn'
-                    )->name;
+
+                    if(
+                        ($joinColumnAnno = $this->annoReader->getPropertyAnnotation($property,'Doctrine\ORM\Mapping\JoinColumn')) ||
+                        ($joinColumnAnno = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation))
+                    ) {
+                        $association['key'] = $joinColumnAnno->name;
+                    }
+                    break;
+                case 'Doctrine\ORM\Mapping\OneToMany':
+                    $association['type'] = substr(get_class($annotation), 21);
+                    $association['name'] = $property->getName();
+                    $association['model'] = $this->getModelName($annotation->targetEntity);
+                    $association['entity'] = $annotation->targetEntity;
+                    $association['key'] = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation)->name;
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne':
@@ -231,16 +246,35 @@ class GeneratorService {
                     break;
             }
         }
+        if($fieldIsId){
+            $structure['idProperty'] = $field['name'];
+        }
+
+        if($field['type'] === 'date') {
+            $field['format'] = $this->fieldsParams['date']['format'];
+            $field['useNull'] = true;
+        }
         if (!empty($association)) {
             $structure['associations'][] = $association;
         }
         if ($saveField || empty($association)) {
-            $structure['fields'][] = $field;
+            $structure['fields'][$field['name']] = $field;
         }
         if (!empty($validators) && !$skipValidator) {
             $structure['validators'] = array_merge($structure['validators'], $validators);
         }
         return $field;
+    }
+    protected function tryToGetJoinColumnAnnotationOfMappedBy($annotation){
+        $result = null;
+        if($annotation->targetEntity && $annotation->mappedBy) {
+            $result = $this->getAnnotation(
+                $annotation->targetEntity,
+                $annotation->mappedBy,
+                'Doctrine\ORM\Mapping\JoinColumn'
+            );
+        }
+        return $result;
     }
 
     protected function getAnnotation($entity, $property, $annotation) {

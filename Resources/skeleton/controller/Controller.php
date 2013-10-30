@@ -245,7 +245,10 @@ class
     protected function getSerializerContext($groups = array(), $version = null) {
         $serializeContext = SerializationContext::create();
         $serializeContext->enableMaxDepthChecks();
-        $serializeContext->setGroups(array(\JMS\Serializer\Exclusion\GroupsExclusionStrategy::DEFAULT_GROUP)+$groups);
+        $serializeContext->setGroups(array_merge(
+            array(\JMS\Serializer\Exclusion\GroupsExclusionStrategy::DEFAULT_GROUP),
+            $groups
+        ));
         if ($version !== null) $serializeContext->setVersion($version);
         return $serializeContext;
     }
