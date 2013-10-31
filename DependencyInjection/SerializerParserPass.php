@@ -17,7 +17,7 @@ class SerializerParserPass implements CompilerPassInterface {
     public function process(ContainerBuilder $container)
     {
         if (
-            $container->getDefinition("nelmio_api_doc.parser.jms_metadata_parser") !== null &&
+            $container->hasDefinition("nelmio_api_doc.parser.jms_metadata_parser") &&
             (
                 $container->getAlias("fos_rest.serializer") == "tpg_extjs.orm_serializer" ||
                 $container->getAlias("fos_rest.serializer") == "tpg_extjs.odm_serializer" ||
