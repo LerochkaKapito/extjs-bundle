@@ -1,9 +1,12 @@
 <?php
 namespace Tpg\ExtjsBundle\Service;
 
+use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Tools\Export\ExportException;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinColumns;
+use Doctrine\ORM\Mapping\OneToMany;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -197,20 +200,13 @@ class GeneratorService {
                     $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
-
-                    if(
-                        ($joinColumnAnno = $this->annoReader->getPropertyAnnotation($property,'Doctrine\ORM\Mapping\JoinColumn')) ||
-                        ($joinColumnAnno = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation))
-                    ) {
-                        $association['key'] = $joinColumnAnno->name;
-                    }
                     break;
                 case 'Doctrine\ORM\Mapping\OneToMany':
                     $association['type'] = substr(get_class($annotation), 21);
                     $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
-                    $association['key'] = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation)->name;
+                    $association['key'] = $this->tryToGetJoinColumnNameOfMappedBy($annotation);
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne':
@@ -237,6 +233,16 @@ class GeneratorService {
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
                     break;
+                case 'Doctrine\ORM\Mapping\JoinColumns':
+                    if (count($annotation->value) > 1) {
+                      throw new \Exception('Multiple foreign key is not supported');
+                    }
+                    $saveField = true;
+                    $field['name'] = $this->convertNaming($annotation->value[0]->name);
+                    $field['type'] = $this->getEntityColumnType($association['entity'], $annotation->value[0]->referencedColumnName);
+                    $field['useNull'] = true;
+                    $association['key'] = $this->convertNaming($annotation->value[0]->name);
+                    break;
                 case 'Doctrine\ORM\Mapping\JoinColumn':
                     $saveField = true;
                     $field['name'] = $this->convertNaming($annotation->name);
@@ -256,6 +262,10 @@ class GeneratorService {
         }
 
         if (!empty($association)) {
+            if ($association['model'] === null) {
+                /** Related model is not available, skip this field. */
+                return array();
+            }
             $structure['associations'][] = $association;
         }
         if ($saveField || empty($association)) {
@@ -266,6 +276,34 @@ class GeneratorService {
         }
         return $field;
     }
+
+    /**
+     * Get the join column name.
+     *
+     * @param OneToMany $annotation
+     * @throws \Exception
+     * @return string
+     */
+    protected function tryToGetJoinColumnNameOfMappedBy($annotation){
+        $annotation = $this->tryToGetJoinColumnAnnotationOfMappedBy($annotation);
+        if ($annotation !== null) {
+            if ($annotation instanceof JoinColumn) {
+                return $annotation->name;
+            } else if ($annotation instanceof JoinColumns) {
+                if (count($annotation->value) > 1) {
+                    throw new \Exception('Multiple foreign key is not supported');
+                }
+                return $annotation->value[0]->name;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Get the join column annotation
+     * @param OneToMany $annotation
+     * @return null|Annotation
+     */
     protected function tryToGetJoinColumnAnnotationOfMappedBy($annotation){
         $result = null;
         if($annotation->targetEntity && $annotation->mappedBy) {
@@ -274,15 +312,29 @@ class GeneratorService {
                 $annotation->mappedBy,
                 'Doctrine\ORM\Mapping\JoinColumn'
             );
+            if ($result === null) {
+                $result = $this->getAnnotation(
+                    $annotation->targetEntity,
+                    $annotation->mappedBy,
+                    'Doctrine\ORM\Mapping\JoinColumns'
+                );
+            }
         }
         return $result;
     }
 
+    /**
+     * Get Annotation
+     * @param $entity
+     * @param $property
+     * @param $annotation
+     * @return Annotation|null
+     */
     protected function getAnnotation($entity, $property, $annotation) {
         $classRef = new \ReflectionClass($entity);
         $propertyRef = $classRef->getProperty($property);
         if ($propertyRef) return $this->annoReader->getPropertyAnnotation($propertyRef, $annotation);
-        else return false;
+        else return null;
     }
 
     /**
@@ -290,6 +342,7 @@ class GeneratorService {
      *
      * @param $entity string Class name of the entity
      * @param $property string
+     * @return string
      */
     public function getEntityColumnType($entity, $property) {
         $classRef = new \ReflectionClass($entity);

@@ -16,7 +16,7 @@ Ext.define("{{ name }}", {
         {
 
             {%- for key,value in field %}
-            {%- if value.skipEncode %}
+            {%- if value.skipEncode is defined and value.skipEncode %}
 
                 {{ key }}: {{ value.value|raw }}
             {%- else %}
@@ -38,7 +38,7 @@ Ext.define("{{ name }}", {
         {
 
             {%- for key,value in validator %}
-            {%- if value.skipEncode %}
+            {%- if value.skipEncode is defined and value.skipEncode %}
 
             {{ key }}: {{ value.value|raw }}
             {%- else %}
@@ -99,7 +99,7 @@ Ext.define("{{ name }}", {
         {%- endfor %}
 
     ],
-    {%- if proxy %}
+    {%- if proxy is defined and proxy %}
 
     proxy: {{ proxy|json_encode(constant('JSON_UNESCAPED_SLASHES'))|raw }}
 
