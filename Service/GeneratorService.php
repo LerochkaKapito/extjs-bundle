@@ -109,11 +109,11 @@ class GeneratorService {
                 $propertyExclude = $this->annoReader->getPropertyAnnotation($property, 'JMS\Serializer\Annotation\Exclude');
                 /** @var $propertyExpose Expose */
                 $propertyExpose = $this->annoReader->getPropertyAnnotation($property, 'JMS\Serializer\Annotation\Expose');
-                if ($classExclusionPolicy === null || $classExclusionPolicy->policy == "none") {
+                if ($classExclusionPolicy === null || strtolower($classExclusionPolicy->policy) == "none") {
                     if ($propertyExclude !== null) {
                         continue;
                     }
-                } else if ($classExclusionPolicy->policy == "all") {
+                } else if (strtolower($classExclusionPolicy->policy) == "all") {
                     if ($propertyExpose === null) {
                         continue;
                     }
