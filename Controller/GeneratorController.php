@@ -26,7 +26,7 @@ class GeneratorController extends Controller {
                         /** Entity end with backslash, it is a directory */
                         $bundleRef = new \ReflectionClass($bundle);
                         $dir = new Finder();
-                        $dir->files()->in(dirname($bundleRef->getFileName()).'/'.$path)->name('/.*\.php$/');
+                        $dir->files()->depth('== 0')->in(dirname($bundleRef->getFileName()).'/'.$path)->name('/.*\.php$/');
                         foreach($dir as $file) {
                             $entityClassname = $bundleRef->getNamespaceName() . "\\" . str_replace("/", "\\", $path) . substr($file->getFilename(), 0, -4);
                             echo $generator->generateMarkupForEntity($entityClassname);
