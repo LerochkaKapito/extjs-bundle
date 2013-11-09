@@ -346,8 +346,20 @@ class GeneratorService {
      */
     public function getEntityColumnType($entity, $property) {
         $classRef = new \ReflectionClass($entity);
-        $propertyRef = $classRef->getProperty($property);
-        $columnRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Column');
+        if ($classRef->hasProperty($property)) {
+            $propertyRef = $classRef->getProperty($property);
+            $columnRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Column');
+        } else {
+            /** Can not find the property on the class. Check the all the Column annotation */
+            foreach ($classRef->getProperties() as $propertyRef) {
+                $columnRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Column');
+                if ($columnRef->name == $property) {
+                    break;
+                } else {
+                    $columnRef = null;
+                }
+            }
+        }
         if ($columnRef === null) {
             $idRef = $this->annoReader->getPropertyAnnotation($propertyRef, 'Doctrine\ORM\Mapping\Id');
             if ($idRef !== null) {
