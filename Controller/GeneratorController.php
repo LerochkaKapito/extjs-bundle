@@ -4,6 +4,7 @@ namespace Tpg\ExtjsBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Tests\Functional\AppKernel;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ class GeneratorController extends Controller {
                         $dir = new Finder();
                         $dir->files()->depth('== 0')->in(dirname($bundleRef->getFileName()).'/'.$path)->name('/.*\.php$/');
                         foreach($dir as $file) {
+                            /** @var SplFileInfo $file*/
                             $entityClassname = $bundleRef->getNamespaceName() . "\\" . str_replace("/", "\\", $path) . substr($file->getFilename(), 0, -4);
                             echo $generator->generateMarkupForEntity($entityClassname);
                         }
