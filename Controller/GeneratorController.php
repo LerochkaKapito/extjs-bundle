@@ -22,8 +22,11 @@ class GeneratorController extends Controller {
                 foreach ($list as $entity) {
                     list($bundleName, $path) = explode("/", substr($entity, 1), 2);
                     $bundle = $kernel->getBundle($bundleName, true);
-                    if ($entity[strlen($entity)-1] == "/") {
-                        /** Entity end with backslash, it is a directory */
+
+                    /** Entity end with backslash, it is a directory */
+                    $loadAllEntitiesFromDir = ($entity[strlen($entity)-1] == "/");
+
+                    if ( $loadAllEntitiesFromDir ) {
                         $bundleRef = new \ReflectionClass($bundle);
                         $dir = new Finder();
                         $dir->files()->depth('== 0')->in(dirname($bundleRef->getFileName()).'/'.$path)->name('/.*\.php$/');
