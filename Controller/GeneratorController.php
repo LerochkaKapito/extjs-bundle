@@ -7,6 +7,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tpg\ExtjsBundle\Service\GeneratorService;
 
 class GeneratorController extends Controller {
@@ -21,6 +22,7 @@ class GeneratorController extends Controller {
             return new StreamedResponse(function () use($list, $generator, $kernel) {
                 foreach ($list as $entity) {
                     list($bundleName, $path) = explode("/", substr($entity, 1), 2);
+                    /** @var Bundle $bundle */
                     $bundle = $kernel->getBundle($bundleName, true);
 
                     /** Entity end with backslash, it is a directory */
