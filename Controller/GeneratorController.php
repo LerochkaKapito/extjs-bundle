@@ -20,13 +20,13 @@ class GeneratorController extends Controller {
         if ($models === null) {
             $list = $this->container->getParameter("tpg_extjs.entities");
             return new StreamedResponse(function () use($list, $generator, $kernel) {
-                foreach ($list as $entity) {
-                    list($bundleName, $path) = explode("/", substr($entity, 1), 2);
+                foreach ($list as $configEntityLine) {
+                    list($bundleName, $path) = explode("/", substr($configEntityLine, 1), 2);
                     /** @var Bundle $bundle */
                     $bundle = $kernel->getBundle($bundleName, true);
 
                     /** Entity end with backslash, it is a directory */
-                    $loadAllEntitiesFromDir = ($entity[strlen($entity)-1] == "/");
+                    $loadAllEntitiesFromDir = ($configEntityLine[strlen($configEntityLine)-1] == "/");
 
                     if ( $loadAllEntitiesFromDir ) {
                         $bundleRef = new \ReflectionClass($bundle);
@@ -37,8 +37,8 @@ class GeneratorController extends Controller {
                             echo $generator->generateMarkupForEntity($entityClassname);
                         }
                     } else  {
-                        $entity = $bundle->getNamespace() . "\\" . str_replace("/", "\\", $path);
-                        echo $generator->generateMarkupForEntity($entity);
+                        $entityClassname = $bundle->getNamespace() . "\\" . str_replace("/", "\\", $path);
+                        echo $generator->generateMarkupForEntity($entityClassname);
                     }
                 }
                 flush();
