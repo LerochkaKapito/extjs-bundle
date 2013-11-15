@@ -158,6 +158,9 @@ class GeneratorService {
                 );
             }
             switch(get_class($annotation)) {
+                case 'Tpg\ExtjsBundle\Annotation\Model\Field':
+                    $field['type'] = $annotation->type;
+                    break;
                 case 'Doctrine\ORM\Mapping\Id':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Id':
                     $field['useNull'] = true;

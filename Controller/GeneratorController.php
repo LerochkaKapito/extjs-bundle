@@ -4,9 +4,11 @@ namespace Tpg\ExtjsBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Bundle\FrameworkBundle\Tests\Functional\AppKernel;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Tpg\ExtjsBundle\Service\GeneratorService;
 
 class GeneratorController extends Controller {
@@ -19,21 +21,26 @@ class GeneratorController extends Controller {
         if ($models === null) {
             $list = $this->container->getParameter("tpg_extjs.entities");
             return new StreamedResponse(function () use($list, $generator, $kernel) {
-                foreach ($list as $entity) {
-                    list($bundleName, $path) = explode("/", substr($entity, 1), 2);
+                foreach ($list as $configEntityLine) {
+                    list($bundleName, $path) = explode("/", substr($configEntityLine, 1), 2);
+                    /** @var Bundle $bundle */
                     $bundle = $kernel->getBundle($bundleName, true);
-                    if ($entity[strlen($entity)-1] == "/") {
-                        /** Entity end with backslash, it is a directory */
+
+                    /** Entity end with backslash, it is a directory */
+                    $loadAllEntitiesFromDir = ($configEntityLine[strlen($configEntityLine)-1] == "/");
+
+                    if ( $loadAllEntitiesFromDir ) {
                         $bundleRef = new \ReflectionClass($bundle);
                         $dir = new Finder();
                         $dir->files()->depth('== 0')->in(dirname($bundleRef->getFileName()).'/'.$path)->name('/.*\.php$/');
                         foreach($dir as $file) {
+                            /** @var SplFileInfo $file*/
                             $entityClassname = $bundleRef->getNamespaceName() . "\\" . str_replace("/", "\\", $path) . substr($file->getFilename(), 0, -4);
                             echo $generator->generateMarkupForEntity($entityClassname);
                         }
                     } else  {
-                        $entity = $bundle->getNamespace() . "\\" . str_replace("/", "\\", $path);
-                        echo $generator->generateMarkupForEntity($entity);
+                        $entityClassname = $bundle->getNamespace() . "\\" . str_replace("/", "\\", $path);
+                        echo $generator->generateMarkupForEntity($entityClassname);
                     }
                 }
                 flush();
