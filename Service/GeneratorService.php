@@ -193,10 +193,30 @@ class GeneratorService {
                     break;
                 case 'Doctrine\ORM\Mapping\Column':
                     $field['type'] = $this->getColumnType($annotation->type);
+                    if ($field['type'] === "date") {
+                        $field['dateFormat'] = \DateTime::ISO8601;
+                    }
                     $validators[] = array('type'=>'presence', 'field'=>$this->convertNaming($property->getName()));
                     break;
                 case 'JMS\Serializer\Annotation\SerializedName':
                     $field['name'] = $annotation->name;
+                    break;
+                case 'JMS\Serializer\Annotation\Type':
+                    if (stripos($annotation->name, "DateTime") === 0) {
+                        $type = $annotation->name;
+                        if ($type === "DateTime") {
+                            $field['dateFormat'] = \DateTime::ISO8601;
+                        } else {
+                            $format = explode(',',
+                                substr(
+                                    $type,
+                                    stripos($type, '<')+2,
+                                    -2
+                                )
+                            );
+                            $field['dateFormat'] = $format[0];
+                        }
+                    }
                     break;
                 case 'Doctrine\ORM\Mapping\OneToOne':
                     $association['type'] = substr(get_class($annotation), 21);
