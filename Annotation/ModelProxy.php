@@ -26,9 +26,9 @@ final class ModelProxy implements Annotation {
             );
         } else {
             if (isset($values['name'])) $this->name = $values['name'];
-            if (isset($values['option'])) $this->option = $values['option'];
-            if (isset($values['reader'])) $this->reader = $values['reader'];
-            if (isset($values['writer'])) $this->writer = $values['writer'];
         }
+        if (isset($values['option'])) $this->option = array_merge($this->option, $values['option']);
+        if (isset($values['writer'])) $this->writer = array_merge($this->writer, $values['writer']);
+        if (isset($values['reader'])) $this->reader = $values['reader'];
     }
 }
