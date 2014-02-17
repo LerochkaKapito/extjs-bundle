@@ -223,6 +223,8 @@ class GeneratorService {
                     $association['name'] = $property->getName();
                     $association['model'] = $this->getModelName($annotation->targetEntity);
                     $association['entity'] = $annotation->targetEntity;
+                    if (!isset($association['key']) || empty($association['key']))
+                        $association['key'] = $this->tryToGetJoinColumnNameOfMappedBy($annotation);
                     break;
                 case 'Doctrine\ORM\Mapping\OneToMany':
                     $association['type'] = substr(get_class($annotation), 21);
