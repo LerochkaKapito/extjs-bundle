@@ -5,3 +5,4 @@ parameters:
     database_name:     testing
     database_user:     root
     database_password: ~
+    database_path:     %kernel.root_dir%/database.db
