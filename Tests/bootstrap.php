@@ -5,7 +5,7 @@ if (!file_exists($file)) {
     throw new RuntimeException('Install dependencies to run test suite. "php composer.phar install --dev"');
 }
 
-$loader = require_once $file;
+$loader = require($file);
 
 use \Doctrine\Common\Annotations\AnnotationRegistry;
 use Symfony\Component\ClassLoader\UniversalClassLoader;
