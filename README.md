@@ -39,6 +39,7 @@ public function registerBundles()
 {
     $bundles = array(
         // ...
+        new JMS\SerializerBundle\JMSSerializerBundle(),
         new \Tpg\ExtjsBundle\TpgExtjsBundle(),
     );
 }

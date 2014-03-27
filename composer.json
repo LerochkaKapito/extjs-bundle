@@ -20,11 +20,21 @@
         "jms/di-extra-bundle": "~1.4",
         "sensio/generator-bundle": "~2.3",
         "friendsofsymfony/rest-bundle": ">=0.12"
+        "friendsofsymfony/rest-bundle": ">=0.12",
+        "incenteev/composer-parameter-handler": "~2.0"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "1.2.*",
         "doctrine/mongodb-odm": "1.0.*@dev",
         "doctrine/mongodb-odm-bundle": "3.0.*@dev"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters"
+        ]
     },
     "autoload": {
         "psr-0": { "Tpg\\ExtjsBundle": "" }
@@ -32,5 +42,10 @@
     "target-dir": "Tpg/ExtjsBundle",
     "config": {
         "bin-dir": "bin/"
+    },
+    "extra": {
+        "incenteev-parameters": {
+            "file": "Tests/app/config/parameters.yml"
+        }
     }
 }

@@ -27,6 +27,7 @@ class DeserializationAssociateRelationship {
         $classMetadata = $e->getContext()->getMetadataFactory()->getMetadataForClass($className);
         /** @var PropertyMetadata $propertyMetadata */
         foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
+            if ($propertyMetadata->reflection === null) continue;
             /** @var JoinColumn $joinColumnAnnotation */
             $joinColumnAnnotation = $this->reader->getPropertyAnnotation(
                 $propertyMetadata->reflection,
