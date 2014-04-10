@@ -1,15 +1,10 @@
 <?php
 namespace Tpg\ExtjsBundle\Tests\Command\ORM;
 
-use Doctrine\Bundle\DoctrineBundle\Command\CreateDatabaseDoctrineCommand;
-use Doctrine\Bundle\DoctrineBundle\Command\DropDatabaseDoctrineCommand;
-use Doctrine\Bundle\DoctrineBundle\Command\Proxy\CreateSchemaDoctrineCommand;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Tools\SchemaTool;
 use FOS\RestBundle\Routing\Loader\RestYamlCollectionLoader;
 
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Routing\Router;
 use Test\TestBundle\Entity\Car;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Tpg\ExtjsBundle\Tests\Command\BaseTestGeneratedRestController as Base;
@@ -61,39 +56,23 @@ class BaseTestGeneratedRestController extends Base {
     public static function setUpBeforeClass() {
         parent::setUpBeforeClass();
         $kernel = new \AppKernel('test', true);
-        $app = new Application($kernel);
-        $app->addCommands(array(
-            new CreateDatabaseDoctrineCommand(),
-            new CreateSchemaDoctrineCommand(),
-        ));
         $kernel->boot();
-        $command = $app->find('doctrine:database:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
-        $command = $app->find('doctrine:schema:create');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-        ));
+
+        /** @var EntityManager $em */
+        $em = $kernel->getContainer()->get('doctrine')->getManager();
+        $tool = new SchemaTool($em);
+        $classNames = $em->getConfiguration()->getMetadataDriverImpl()->getAllClassNames();
+        $classMetaData = [];
+        foreach ($classNames as $className) {
+            $classMetaData[] = $em->getClassMetadata($className);
+        }
+        $tool->dropSchema($classMetaData);
+        $tool->createSchema($classMetaData);
+
         $kernel->shutdown();
     }
 
     public static function tearDownAfterClass() {
         parent::tearDownAfterClass();
-        $kernel = new \AppKernel('test', true);
-        $app = new Application($kernel);
-        $app->addCommands(array(
-            new DropDatabaseDoctrineCommand(),
-        ));
-        $kernel->boot();
-        $command = $app->find('doctrine:database:drop');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command' => $command->getName(),
-            '--force' => true,
-        ));
-        $kernel->shutdown();
     }
 }
