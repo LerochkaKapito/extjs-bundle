@@ -23,6 +23,9 @@ class GeneratorService {
 
     /** @var $twig TwigEngine */
     protected $twig;
+	
+	/** @var $router Router */
+    protected $router;
 
     protected $remotingBundles = array();
     protected $fieldsParams = array();
@@ -33,6 +36,13 @@ class GeneratorService {
 
     public function setTwigEngine($engine) {
         $this->twig = $engine;
+    }
+	/**
+     * DI for Router
+     * @param $router
+     */
+    public function setRouter($router) {
+    	$this->router = $router;
     }
 
     public function setRemotingBundles($bundles) {
@@ -96,6 +106,9 @@ class GeneratorService {
                 'idProperty' => 'id'
             );
             if ($classModelProxyAnnotation !== null) {
+				if(isset($classModelProxyAnnotation->option['url'])){
+            		$classModelProxyAnnotation->option['url'] = $this->router->generate($classModelProxyAnnotation->option['url'],array(),true);
+            	}
                 $structure['proxy'] = array(
                     'type'=>$classModelProxyAnnotation->name,
                 ) + $classModelProxyAnnotation->option;
