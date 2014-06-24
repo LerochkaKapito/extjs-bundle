@@ -93,7 +93,7 @@ class
             $paramFetcher->get("limit"),
             $start
         );
-        {%- if mongo %}
+        {%- if (mongo or phpcr) %}
 
         $list = array_values($list->toArray());
         {%- endif %}

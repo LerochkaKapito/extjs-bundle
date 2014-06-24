@@ -35,6 +35,9 @@ class TpgExtjsExtension extends Extension
         if (isset($bundles['DoctrineMongoDBBundle'])) {
             $loader->load('odm.services.xml');
         }
+        if(isset($bundles['DoctrinePHPCRBundle'])) {
+        	$loader->load('phpcr.services.xml');
+        }
 
         $list = array();
         if (isset($config['remoting'])) {

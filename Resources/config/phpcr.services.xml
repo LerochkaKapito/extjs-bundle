@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="tpg_extjs.phpcr_parentdocument_handler.class">Tpg\ExtjsBundle\Handler\PHPCRTypeHandler</parameter>
+        <parameter key="tpg_extjs.json_deserialization_visitor.class">Tpg\ExtjsBundle\Component\JsonDeserializationVisitor</parameter>
+        <parameter key="tpg_extjs.doctrine_phpcr_object_constructor.class">Tpg\ExtjsBundle\Construction\DoctrinePhpcrObjectConstructor</parameter>
+    </parameters>
+
+    <services>
+        <service id="tpg_extjs.phpcr_parentdocument_handler" class="%tpg_extjs.phpcr_parentdocument_handler.class%">
+        	<argument type="service" id="doctrine_phpcr" />
+        	<tag name="jms_serializer.subscribing_handler" />
+        </service>
+
+    
+        <!-- Serializer service from JMS Serializer -->
+        <service id="tpg_extjs.phpcr_serializer" class="%jms_serializer.serializer.class%">
+            <argument type="service" id="jms_serializer.metadata_factory" />
+            <argument type="service" id="jms_serializer.handler_registry" />
+            <argument type="service" id="tpg_extjs.doctrine_phpcr_object_constructor" />
+            <argument type="collection" /><!-- Serialization Visitors -->
+            <argument type="collection" /><!-- Deserialization Visitors -->
+            <argument type="service" id="jms_serializer.event_dispatcher" />
+        </service>
+        <service id="tpg_extjs.serializer" alias="tpg_extjs.phpcr_serializer" />
+
+        <service id="tpg_extjs.doctrine_phpcr_object_constructor" class="%tpg_extjs.doctrine_phpcr_object_constructor.class%" public="false">
+            <argument type="service" id="doctrine_phpcr"/>
+            <argument type="service" id="jms_serializer.unserialize_object_constructor"/>
+        </service>
+
+        <service id="tpg_extjs.json_deserialization_visitor" class="%tpg_extjs.json_deserialization_visitor.class%">
+            <argument type="service" id="tpg_extjs.naming_strategy" />
+            <argument type="service" id="tpg_extjs.doctrine_phpcr_object_constructor" />
+            <tag name="tpg_extjs.deserialization_visitor" format="json" />
+        </service>
+
+        <service id="tpg_extjs.naming_strategy" class="Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy" public="false"/>
+    </services>
+</container>

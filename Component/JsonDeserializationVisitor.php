@@ -25,7 +25,6 @@ class JsonDeserializationVisitor extends Base {
         if ( ! $metadata->type) {
             throw new RuntimeException(sprintf('You must define a type for %s::$%s.', $metadata->reflection->class, $metadata->name));
         }
-
         $v = $data[$name] !== null ? $this->getNavigator()->accept($data[$name], $metadata->type, $context) : null;
 
         if (null === $metadata->setter) {

@@ -8,7 +8,7 @@ use JMS\Serializer\EventDispatcher\PreDeserializeEvent;
 use JMS\Serializer\Metadata\PropertyMetadata;
 
 class DeserializationAssociateRelationship {
-
+	
     /** @var  AnnotationReader */
     protected $reader;
 
@@ -24,7 +24,11 @@ class DeserializationAssociateRelationship {
             $className = $e->getType();
             $className = $className['params'][0]['name'];
         }
-        $classMetadata = $e->getContext()->getMetadataFactory()->getMetadataForClass($className);
+        try {
+        	$classMetadata = $e->getContext()->getMetadataFactory()->getMetadataForClass($className);
+        } catch (\Exception $e) {
+        	return;
+        }
         /** @var PropertyMetadata $propertyMetadata */
         foreach ($classMetadata->propertyMetadata as $propertyMetadata) {
             if ($propertyMetadata->reflection === null) continue;
