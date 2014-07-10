@@ -188,7 +188,8 @@ class GeneratorService {
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Int':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Increment':
                 case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Int':
-                    $field['type'] = "int";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Long':
+                	$field['type'] = "int";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\String':
                 case 'Doctrine\ODM\PHPCR\Mapping\Annotations\String':
@@ -222,6 +223,8 @@ class GeneratorService {
                             );
                             $field['dateFormat'] = $format[0];
                         }
+                    } else {
+                    	$field['type'] = $annotation->name;
                     }
                     break;
                 case 'Doctrine\ORM\Mapping\OneToOne':
