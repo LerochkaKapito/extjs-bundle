@@ -12,6 +12,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\View\View;
+use FOS\RestBundle\Controller\Annotations\Route;
 use \JMS\Serializer\SerializationContext;
 use \Doctrine\DBAL\DBALException;
 use \JMS\Serializer\DeserializationContext;
@@ -40,7 +41,8 @@ class
     /**
      * Get detail of a {{ entity_name }} record
      * @param              $id
-     *
+	 *
+{% if phpcr %}     * @Route(requirements={"id"=".+"}) {% endif %}
      * @QueryParam(name="group", description="The JMS Serializer group", default="")
      * @QueryParam(name="depth", description="The depth to use for serialization", default="1")
      *
@@ -93,7 +95,7 @@ class
             $paramFetcher->get("limit"),
             $start
         );
-        {%- if mongo %}
+        {%- if (mongo or phpcr) %}
 
         $list = array_values($list->toArray());
         {%- endif %}
@@ -106,6 +108,7 @@ class
     /**
      * Create a new {{ entity_name }} record
      *
+{% if phpcr %}     * @Route(requirements={"id"=".+"}) {% endif %}
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function post{{ controller|capitalize }}sAction() {
@@ -146,6 +149,7 @@ class
      * Update an existing {{ entity_name }} record
      * @param $id
      *
+{% if phpcr %}     * @Route(requirements={"id"=".+"}) {% endif %}
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function put{{ controller|capitalize }}Action($id) {
@@ -187,6 +191,7 @@ class
      * Patch an existing {{ entity_name }} record
      * @param $id
      *
+{% if phpcr %}     * @Route(requirements={"id"=".+"}) {% endif %}
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function patch{{ controller|capitalize }}Action($id) {
@@ -230,6 +235,7 @@ class
      * Delete an existing {{ entity_name }} record
      * @param $id
      *
+{% if phpcr %}     * @Route(requirements={"id"=".+"}) {% endif %}
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function delete{{ controller|capitalize }}Action($id) {

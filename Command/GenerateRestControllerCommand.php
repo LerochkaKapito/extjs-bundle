@@ -45,8 +45,14 @@ class GenerateRestControllerCommand extends GeneratorCommand {
                         'm',
                         InputOption::VALUE_NONE,
                         "Generate Rest Controller for Mongo Document"
+                    ),
+                    new InputOption(
+                        'phpcr',
+                        'p',
+                        InputOption::VALUE_NONE,
+                        "Generate Rest Controller for PHPCR Document"
                     )
-                ))
+            ))
             ->setDescription('Generates a controller')
             ->setHelp(<<<EOT
 The <info>generate:rest:controller</info> command helps you generates new FOSRest based controllers inside bundles.
@@ -140,6 +146,10 @@ EOT
         /** @todo Check entity is a valid entity */
         if ($this->input->getOption("mongo")) {
             $generator->setMongo(true);
+        }
+            /** @todo Check entity is a valid entity */
+        if ($this->input->getOption("phpcr")) {
+            $generator->setPhpcr(true);
         }
         $generator->setEntityBundle($bundle);
         return $generator;

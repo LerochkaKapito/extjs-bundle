@@ -160,33 +160,41 @@ class GeneratorService {
             switch(get_class($annotation)) {
                 case 'Tpg\ExtjsBundle\Annotation\Model\Field':
                     $field['type'] = $annotation->type;
+                    $field['persist'] = $annotation->persist;
                     break;
                 case 'Doctrine\ORM\Mapping\Id':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Id':
-                    $field['useNull'] = true;
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Id':
+                	$field['useNull'] = true;
                     $field['persist'] = false;
                     $skipValidator = true;
                     $fieldIsId = true;
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Timestamp':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Date':
-                    $field['type'] = "date";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Date':
+                	$field['type'] = "date";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Float':
-                    $field['type'] = "float";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Float':
+                	$field['type'] = "float";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Boolean':
-                    $field['type'] = "boolean";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Boolean':
+                	$field['type'] = "boolean";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Hash':
-                    $field['type'] = "auto";
+                	$field['type'] = "auto";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Int':
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Increment':
-                    $field['type'] = "int";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Int':
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\Long':
+                	$field['type'] = "int";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\String':
-                    $field['type'] = "string";
+                case 'Doctrine\ODM\PHPCR\Mapping\Annotations\String':
+                	$field['type'] = "string";
                     break;
                 case 'Doctrine\ODM\MongoDB\Mapping\Annotations\Field':
                     $field['type'] = $this->getColumnType($annotation->type);
@@ -216,6 +224,8 @@ class GeneratorService {
                             );
                             $field['dateFormat'] = $format[0];
                         }
+                    } else {
+                    	$field['type'] = $annotation->name;
                     }
                     break;
                 case 'Doctrine\ORM\Mapping\OneToOne':

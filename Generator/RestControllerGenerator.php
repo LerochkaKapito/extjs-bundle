@@ -11,6 +11,7 @@ class RestControllerGenerator extends ControllerGenerator {
     protected $entityName;
     protected $trait = false;
     protected $mongo = false;
+    protected $phpcr = false;
     protected $template = 'Controller.php';
 
     /**
@@ -36,7 +37,11 @@ class RestControllerGenerator extends ControllerGenerator {
     public function setMongo($mongo) {
         $this->mongo = $mongo;
     }
-
+    
+    public function setPhpcr($phpcr) {
+    	$this->phpcr = $phpcr;
+    }
+    
     public function generate(BundleInterface $bundle, $controller, $routeFormat, $templateFormat, array $actions = array())
     {
         $dir = $bundle->getPath();
@@ -51,21 +56,30 @@ class RestControllerGenerator extends ControllerGenerator {
             throw new \RuntimeException(sprintf('Controller "%s" already exists', $controllerFile));
         }
 
+        $manager = "doctrine.orm.default_entity_manager";
+        $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
+        $serializer = "tpg_extjs.orm_serializer";
+        
         if ($this->mongo) {
             $entityClass = $this->entityBundle->getNamespace().'\\Document\\'.$this->entityName;
-        } else {
-            $entityClass = $this->entityBundle->getNamespace().'\\Entity\\'.$this->entityName;
+            $manager = "doctrine_mongodb.odm.default_document_manager";
+            $serializer = "tpg_extjs.odm_serializer";
+        } elseif ($this->phpcr) {
+            $entityClass = $this->entityBundle->getNamespace().'\\Document\\'.$this->entityName;
+            $manager = "doctrine_phpcr.odm.default_document_manager";
+            $serializer = "tpg_extjs.phpcr_serializer";
         }
 
         $tmpEntity = explode('/', $this->entityName);
-
+        
         $parameters = array(
             'mongo'      => $this->mongo,
-            'trait'      => $this->trait,
+            'phpcr'      => $this->phpcr,
+        	'trait'      => $this->trait,
             'namespace'  => $bundle->getNamespace(),
             'bundle'     => $bundle->getName(),
-            "manager"    => ($this->mongo===true)?"doctrine_mongodb.odm.default_document_manager":"doctrine.orm.default_entity_manager",
-            'serializer' => ($this->mongo===true)?"tpg_extjs.odm_serializer":"tpg_extjs.orm_serializer",
+            "manager"    => $manager,
+            'serializer' => $serializer,
             'controller'        => $controller,
             'entity_class'      => $entityClass,
             'entity_name'       => str_replace(array("/","\\"), "_", $this->entityName),
