@@ -9,4 +9,5 @@ use Doctrine\ORM\Mapping\Annotation;
  */
 class Field implements Annotation {
     public $type="string";
-} 
+	public $persist=true;
+}
