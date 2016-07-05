@@ -1,5 +1,5 @@
 {
-    "name": "tpg/extjs-bundle",
+    "name": "amstaffix/extjs-bundle",
     "type": "symfony-bundle",
     "description": "Use ExtJs with Symfony 2",
     "keywords": ["extjs", "bundle", "symfony2"],
@@ -9,6 +9,14 @@
         {
             "name": "James Moey",
             "email": "james.moey@tradingpursuits.com"
+        },
+        {
+            "name": "Nikita Sapogov",
+            "email": "amstaffix@gmail.com"
+        },
+        {
+            "name": "Community",
+            "homepage": "https://github.com/AmsTaFFix/extjs-bundle/graphs/contributors"
         }
     ],
     "require": {
@@ -36,7 +44,9 @@
         ]
     },
     "autoload": {
-        "psr-0": { "Tpg\\ExtjsBundle": "" }
+        "psr-0": {
+            "Tpg\\ExtjsBundle": ""
+        }
     },
     "target-dir": "Tpg/ExtjsBundle",
     "config": {
