@@ -3,7 +3,7 @@
     "type": "symfony-bundle",
     "description": "Use ExtJs with Symfony 2",
     "keywords": ["extjs", "bundle", "symfony2"],
-    "homepage": "",
+    "homepage": "https://github.com/AmsTaFFix/extjs-bundle",
     "license": "MIT",
     "authors": [
         {

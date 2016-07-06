@@ -66,7 +66,7 @@ class GeneratedRestControllerTest extends BaseTestGeneratedRestController {
         $repo = $this->client->getContainer()->get('doctrine_mongodb.odm.default_document_manager')->getRepository('TestTestBundle:Order');
         /** @var LoggableCursor $orders */
         $orders = $repo->findAll();
-        $order = $orders->getNext();
+        $order = reset($orders);
         $this->client->request('GET', '/orders/'.$order->getId().'.json');
         $this->assertEquals("200", $this->client->getResponse()->getStatusCode());
         $content = json_decode($this->client->getResponse()->getContent(), true);

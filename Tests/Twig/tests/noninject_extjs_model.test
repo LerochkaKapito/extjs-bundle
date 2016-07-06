@@ -4,5 +4,4 @@
 {{ extjs_model(false, 'Test.model.Person', 'Test.model.Book') }}
 --DATA--
 return array()
---EXPECT--
-<script type='text/javascript' src='/generateModel.js?model[]=Test.model.Person&model[]=Test.model.Book'></script>
+--EXPECT--<script type='text/javascript' src='/generateModel.js?model[]=Test.model.Person&model[]=Test.model.Book'></script>

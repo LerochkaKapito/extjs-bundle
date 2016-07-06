@@ -94,8 +94,8 @@ class
             $start
         );
         {%- if mongo %}
-
-        $list = array_values($list->toArray());
+// @todo fix it...
+//        $list = array_values($list->toArray());
         {%- endif %}
 
         $context = $this->getSerializerContext(array('list'));
