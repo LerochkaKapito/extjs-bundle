@@ -32,8 +32,8 @@
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "~1.2",
-        "doctrine/mongodb-odm": "1.0.*@dev",
-        "doctrine/mongodb-odm-bundle": "3.0.*@dev"
+        "doctrine/mongodb-odm": "~1.0",
+        "doctrine/mongodb-odm-bundle": "~3.0"
     },
     "scripts": {
         "post-install-cmd": [
