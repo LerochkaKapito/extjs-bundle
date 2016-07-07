@@ -10,9 +10,8 @@ services:
 
 before_script:
     - echo "extension=mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-    - echo "memory_limit=2G" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - curl -s http://getcomposer.org/installer | php
-    - php composer.phar install --dev
+    - php -d memory_limit=-1 composer.phar install
     - php Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCar --entity TestTestBundle:Car
     - php Tests/app/console generate:rest:controller -t --controller TestTestBundle:MyCarOwner --entity TestTestBundle:CarOwner
     - php Tests/app/console doctrine:database:create
