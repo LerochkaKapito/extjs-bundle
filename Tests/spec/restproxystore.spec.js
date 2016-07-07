@@ -110,17 +110,19 @@ describe('Rest Proxy in Model', function() {
             password: 'xx'
         });
         var runned = false;
+        var car_owner_id;
         runs(function() {
             car.save({
                 callback: function(record) {
                     var owner = Ext.create('Test.TestBundle.Entity.CarOwner', {
-                        name: 'James'
+                        name: 'James Y'
                     });
                     owner.save({
                         callback: function(record) {
                             car.setCarOwner(record, {
                                 callback: function() {
                                     runned = true;
+                                    car_owner_id = car.get('car_owner_id');
                                 }
                             });
                         }
@@ -131,9 +133,37 @@ describe('Rest Proxy in Model', function() {
         waitsFor(function() {
             return runned;
         });
+
+        // Reload Car entity from REST proxy. Car_owner_id should still be there.
+        var runned1 = false;
+        runs(function() {
+            Test.TestBundle.Entity.Car.load(car.get('id'), {
+                callback: function(record) {
+                    record.set('name', 'Audi');
+
+                    // Save and reload again. If car_owner_id was not there the belongsTo association is destroyed.
+                    record.save({
+                        callback: function(record) {
+                            Test.TestBundle.Entity.Car.load(car.get('id'), {
+                                callback: function(record) {
+                                    car = record;
+                                    runned1 = true;
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        waitsFor(function() {
+            return runned1;
+        });
+
         runs(function() {
             expect(car.getCarOwner()).not.toBeNull();
-            expect(car.getCarOwner().getId()).toBeGreaterThan(0);
+            expect(car.get('car_owner_id')).toBe(car_owner_id);
+            expect(car.getCarOwner().get('name')).toBe('James Y');
+            expect(car.get('name')).toBe('Audi');
         });
     });
     it('should update entity', function() {
