@@ -5,7 +5,7 @@ Use ExtJs with Symfony 2
 
 ![Build Status](https://travis-ci.org/AmsTaFFix/extjs-bundle.svg?branch=master)
 
-Packagist: https://packagist.org/packages/tpg/extjs-bundle
+Packagist: https://packagist.org/packages/amstaffix/extjs-bundle
 
 The aim of this bundle is to ease the intergration between Symfony 2 and ExtJS client side framework. It support
  - Dynamic runtime generation of Ext.data.Model based on entities/models implement on the server side.
@@ -15,19 +15,19 @@ The aim of this bundle is to ease the intergration between Symfony 2 and ExtJS c
 Requirement
 -----------
 Mandatory
- - Symfony 2.3.*
- - Serializer library from JMS 0.13.*
+ - Symfony ~2.3
+ - Serializer library from JMS ~1.0
  - Doctrine ORM or ODM
- - Generator from Sensio 2.3.*
+ - Generator from Sensio ~2.3
 
 Optional
- - Rest Controller code generator need FOSRestBundle 0.12.*
+ - Rest Controller code generator need FOSRestBundle ~1.0
 
 Installation
 ------------
 **Using composer**
 ``` bash
-$ composer require tpg/extjs-bundle
+$ composer require amstaffix/extjs-bundle
 ```
 
 **Enabling bundle**
