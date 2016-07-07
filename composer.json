@@ -22,11 +22,11 @@
     "require": {
         "php": "~5.4",
         "symfony/symfony": "~2.3",
-        "doctrine/orm": ">=2.2.3,<2.4-dev",
+        "doctrine/orm": "^2.2.3",
         "jms/serializer": "~1.0",
         "jms/serializer-bundle": "~1.0",
         "jms/di-extra-bundle": "~1.4",
-        "sensio/generator-bundle": "2.3.*",
+        "sensio/generator-bundle": "~2.3, <2.5.0",
         "friendsofsymfony/rest-bundle": "~1.0",
         "incenteev/composer-parameter-handler": "~2.0"
     },
