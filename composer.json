@@ -21,8 +21,10 @@
     ],
     "require": {
         "php": "~5.4",
-        "symfony/symfony": "~2.3",
         "doctrine/orm": "^2.2.3",
+        "doctrine/doctrine-bundle": "~1.0",
+        "symfony/framework-bundle": "~2.3",
+        "symfony/twig-bundle": "~2.3",
         "jms/serializer": "~1.0",
         "jms/serializer-bundle": "~1.0",
         "jms/di-extra-bundle": "~1.4",
@@ -31,9 +33,9 @@
         "incenteev/composer-parameter-handler": "~2.0"
     },
     "require-dev": {
-        "doctrine/doctrine-bundle": "~1.2",
         "doctrine/mongodb-odm": "~1.0",
-        "doctrine/mongodb-odm-bundle": "~3.0"
+        "doctrine/mongodb-odm-bundle": "~3.0",
+        "symfony/symfony": "~2.3"
     },
     "scripts": {
         "post-install-cmd": [
