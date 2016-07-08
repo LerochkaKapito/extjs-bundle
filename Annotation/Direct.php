@@ -1,11 +1,12 @@
 <?php
+
 namespace Tpg\ExtjsBundle\Annotation;
 
-use Doctrine\ORM\Mapping\Annotation;
-
 /**
+ * Annotation for Controller action to mark it like remote use enabled
+ *
  * @Annotation
  * @Target("METHOD")
  */
-class Direct implements Annotation {
+class Direct {
 }

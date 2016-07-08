@@ -1,0 +1,12 @@
+checks:
+    php: true
+filter:
+    excluded_paths:
+        - Resources/skeleton*
+build:
+    dependencies:
+        override:
+            - curl -s http://getcomposer.org/installer | php
+            - php -d memory_limit=-1 composer.phar install
+    environment:
+        mongodb: true
