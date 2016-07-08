@@ -1,4 +1,5 @@
 <?php
+
 namespace Tpg\ExtjsBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
@@ -8,9 +9,14 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Tpg\ExtjsBundle\Service\GeneratorService;
 
+/**
+ * Generates Extjs model based on entity
+ */
 class GenerateEntityCommand extends ContainerAwareCommand {
+    /**
+     * @inheritdoc
+     */
     public function configure() {
         parent::configure();
         $this->setName('generate:extjs:entity');
@@ -20,6 +26,9 @@ class GenerateEntityCommand extends ContainerAwareCommand {
         $this->setDescription("Generate Sencha ExtJs model base on an existing PHP entity");
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $reader = $this->getContainer()->get('annotation_reader');
