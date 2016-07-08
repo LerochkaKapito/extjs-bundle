@@ -21,6 +21,7 @@ class GenerateEntityCommand extends ContainerAwareCommand
     public function configure()
     {
         parent::configure();
+
         $this->setName('generate:extjs:entity');
         $this->addArgument('name', InputArgument::REQUIRED, "A bundle name, a namespace, or a class name");
         $this->addOption(
