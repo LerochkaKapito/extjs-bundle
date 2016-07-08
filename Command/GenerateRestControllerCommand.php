@@ -72,7 +72,12 @@ EOT
 
         Validators::validateEntityName($input->getOption('entity'));
 
-        $dialog = $this->getDialogHelper();
+        // in SensioGeneratorBundle:v2.5.0 was BC break, changed method name. commit 59eebd0
+        if (method_exists($this, 'getDialogHelper')) {
+            $dialog = $this->getDialogHelper();
+        } else {
+            $dialog = $this->getQuestionHelper();
+        }
 
         if ($input->getOption('trait')) {
             if (PHP_MAJOR_VERSION < 5 || PHP_MINOR_VERSION < 4) {
