@@ -2,19 +2,28 @@
 
 namespace Tpg\ExtjsBundle\Annotation;
 
-use Doctrine\ORM\Mapping\Annotation;
-
 /**
+ * Description of proxy for model
+ *
  * @Annotation
  * @Target("CLASS")
  */
-final class ModelProxy implements Annotation
+final class ModelProxy
 {
+    /** @var string Name of proxy */
     public $name = 'memory';
+    /** @var array Options */
     public $option = array();
+    /** @var array Reader params */
     public $reader = array();
+    /** @var array Writer params */
     public $writer = array();
 
+    /**
+     * Constructor.
+     *
+     * @param array $values Values
+     */
     public function __construct($values)
     {
         if (isset($values['value'])) {
