@@ -1,12 +1,17 @@
 <?php
+
 namespace Tpg\ExtjsBundle\Annotation\Model;
 
-use Doctrine\ORM\Mapping\Annotation;
-
 /**
+ * Description of field in Extjs Model
+ *
  * @Annotation
  * @Target("PROPERTY")
  */
-class Field implements Annotation {
-    public $type="string";
+class Field
+{
+    /**
+     * @var string Type of field
+     */
+    public $type = "string";
 } 
