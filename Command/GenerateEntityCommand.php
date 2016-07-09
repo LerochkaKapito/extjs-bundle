@@ -47,13 +47,13 @@ class GenerateEntityCommand extends ContainerAwareCommand
             } else {
                 if (is_dir(dirname($input->getOption("output")))) {
                     if (!$this->canWriteFile($input, $output, $input->getOption("output"))) {
-                        exit(1);
+                        return 1;
                     }
                     file_put_contents($input->getOption("output"), '');
                     $outputLocation = realpath($input->getOption("output"));
                 } else {
                     $output->writeln("Invalid output directory");
-                    exit(1);
+                    return 1;
                 }
             }
         }
@@ -104,7 +104,9 @@ class GenerateEntityCommand extends ContainerAwareCommand
     {
         $manager = new DisconnectedMetadataFactory($this->getContainer()->get('doctrine'));
         try {
-            $bundle = $this->getContainer()->get("kernel")->getBundle($input->getArgument('name'));
+            /** @var \AppKernel $kernel */
+            $kernel = $this->getContainer()->get("kernel");
+            $bundle = $kernel->getBundle($input->getArgument('name'));
             if ($displayStatus) {
                 $output->writeln(sprintf('Generating entities for bundle "<info>%s</info>"', $bundle->getName()));
             }
