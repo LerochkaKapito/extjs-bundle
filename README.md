@@ -4,6 +4,8 @@ extjs-bundle
 Use ExtJs with Symfony 2
 
 ![Build Status](https://travis-ci.org/AmsTaFFix/extjs-bundle.svg?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/AmsTaFFix/extjs-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/AmsTaFFix/extjs-bundle/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/AmsTaFFix/extjs-bundle/badges/build.png?b=master)](https://scrutinizer-ci.com/g/AmsTaFFix/extjs-bundle/build-status/master)
 
 Packagist: https://packagist.org/packages/amstaffix/extjs-bundle
 
