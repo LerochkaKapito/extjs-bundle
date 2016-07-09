@@ -3,24 +3,60 @@
 namespace Tpg\ExtjsBundle\Command;
 
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
+use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Tpg\ExtjsBundle\Service\GeneratorService;
 
 /**
  * Generates Extjs model based on entity
  */
 class GenerateEntityCommand extends ContainerAwareCommand
 {
+    /** @var AnnotationReader A reader for docblock annotations */
+    private $annotationReader;
+    /** @var GeneratorService Extjs Generator */
+    private $generator;
+    /** @var Registry References all Doctrine connections and entity managers in a given Container */
+    private $doctrine;
+    /** @var KernelInterface Kernel */
+    private $kernel;
+
+    /**
+     * Constructor
+     *
+     * @param AnnotationReader $annotationReader A reader for docblock annotations
+     * @param GeneratorService $generator Extjs Generator
+     * @param Registry $doctrine References all Doctrine connections and entity managers in a given Container
+     * @param KernelInterface $kernel Kernel
+     */
+    public function __construct(
+        AnnotationReader $annotationReader,
+        GeneratorService $generator,
+        Registry $doctrine,
+        KernelInterface $kernel
+    ) {
+        parent::__construct();
+
+        $this->annotationReader = $annotationReader;
+        $this->generator = $generator;
+        $this->doctrine = $doctrine;
+        $this->kernel = $kernel;
+    }
+
     /**
      * @inheritdoc
      */
     public function configure()
     {
         parent::configure();
+
         $this->setName('generate:extjs:entity');
         $this->addArgument('name', InputArgument::REQUIRED, "A bundle name, a namespace, or a class name");
         $this->addOption(
@@ -38,8 +74,6 @@ class GenerateEntityCommand extends ContainerAwareCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $reader = $this->getContainer()->get('annotation_reader');
-        $generator = $this->getContainer()->get("tpg_extjs.generator");
         $outputLocation = false;
         if ($input->getOption("output")) {
             if (is_dir($input->getOption("output"))) {
@@ -61,7 +95,7 @@ class GenerateEntityCommand extends ContainerAwareCommand
         foreach ($metadata->getMetadata() as $classMetadata) {
             /** @var ClassMetadata $classMetadata */
             $classMetadata->reflClass = new \ReflectionClass($classMetadata->name);
-            if ($reader->getClassAnnotation(
+            if ($this->annotationReader->getClassAnnotation(
                     $classMetadata->getReflectionClass(),
                     'Tpg\ExtjsBundle\Annotation\Model'
                 ) !== null
@@ -82,19 +116,19 @@ class GenerateEntityCommand extends ContainerAwareCommand
                         }
                         file_put_contents(
                             $fileName,
-                            $generator->generateMarkupForEntity($classMetadata->name)
+                            $this->generator->generateMarkupForEntity($classMetadata->name)
                         );
                         $output->writeln("Generated $fileName");
                     } else {
                         file_put_contents(
                             $outputLocation,
-                            $generator->generateMarkupForEntity($classMetadata->name),
+                            $this->generator->generateMarkupForEntity($classMetadata->name),
                             FILE_APPEND
                         );
                         $output->writeln("Appending to $outputLocation");
                     }
                 } else {
-                    $output->write($generator->generateMarkupForEntity($classMetadata->name));
+                    $output->write($this->generator->generateMarkupForEntity($classMetadata->name));
                 }
             }
         }
@@ -102,11 +136,9 @@ class GenerateEntityCommand extends ContainerAwareCommand
 
     protected function getMetadata(InputInterface $input, OutputInterface $output, $displayStatus)
     {
-        $manager = new DisconnectedMetadataFactory($this->getContainer()->get('doctrine'));
+        $manager = new DisconnectedMetadataFactory($this->doctrine);
         try {
-            /** @var \AppKernel $kernel */
-            $kernel = $this->getContainer()->get("kernel");
-            $bundle = $kernel->getBundle($input->getArgument('name'));
+            $bundle = $this->kernel->getBundle($input->getArgument('name'));
             if ($displayStatus) {
                 $output->writeln(sprintf('Generating entities for bundle "<info>%s</info>"', $bundle->getName()));
             }

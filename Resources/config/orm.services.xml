@@ -38,5 +38,12 @@
         </service>
 
         <service id="tpg_extjs.naming_strategy" class="Tpg\ExtjsBundle\Component\JMSCamelCaseNamingStrategy" public="false"/>
+        <service class="Tpg\ExtjsBundle\Command\GenerateEntityCommand" id="tpg_extjs.command.generate_entity_command">
+            <argument id="annotations.reader" type="service"/>
+            <argument id="tpg_extjs.generator" type="service"/>
+            <argument id="doctrine" type="service"/>
+            <argument id="kernel" type="service"/>
+            <tag name="console.command"/>
+        </service>
     </services>
 </container>

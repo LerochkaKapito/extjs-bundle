@@ -7,7 +7,6 @@ include_once(__DIR__.'/../../app/AppKernel.php');
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Filesystem\Filesystem;
-use Tpg\ExtjsBundle\Command\GenerateEntityCommand;
 
 /**
  * GenerateEntityCommandTest
@@ -57,8 +56,7 @@ class GenerateEntityCommandTest extends \PHPUnit_Framework_TestCase
     {
         $kernel = new \AppKernel('test', true);
         $app = new Application($kernel);
-        $app->add(new GenerateEntityCommand());
-        $kernel->boot();
+        $app->all(); // for commands registration
         $command = $app->find('generate:extjs:entity');
         $commandTester = new CommandTester($command);
         $commandTester->execute(
