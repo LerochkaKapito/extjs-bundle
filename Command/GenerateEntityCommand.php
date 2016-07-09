@@ -74,24 +74,15 @@ class GenerateEntityCommand extends ContainerAwareCommand
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $outputLocation = false;
-        if ($input->getOption("output")) {
-            if (is_dir($input->getOption("output"))) {
-                $outputLocation = realpath($input->getOption("output"));
-            } else {
-                if (is_dir(dirname($input->getOption("output")))) {
-                    if (!$this->canWriteFile($input, $output, $input->getOption("output"))) {
-                        return 1;
-                    }
-                    file_put_contents($input->getOption("output"), '');
-                    $outputLocation = realpath($input->getOption("output"));
-                } else {
-                    $output->writeln("Invalid output directory");
-                    return 1;
-                }
+        $outputLocation = null;
+        if ($input->hasOption("output")) {
+            $outputLocation = $this->getOutputLocationFromOutputOption($input->getOption("output"), $input, $output);
+            if ($outputLocation === null) {
+                return 1;
             }
         }
-        $metadata = $this->getMetadata($input, $output, $outputLocation === false);
+
+        $metadata = $this->getMetadata($input, $output, $outputLocation === null);
         foreach ($metadata->getMetadata() as $classMetadata) {
             /** @var ClassMetadata $classMetadata */
             $classMetadata->reflClass = new \ReflectionClass($classMetadata->name);
@@ -132,6 +123,40 @@ class GenerateEntityCommand extends ContainerAwareCommand
                 }
             }
         }
+
+        return 0;
+    }
+
+    /**
+     * Get path to output location
+     *
+     * @param string $outputPath Output path to process
+     * @param InputInterface $input An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     *
+     * @return null|string Path to output location or null, if location not recognized|found
+     */
+    protected function getOutputLocationFromOutputOption($outputPath, InputInterface $input, OutputInterface $output)
+    {
+        if (is_dir($outputPath)) {
+            return realpath($outputPath);
+        }
+
+        // if outputPath is not a dir, than it is file
+        $outputFilePath = $outputPath;
+        if (!is_dir(dirname($outputFilePath))) {
+            $output->writeln("Invalid output directory");
+
+            return null;
+        }
+
+        if (!$this->canWriteFile($input, $output, $outputFilePath)) {
+            return null;
+        }
+
+        file_put_contents($outputFilePath, '');
+
+        return realpath($outputFilePath);
     }
 
     protected function getMetadata(InputInterface $input, OutputInterface $output, $displayStatus)
@@ -167,22 +192,31 @@ class GenerateEntityCommand extends ContainerAwareCommand
         return $metadata;
     }
 
+    /**
+     * Check can write to file
+     *
+     * @param InputInterface $input An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     * @param string $fileName Filename
+     *
+     * @return bool Can write to file
+     */
     protected function canWriteFile(InputInterface $input, OutputInterface $output, $fileName)
     {
-        if (!$input->getOption("overwrite") && file_exists($fileName)) {
-            $dialog = $this->getHelperSet()->get('dialog');
-            $result = $dialog->askConfirmation(
-                $output,
-                '<question>'.$fileName.' already exist, overwrite?</question>',
-                false
-            );
-            if (!$result) {
-                $output->writeln("Skipping $fileName");
-            }
-
-            return $result;
-        } else {
+        if (!file_exists($fileName) || $input->getOption("overwrite")) {
             return true;
         }
+
+        $dialog = $this->getHelperSet()->get('dialog');
+        $result = $dialog->askConfirmation(
+            $output,
+            '<question>'.$fileName.' already exist, overwrite?</question>',
+            false
+        );
+        if (!$result) {
+            $output->writeln("Skipping $fileName");
+        }
+
+        return $result;
     }
 }
