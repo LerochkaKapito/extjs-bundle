@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Tpg\ExtjsBundle\Service\GeneratorService;
 
@@ -86,45 +87,60 @@ class GenerateEntityCommand extends ContainerAwareCommand
         foreach ($metadata->getMetadata() as $classMetadata) {
             /** @var ClassMetadata $classMetadata */
             $classMetadata->reflClass = new \ReflectionClass($classMetadata->name);
-            if ($this->annotationReader->getClassAnnotation(
-                    $classMetadata->getReflectionClass(),
-                    'Tpg\ExtjsBundle\Annotation\Model'
-                ) !== null
-            ) {
-                if ($outputLocation) {
-                    if (is_dir($outputLocation)) {
-                        $baseDir = $outputLocation;
-                        foreach (explode("\\", $classMetadata->namespace) as $dir) {
-                            @mkdir($baseDir.DIRECTORY_SEPARATOR.$dir);
-                            $baseDir .= DIRECTORY_SEPARATOR.$dir;
-                        }
-                        $fileName = $baseDir.DIRECTORY_SEPARATOR.substr(
-                                $classMetadata->name,
-                                strlen($classMetadata->namespace) + 1
-                            ).".js";
-                        if (!$this->canWriteFile($input, $output, $fileName)) {
-                            continue;
-                        }
-                        file_put_contents(
-                            $fileName,
-                            $this->generator->generateMarkupForEntity($classMetadata->name)
-                        );
-                        $output->writeln("Generated $fileName");
-                    } else {
-                        file_put_contents(
-                            $outputLocation,
-                            $this->generator->generateMarkupForEntity($classMetadata->name),
-                            FILE_APPEND
-                        );
-                        $output->writeln("Appending to $outputLocation");
-                    }
-                } else {
-                    $output->write($this->generator->generateMarkupForEntity($classMetadata->name));
-                }
+            $classAnnotation = $this->annotationReader->getClassAnnotation(
+                $classMetadata->getReflectionClass(),
+                'Tpg\ExtjsBundle\Annotation\Model'
+            );
+            if ($classAnnotation === null) {
+                $output->writeln(sprintf("Skip '%s'. Class doesn't have Model annotation", $classMetadata->name));
+                continue;
+            }
+
+            $generatedModel = $this->generator->generateMarkupForEntity($classMetadata->name);
+            if (empty($outputLocation)) {
+                $output->write($generatedModel);
+            } elseif (is_dir($outputLocation)) {
+                $this->writeToDir($generatedModel, $outputLocation, $classMetadata, $input, $output);
+            } else {
+                file_put_contents($outputLocation, $generatedModel, FILE_APPEND);
+                $output->writeln("Appending to $outputLocation");
             }
         }
 
         return 0;
+    }
+
+    /**
+     * Write generated ExtjsModel in file in directory
+     *
+     * @param string $generatedExtjsModel Generated ExtJs model to write
+     * @param string $outputLocation Path to directory
+     * @param ClassMetadata $classMetadata ClassMetaData
+     * @param InputInterface $input An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     */
+    protected function writeToDir(
+        $generatedExtjsModel,
+        $outputLocation,
+        ClassMetadata $classMetadata,
+        InputInterface $input,
+        OutputInterface $output
+    ) {
+        $baseDir = $outputLocation;
+        foreach (explode("\\", $classMetadata->namespace) as $dir) {
+            @mkdir($baseDir.DIRECTORY_SEPARATOR.$dir);
+            $baseDir .= DIRECTORY_SEPARATOR.$dir;
+        }
+
+        $fileName = $baseDir.DIRECTORY_SEPARATOR
+            .substr($classMetadata->name, strlen($classMetadata->namespace) + 1).".js";
+
+        if (!$this->canWriteFile($input, $output, $fileName)) {
+            return;
+        }
+
+        file_put_contents($fileName,$generatedExtjsModel);
+        $output->writeln("Generated $fileName");
     }
 
     /**
@@ -172,8 +188,7 @@ class GenerateEntityCommand extends ContainerAwareCommand
             $name = strtr($input->getArgument('name'), '/', '\\');
 
             if (false !== $pos = strpos($name, ':')) {
-                $name = $this->getContainer()->get('doctrine')
-                        ->getAliasNamespace(substr($name, 0, $pos)).'\\'.substr($name, $pos + 1);
+                $name = $this->doctrine->getAliasNamespace(substr($name, 0, $pos)).'\\'.substr($name, $pos + 1);
             }
 
             if (class_exists($name)) {
