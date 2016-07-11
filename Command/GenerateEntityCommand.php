@@ -2,6 +2,7 @@
 
 namespace Tpg\ExtjsBundle\Command;
 
+use Doctrine\Bundle\DoctrineBundle\Mapping\ClassMetadataCollection;
 use Doctrine\Bundle\DoctrineBundle\Mapping\DisconnectedMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -21,6 +22,7 @@ class GenerateEntityCommand extends ContainerAwareCommand
     public function configure()
     {
         parent::configure();
+
         $this->setName('generate:extjs:entity');
         $this->addArgument('name', InputArgument::REQUIRED, "A bundle name, a namespace, or a class name");
         $this->addOption(
@@ -100,6 +102,15 @@ class GenerateEntityCommand extends ContainerAwareCommand
         }
     }
 
+    /**
+     * Returning ClassMetadata
+     *
+     * @param InputInterface $input An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     * @param bool $displayStatus Displaying process messages
+     *
+     * @return ClassMetadataCollection
+     */
     protected function getMetadata(InputInterface $input, OutputInterface $output, $displayStatus)
     {
         $manager = new DisconnectedMetadataFactory($this->getContainer()->get('doctrine'));

@@ -10,3 +10,10 @@ build:
             - php -d memory_limit=-1 composer.phar install
     environment:
         mongodb: true
+    tests:
+        override:
+            -
+                command: 'phpunit --coverage-clover=some-file'
+                coverage:
+                    file: 'some-file'
+                    format: 'clover'

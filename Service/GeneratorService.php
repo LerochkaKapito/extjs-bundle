@@ -1,9 +1,9 @@
 <?php
+
 namespace Tpg\ExtjsBundle\Service;
 
 use Doctrine\Common\Annotations\Annotation;
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinColumns;
 use Doctrine\ORM\Mapping\OneToMany;
@@ -48,7 +48,6 @@ class GeneratorService {
     public function generateRemotingApi() {
         $list = array();
         foreach($this->remotingBundles as $bundle) {
-            $controllers = array();
             $bundleRef = new \ReflectionClass($bundle);
             $controllerDir = new Finder();
             $controllerDir->files()->in(dirname($bundleRef->getFileName()).'/Controller/')->name('/.*Controller\.php$/');
@@ -516,19 +515,24 @@ class GeneratorService {
         return null;
     }
 
-    protected function removeDuplicate(&$list) {
+    protected function removeDuplicate(&$list)
+    {
         $secondList = $list;
         $duplicateList = array();
-        foreach ($list as $index=>$row) {
-            if (in_array($index, $duplicateList)) continue;
+        foreach ($list as $index => $row) {
+            if (in_array($index, $duplicateList)) {
+                continue;
+            }
             foreach ($secondList as $index2 => $row2) {
-                if ($index === $index2) continue;
+                if ($index === $index2) {
+                    continue;
+                }
                 if ($row == $row2) {
                     $duplicateList[] = $index2;
                 }
             }
         }
-        foreach(array_reverse($duplicateList) as $index) {
+        foreach (array_reverse($duplicateList) as $index) {
             unset($list[$index]);
         }
     }
