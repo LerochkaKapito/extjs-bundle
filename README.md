@@ -199,7 +199,7 @@ To specify rest proxy in extjs model, you need
 // in file Acme\TestBundle\Entity\Car.php
 /**
  * @Extjs\Model
- * @Extjs\ModelProxy("/api/cars")
+ * @Extjs\ModelProxy("_acme_test_bundle_api_get_cars")
  * @ORM\Entity
  * @ORM\Table(name="car")
  */

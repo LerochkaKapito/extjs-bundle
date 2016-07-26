@@ -26,6 +26,9 @@
             <call method="setRemotingBundles">
                 <argument>%tpg_extjs.remoting.bundles%</argument>
             </call>
+			<call method="setRouter">
+                <argument type="service" id="router"/>
+            </call>
             <call method="setModelFieldsParameters">
                 <argument>%tpg_extjs.field_types%</argument>
             </call>
